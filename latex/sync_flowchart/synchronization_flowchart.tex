@@ -1,0 +1,70 @@
+\documentclass{article}
+
+\usepackage[latin1]{inputenc}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+\begin{document}
+\pagestyle{empty}
+
+
+% Define block styles
+\tikzstyle{decision} = [diamond, draw, fill=blue!20, 
+    text width=4.5em, text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{block} = [rectangle, draw, fill=blue!20, 
+    text width=5em, text centered, rounded corners, minimum height=4em]
+\tikzstyle{line} = [draw, -latex']
+\tikzstyle{cloud} = [draw, ellipse,fill=red!20, node distance=3cm,
+    minimum height=2em]
+    
+\begin{tikzpicture}[node distance = 2cm, auto]
+    % Place nodes
+    \node [block] (init) {Start};
+    \node [decision, below of=init] (null) {NULL expected?};
+    \node [block, below of=null, node distance=3cm] (corr) {delayed correlation};
+    \node [decision, below of=corr, node distance=2cm] (peak) {peak?};
+    \node [block, below of=peak, node distance=2.5cm] (energy) {energy measurement};
+    \node [decision, below of=energy] (first) {first symbol after NULL?};
+    \node [block, below of=first, node distance=3cm] (tag) {set "Start" tag};
+    \node [block, right of=null, node distance=4cm] (skip) {skip 1 symbol length};
+    \node [block, below of=skip, node distance=3cm] (corr2) {delayed correlation};
+    \node [decision, below of=corr2] (peak?2) {peak?};
+    \node [above of=null, node distance=2cm] (backtonull){};
+    
+    \path [line] (init) -- (null);
+    \path [line] (null) -- node {yes} (corr);
+    \path [line] (null) -- node {no} (skip);
+    \path [line] (corr) -- (peak);
+    \path [line] (peak) -- node {yes} (energy);
+    \path [line] (energy) -- (first);
+    \path [line] (first) -- node {yes} (tag);
+    \path [line] (peak) -- node {no} ++(2cm,0) |-  (corr);
+    \path [line] (first) -- node {no} ++(2cm,0) |- (corr);
+    \path [line] (skip) -- (corr2);
+    \path [line] (corr2) -- (peak?2);
+    \path [line] (peak?2) -- node {no} ++(-2cm,0) |-  (corr);
+    \path [line] (peak?2) -- node{yes}++(0,-1.5cm) -- node {} ++(2cm,0) -- node{}++(0,9.5cm) -| (null);
+    \path [line] (tag) -- node{}++(0,-1cm) -- node {} ++(-2.5cm,0) -- node{}++(0,16.5cm) -| (null);
+    
+    
+%    \node [block] (null) {nullialize model};
+%    \node [cloud, left of=null] (expert) {expert};
+%    \node [cloud, right of=null] (system) {system};
+%    \node [block, below of=null] (identify) {identify candidate models};
+%    \node [block, below of=identify] (evaluate) {evaluate candidate models};
+%    \node [block, left of=evaluate, node distance=3cm] (update) {update model};
+%    \node [decision, below of=evaluate] (decide) {is best candidate better?};
+%    \node [block, below of=decide, node distance=3cm] (stop) {stop};
+%    % Draw edges
+%    \path [line] (null) -- (identify);
+%    \path [line] (identify) -- (evaluate);
+%    \path [line] (evaluate) -- (decide);
+%    \path [line] (decide) -| node [near start] {yes} (corr);
+%    \path [line] (update) |- (identify);
+%    \path [line] (decide) -- node {no}(stop);
+%    \path [line,dashed] (expert) -- (null);
+%    \path [line,dashed] (system) -- (null);
+%    \path [line,dashed] (system) |- (evaluate);
+\end{tikzpicture}
+
+
+\end{document}
