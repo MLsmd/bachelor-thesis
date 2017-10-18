@@ -1,0 +1,15 @@
+<block>
+  <name>Delayed correlation cc</name>
+  <key>dab_research_delayed_correlation_cc</key>
+  <category>DAB_RESEARCH</category>
+  <import>import dab_research</import>
+  <make>dab_research.delayed_correlation_cc()</make>
+  <sink>
+    <name>in</name>
+    <type>complex</type>
+  </sink>
+  <source>
+    <name>out</name>
+    <type>complex</type>
+  </source>
+</block>

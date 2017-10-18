@@ -1,0 +1,33 @@
+/home/luca/CLion/clion-2016.3/bin/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/luca/bachelor-thesis/gr-dab_research/lib
+CMake Error at CMakeLists.txt:23 (include):
+  include could not find load file:
+
+    GrPlatform
+
+
+CMake Warning (dev) at CMakeLists.txt:33 (set):
+  Cannot set "dab_research_sources": current scope has no parent.
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+CMake Error at CMakeLists.txt:61 (include):
+  include could not find load file:
+
+    GrTest
+
+
+CMake Error at CMakeLists.txt:80 (GR_ADD_TEST):
+  Unknown CMake command "GR_ADD_TEST".
+
+
+CMake Warning (dev) in CMakeLists.txt:
+  No cmake_minimum_required command is present.  A line of code such as
+
+    cmake_minimum_required(VERSION 3.6)
+
+  should be added at the top of the file.  The version specified may be lower
+  if you wish to support older CMake versions for this project.  For more
+  information run "cmake --help-policy CMP0000".
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Configuring incomplete, errors occurred!
+See also "/home/luca/bachelor-thesis/gr-dab_research/lib/cmake-build-debug/CMakeFiles/CMakeOutput.log".
