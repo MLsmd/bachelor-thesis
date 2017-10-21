@@ -23,5 +23,7 @@
 install(FILES
     api.h
     delayed_correlation_cc.h
-    measure_freq_offset_cf.h DESTINATION include/dab_research
+    measure_freq_offset_cf.h
+    qpsk_demod_vcvb.h
+    measure_fib_error_rate.h DESTINATION include/dab_research
 )

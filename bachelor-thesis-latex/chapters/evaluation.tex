@@ -1,0 +1,15 @@
+\chapter{Evaluation des Systems}
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+title=\ac{FIB} Fehlerrate,
+xlabel={$SNR \ [dB]$},
+ylabel={FIB Fehlerrate},
+grid=both,
+]
+\addplot [blue, mark=diamond*]table {data/171021_fic_error_rate.dat};
+\end{axis}
+\label{plot:varianz_freq_offset}
+\end{tikzpicture}
+\end{center}

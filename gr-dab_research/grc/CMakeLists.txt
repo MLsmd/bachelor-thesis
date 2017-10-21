@@ -16,8 +16,10 @@
 # along with GNU Radio; see the file COPYING.  If not, write to
 # the Free Software Foundation, Inc., 51 Franklin Street,
 # Boston, MA 02110-1301, USA.
-
 install(FILES
     dab_research_delayed_correlation_cc.xml
-    dab_research_measure_freq_offset_cf.xml DESTINATION share/gnuradio/grc/blocks
+    dab_research_measure_freq_offset_cf.xml
+    dab_research_qpsk_demod_vcvb.xml
+    dab_research_fic_decode_vc.xml
+    dab_research_measure_fib_error_rate.xml DESTINATION share/gnuradio/grc/blocks
 )

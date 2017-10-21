@@ -1,0 +1,81 @@
+\chapter{DAB Standard}
+\todo{Erwähnen, dass hier immer nur vom Mode 1 gesprochen wird}
+
+Ein DAB Ensemble beinhaltet in der Regel mehrere Radio Sender und überträgt dadurch eine Vielzahl an Audio und Daten Streams im \ac{MSC}. All diese Streams werden im Main Service Multiplexer zu einem \ac{CIF} gebündelt und übertragen. Ohne Kenntnis über den Aufbau und die Struktur des Mulitplex, ist ein \ac{CIF} am Empfänger nutzlos, da keine Information über die Lage einzelner Audio Streams im Multiplex bekannt ist. Die Übertragung dieser \ac{MCI} ist Aufgabe des \ac{FIC}.
+
+\section{FIC}
+Der \ac{FIC} spielt bei der Übertragung eines DAB Ensembles eine sehr wichtige Rolle, da er sowohl die \ac{MCI} als auch die \ac{SI}, wie zum Beispiel den Namen eines Radiosenders, überträgt. Die Informationen werden Paketweise in sogenannten \ac{FIG} übertragen. Die Bedeutung der \ac{MCI} wurde schon erläutert und ist naheliegend, aber auch die \ac{SI} ist von großer Bedeutung, da ein Nutzer das Radioprogramm nicht ohne dessen Namen auswählen kann. \\
+Die Übertragung des FIC erfordert daher eine hohe Robustheit was durch eine gute Kanalcodierung sichergestellt wird.
+
+\subsection{\ac{CRC}}
+Jedem \ac{FIB} der Länge 30 bytes (bestehend aus \ac{FIG}) wird ein 16 bit \ac{CRC} Wort angehängt. Das \ac{CRC} Wort wird über die 30 Nutzbytes mittels des Generatorpolynoms
+\begin{equation}
+G(x) = x^{16} + x^{12} + x^5 + 1
+\end{equation}
+berechnet. Das CRC Wort bietet keine Möglichkeit zur Fehlerkorrektur sondern dient lediglich der Fehlerdetektion, wofür es nach \cite{crc:recommendation} optimiert ist.
+\subsection{Energieverwischung}
+Im nächsten Schritt wird sichergestellt, dass die Binärquelle ideale Eigenschaften erfüllt. Dazu müssen die zu übertragenden Bits gleichverteilt sein um die Entropie der Quelle zu maximieren und zyklischen Wiederholungen von Bitsequenzen durch etwaige Wiederholungen von \ac{FIG}s müssen vermieden werden. Der Bitstream wird dazu über eine Modulo-2 Operation mit einer \ac{PRBS} gescrambled. Die \ac{PRBS} erfüllt die gewünschten Eigenschaften und ist durch das Polynom
+\begin{equation}
+P(x) = X^9 + X^5 + 1
+\end{equation}
+im Empfänger exakt reproduzierbar.
+
+\subsection{Faltungscodierung}
+Eine Kanalcodierung ermöglicht die Erkennung und Korrektur von Bitfehlern auf Kosten einer geringeren Nutzdatenrate. Das DAB System verwendet eine Faltungscodierung mit der Coderate $R=1/4$ und einer Einflusslänge von 7 Bits. Für jedes Eingangsbit produziert der Encoder also ein Codewort der Länge 4 bit, das über die Polynome
+\begin{equation}
+\begin{aligned}
+g_1(x) &= 1 + x^2 + x^3 + x^5 + x^6 \\
+g_2(x) &= 1 + x + x^2 + x^3 + x^6 \\
+g_3(x) &= 1 + x + x^4 + x^6 \\
+g_4(x) &= 1 + x^2 + x^3 + x^5 + x^6
+\end{aligned}
+\end{equation}
+berechnet werden. \\
+\todo{reinbringen, dass Blockweise? Lese Friedrichs}
+Um die Coderate $R$ zu erhöhen wird die punktierte Faltungscodierung verwendet, bei der aus einer Gruppen von Codebits ein Teil der Bits wieder gestrichen (punktiert) wird. Dadurch ergeben sich eine Vielzahl an möglichen Coderaten
+\begin{equation}
+R_{punktiert} = \frac{8}{8 + PI} \text{mit} PI \in [1;24]
+\end{equation}
+wobei $R = 1/4 \leq R_{punktiert} \leq 1$ gilt.\\
+Der FIC verwendet eine konstante Coderate von $R_{punktiert, FIC} = 1/3$.
+
+
+\begin{figure}
+\begin{center}
+\begin{tikzpicture}
+\tikzstyle{block} = [rectangle, draw, text width=5em, text centered, minimum height=4em]
+\tikzstyle{input} = [rectangle, text width=2em, align=right, minimum height=0em]
+
+% blocks
+    \node [](null){};
+    \node [input](si)[above=0.1cm of null]{SI};
+    \node [input](mci)[below=0.1cm of null]{MCI};
+    \node [block, right=0.8cm of null] (FIB) {FIB Quelle};
+    \node [block, right=0.5cm of FIB, text width=4em] (CRC) {CRC16};
+    \node [block, right=0.5cm of CRC, text width=6em] (Energy) {Energie- verwischung};
+    \node [block, right=0.5cm of Energy] (conv) {Faltungs- encoder};
+    \node [block, right=0.5cm of conv, text width=6em] (punc) {Punktierung};
+% arrows
+    \draw [->] (si.east) -- (FIB.west|-si);
+    \draw [->] (mci.east) -- (FIB.west|-mci);
+    \draw [->] (FIB.east) -- (CRC.west);
+    \draw [->] (CRC.east) -- (Energy.west);
+    \draw [->] (Energy.east) -- (conv.west);
+    \draw [->] (conv.east) -- (punc.west);
+    \draw [->] (punc.east) -- ++(0.5,0);
+\end{tikzpicture}
+\end{center}
+\end{figure}
+
+
+\section{MSC}
+\subsection{Audio Kompression}
+
+\section{OFDM Modulation}
+
+%Symbole aus OFDM über DFT
+\begin{equation}
+    S(m T_U) = \sum \limits_{n=0}^{K-1} 2 z_{l,k} e^{-j(2 \pi n m / K)}
+%\todo{article ofdm_dft zitieren und reinbringen}
+\label{eq:ofdm_dft}
+\end{equation}

@@ -31,4 +31,5 @@ except ImportError:
 	pass
 
 # import any pure python here
+from fic_decode_vc import fic_decode_vc
 #

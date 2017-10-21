@@ -39,6 +39,7 @@
 \usepackage{filecontents}
 \usepackage{tikz}
 \usetikzlibrary{datavisualization}
+\usetikzlibrary{positioning}
 
 
 %%% DEFINITIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -57,8 +58,10 @@
   \tableofcontents 		% a MUST
   \cleardoublepage		% make sure multipage TOCs are numbered correctly.
   \include{chapters/introduction}		% include chapter introduction.tex
+  \include{chapters/dab_standard}
   \include{chapters/synchronization}
-  \include{chapters/systemmodel}		% an example chapter
+  \include{chapters/evaluation}
+  %\include{chapters/systemmodel}		% an example chapter
   \include{chapters/conclusion}		% everything ends with a summary!
 
 

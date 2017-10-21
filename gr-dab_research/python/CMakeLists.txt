@@ -31,7 +31,7 @@ endif()
 GR_PYTHON_INSTALL(
     FILES
     __init__.py
-    DESTINATION ${GR_PYTHON_DIR}/dab_research
+    fic_decode_vc.py DESTINATION ${GR_PYTHON_DIR}/dab_research
 )
 
 ########################################################################

@@ -24,11 +24,12 @@ include(GrPlatform) #define LIB_SUFFIX
 
 include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIRS})
-
 list(APPEND dab_research_sources
     delayed_correlation_cc_impl.cc
     measure_freq_offset_cf_impl.cc
-)
+    qpsk_demod_vcvb_impl.cc
+    crc16.cc
+    measure_fib_error_rate_impl.cc )
 
 set(dab_research_sources "${dab_research_sources}" PARENT_SCOPE)
 if(NOT dab_research_sources)

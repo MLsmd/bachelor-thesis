@@ -1,7 +1,15 @@
 \let\conjugatet\overline
-\chapter{Synchronisation}
+\chapter{Implementierung}
 \todo{Signalmodell, Annahmen, Einflüsse, usw}
-\section{Zeit Synchronisation}
+\begin{figure}[ht]
+\centering
+  \includegraphics[width=0.8\textwidth]{figures/sync_hier_block.png}
+	\caption{Aufbau der kompletten Synchronisationskette im \ac{GRC}}
+	\label{fig:sync_overview}
+\end{figure}
+
+\section{OFDM}
+\subsection{Zeit Synchronisation}
 Eine geeignete Zeitsynchonisation muss sowohl eine grobe Synchronisation des OFDM Frames als auch eine feine Synchonisation der einzelnen OFDM Symbole sicherstellen. \\
 
 Der Beginn eines jeden Frames $ k $ wird durch das Nullsymbol $z_{0,k}$ markiert. Wegen $S(t) = 0$ für $t \in [0, T_{NULL}]$ stellt es eine zuverlässige Möglichkeit dar den Anfang eines Frames über eine Energiemessung zu detektieren.
@@ -187,10 +195,10 @@ führen. Rechnung~\ref{eq:clockdrift} zeigt, dass eine feine Zeitsynchronisation
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Frequenz Synchronisation}
+\subsection{Frequenz Synchronisation}
 Die Messung und Korrektur eines Frequenzoffsets ist der nächste Schritt der Synchronisationskette. Sie spielt in OFDM Systemen eine besonders wichtige Rolle, da ein Frequenzoffset die Orthogonalität zwischen den Unterträgern zerstört und somit zu \ac{ICI} führt.
 
-\subsection{Feine Frequenz-Schätzung}
+\subsubsection{Feine Frequenz-Schätzung}
 Für die Messung des Frequenzoffsets kann wieder auf die Korrelaton aus Gl.~\ref{eq:corr_einfach} zurückgegriffen werden. Ein Frequenzoffset lässt sich hier als konstante Änderung der Phase über der Zeit $T_S$ messen, da die Phase von Cyclic Prefix und dessen Wiederholung ohne Frequenzoffset gleich sind. 
 \begin{equation}
 f_{off}[i] = \frac{arg(y[i])}{T_S}
@@ -201,7 +209,6 @@ Ein zusätzliches \ac{AWGN} ändert die Phase jedes einzelnen Samples. Wegen der
 Durch das Korrelationsintervall von $T_G = 504$ Samples wird solche eine Mittelung durchgeführt was die relativ kleine Varianz der Frequenzoffsetmessung in Abb.~\ref{plot:varianz_freq_offset} bestätigt.
 \todo{Wie korrigieren reinbringen}
 \begin{center}
-\todo{Werte noch nicht richtig, es muss ein rauschfreies sendesignal verwendet werden!}
 \begin{tikzpicture}
 \begin{axis}[
 title=Varianz der feinen Frequenzoffsetmessung,
@@ -209,7 +216,7 @@ xlabel={$SNR \ [dB]$},
 ylabel={$E((\hat{f} - f_{off})^2) \ [Hz]$},
 grid=both,
 ]
-\addplot [blue, mark=diamond*]table {data/171017_frequency_offset_variance_over_SNR.dat};
+\addplot [blue, mark=diamond*]table {data/171020_frequency_offset_variance.dat};
 \end{axis}
 \label{plot:varianz_freq_offset}
 \end{tikzpicture}
@@ -237,7 +244,7 @@ Aus \ref{eq:3sigma_grenze} und \ref{eq:mittelung_fehler} ergibt sich eine rausch
 N \overset{!}{<} \left(\frac{df}{dt}\frac{T_G + T_S}{3 \sigma(SNR)}\right)^{-2/3}
 \end{equation}
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Grobe Frequenz-Schätzung}
+\subsubsection{Grobe Frequenz-Schätzung}
 Wegen $arg(y[i]) \in (-\pi,\pi] rad$ ist der gemessene Frequenzoffset aus Gl.~\ref{eq:fine_frequency_estimation} nur in $f_{off} \in (-500,500] Hz$ eindeutig. Dieser Eindeutigkeitsbereich entpricht genau der Breite eines OFDM Unterträgers von $1 kHz$. Nach der feinen Frequenzkorrektur liegen also die Unterträger wieder auf dem Frequenzraster und es tritt durch die Orthogonalität keine ICI auf. Jedoch kann das Signal um das ganze Vielfache des Unterträgerabstandes verschoben sein, wodurch Symbole im Empfänger durch eine falsche Zuweisung der FFT Bins fehlinterpretiert würden und die komplette Information des Frames verloren ginge.
 \todo{arctan bei Eindeutigkeit reinbringen?}
 \todo{grobe fe nach FFT reinbringen}
@@ -246,8 +253,20 @@ Da sowohl die Erkenung als auch die Korrektur einer Unterträgerverschiebung im 
 Von den 2048 Unterträgern die aus der FFT resultieren, sind jeweils die ersten $K = \frac{1536}{2}$ rechts und links des zentralen DC-Trägers belegt. Die restlichen, unbelegten Träger enthalten am Empfänger neben möglichst geringer \ac{ICI} lediglich \ac{AWGN}. Durch eine Korrelation des FFT Vektors mit dem Vektor der bekannten Trägerbelegung $[1,1,...,1,0,1,...,1,1]$ der Länge $1536+1$ kann der Trägeroffset n ermittelt werden.
 \todo{evt Grafik mit beschriftung auf der die Beschreibung aufbauen kann, $T_u$ als FFT length definieren}
 \begin{equation}
-X[n] = \argmax_i \sum \limits_{n=i}^{i+K} |X[n]|^2 \ \ mit \ \ i \in [0,L_{FFT}-K)
+X[n] = \argmax_i \sum \limits_{n=i}^{i+K} |X[n]|^2 \ \ \text{mit} \ \ i \in [0,L_{FFT}-K)
 \end{equation}
 
-\section{FFT}
+\subsection{FFT}
 \label{sec:FFT}
+Die modulierten Symbole werden durch das OFDM System parallel auf den $K=1536$ Unterträgern moduliert und sind innerhalb eines Sendesymbols $T_S$ durch ihre Phase und Frequenz vollständig beschrieben \cite{nt1}. Um aus dem empfangenen Zeitsignal nach der Zeit- und Frequenzsynchronisation nun wieder die D-QPSK Symbole zu erhalten, wechselt man mittels einer \ac{DFT} wieder in den Frequenzbereich, was in Gl.~\ref{eq:ofdm_dft} gezeigt wurde. Wegen $L_{DFT} = \frac{2,048 M samples/s}{T_S} = 2048 = 2^{11}$ kann die \ac{DFT} durch eine \ac{FFT} der Länge 2048 effizient implementiert werden. Der \ac{FFT} Algorithmus ist ist in GNU Radio \cite{repo:gr-fft} bereits implementiert und kann verwendet werden.
+\todo{zitiere FFT aus SUS Buch}
+
+\todo{Unbedingt Unterschiedliche Symbole für Zeit und Samples einführen!!!}
+
+\subsection{Frequenzspreizung}
+\subsection{Demodulation}
+\subsection{Kanalcodierung}
+\subsection{Audio Codecs}
+
+
+
