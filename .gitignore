@@ -1,2 +1,4 @@
 gr-dab_research/build/
-data/iq_data/
+python/data/
+*.pyc
+.idea/

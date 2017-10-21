@@ -32,25 +32,25 @@ Messung der Varianz des Frequenzoffsets bei verschiedenen SNR Szenarien
 '''
 
 class measure_freq_offset(gr.top_block):
-    def __init__(self, SNR):
+    def __init__(self, power, SNR):
         gr.top_block.__init__(self)
-
-        #data_source = blocks.vector_source_c_make(rx)
-        data_source = blocks.file_source_make(gr.sizeof_gr_complex, "171011_recorded_iq_data.dat")
-        noise_amplitude = 10**((-38.0-SNR)/20.0)
-        #print "noise ampl: " + str(noise_amplitude)
+        data_source = blocks.file_source_make(gr.sizeof_gr_complex, "data/pure_dab.dat")
+        noise_amplitude = 10**((power-SNR)/20.0)
         noise_source = analog.noise_source_c_make(analog.GR_GAUSSIAN, noise_amplitude)
         add = blocks.add_cc_make()
         measure = dab_research.measure_freq_offset_cf_make()
-        head = blocks.head_make(gr.sizeof_float, 1000)
+        head = blocks.head_make(gr.sizeof_float, 1000000)
         sink = blocks.vector_sink_f_make()
         self.connect(data_source, add, measure, head, sink)
         self.connect(noise_source, (add, 1))
         self.run()
         self.sink_data = sink.data()
-        #print self.sink_data
         self.data = np.asarray(self.sink_data)
 
+
+# measure power of iq_data
+iq_gen = np.fromfile('data/pure_dab.dat', dtype=np.complex64, count=30720000)
+power = 10*np.log10(np.mean(np.square(np.absolute(iq_gen))))
 # SNR vector
 noise_range = np.asarray((0.0, 2.0, 4.0, 6.0, 8.0, 10.0, 12.0, 14.0, 16.0, 18.0, 20.0))
 freq_var = np.zeros(len(noise_range))
@@ -58,7 +58,7 @@ freq_std = np.zeros(len(noise_range))
 # calculate frequency offset for each SNR
 i = 0
 for SNR in noise_range:
-    flowgraph = measure_freq_offset(SNR)
+    flowgraph = measure_freq_offset(power, SNR)
     f_offset = flowgraph.data
     # convert to Hz
     f_offset = np.multiply(np.absolute(f_offset), 1000.0/(2.0*np.pi))
@@ -67,5 +67,5 @@ for SNR in noise_range:
     freq_std[i] = np.std(f_offset)
     i += 1
 
-print freq_std
 print freq_var
+np.savetxt("results/frequency_offset_variance.dat", np.c_[noise_range, freq_var], delimiter=' ')
