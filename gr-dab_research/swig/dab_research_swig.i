@@ -12,6 +12,7 @@
 #include "dab_research/measure_freq_offset_cf.h"
 #include "dab_research/qpsk_demod_vcvb.h"
 #include "dab_research/measure_fib_error_rate.h"
+#include "dab_research/firecode_check_bb.h"
 %}
 
 
@@ -24,3 +25,6 @@ GR_SWIG_BLOCK_MAGIC2(dab_research, qpsk_demod_vcvb);
 
 %include "dab_research/measure_fib_error_rate.h"
 GR_SWIG_BLOCK_MAGIC2(dab_research, measure_fib_error_rate);
+
+%include "dab_research/firecode_check_bb.h"
+GR_SWIG_BLOCK_MAGIC2(dab_research, firecode_check_bb);

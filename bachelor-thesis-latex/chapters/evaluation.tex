@@ -4,11 +4,28 @@
 \begin{tikzpicture}
 \begin{axis}[
 title=\ac{FIB} Fehlerrate,
+ymode=log,
 xlabel={$SNR \ [dB]$},
 ylabel={FIB Fehlerrate},
-grid=both,
+grid=major,
 ]
-\addplot [blue, mark=diamond*]table {data/171021_fic_error_rate.dat};
+\addplot [blue, mark=diamond*]table {data/171022_fic_error_rate.dat};
+\addplot [red, mark=diamond*]table {data/171022_fic_throughput_rate.dat};
+\end{axis}
+\label{plot:varianz_freq_offset}
+\end{tikzpicture}
+\end{center}
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+title=BER,
+ymode=log,
+xlabel={$SNR \ [dB]$},
+ylabel={BER},
+grid=major,
+]
+\addplot [blue, mark=diamond*]table {data/171026_BER.dat};
 \end{axis}
 \label{plot:varianz_freq_offset}
 \end{tikzpicture}

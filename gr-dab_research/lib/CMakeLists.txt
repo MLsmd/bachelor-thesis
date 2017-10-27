@@ -29,7 +29,9 @@ list(APPEND dab_research_sources
     measure_freq_offset_cf_impl.cc
     qpsk_demod_vcvb_impl.cc
     crc16.cc
-    measure_fib_error_rate_impl.cc )
+    measure_fib_error_rate_impl.cc 
+    firecode-checker.cpp
+    firecode_check_bb_impl.cc)
 
 set(dab_research_sources "${dab_research_sources}" PARENT_SCOPE)
 if(NOT dab_research_sources)
