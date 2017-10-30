@@ -30,3 +30,24 @@ grid=major,
 \label{plot:varianz_freq_offset}
 \end{tikzpicture}
 \end{center}
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+title=BER,
+ymode=log,
+xlabel={$SNR \ [dB]$},
+ylabel={BER},
+grid=major,
+legend style={nodes={scale=0.5, transform shape}},
+legend entries={AWGN, LTE EPA, LTE EVA, LTE ETU, Rayleigh Fading},
+]
+\addplot [red, mark=diamond*]table {data/171029_BER_AWGN.dat};
+\addplot [blue, mark=diamond*]table {data/171029_BER_AWGN_LTE_EPA.dat};
+\addplot [green, mark=diamond*]table {data/171029_BER_AWGN_LTE_EVA.dat};
+\addplot [orange, mark=diamond*]table {data/171029_BER_AWGN_LTE_ETU.dat};
+\addplot [black, mark=diamond*]table {data/171030_BER_Fading.dat};
+\end{axis}
+\label{plot:LTE}
+\end{tikzpicture}
+\end{center}

@@ -1,4 +1,5 @@
 \chapter{DAB Standard}
+\todo{Struktur mit Ensemble Services usw erklären}
 \todo{Erwähnen, dass hier immer nur vom Mode 1 gesprochen wird}
 
 Ein DAB Ensemble beinhaltet in der Regel mehrere Radio Sender und überträgt dadurch eine Vielzahl an Audio und Daten Streams im \ac{MSC}. All diese Streams werden im Main Service Multiplexer zu einem \ac{CIF} gebündelt und übertragen. Ohne Kenntnis über den Aufbau und die Struktur des Mulitplex, ist ein \ac{CIF} am Empfänger nutzlos, da keine Information über die Lage einzelner Audio Streams im Multiplex bekannt ist. Die Übertragung dieser \ac{MCI} ist Aufgabe des \ac{FIC}.
@@ -31,9 +32,12 @@ Die Übertragung des FIC erfordert daher eine hohe Robustheit was durch eine gut
     \path [line] (conv.east) -- ++(0.5,0);
 \end{tikzpicture}
 \end{center}
+\label{chart:fic_encoder}
+\caption{Quelle und Kanalcodierung des FIC}
 \end{figure}
 
 \subsection{\ac{CRC}}
+\label{sec:crc}
 Jedem \ac{FIB} der Länge 30 bytes (bestehend aus \ac{FIG}) wird ein 16 bit \ac{CRC} Wort angehängt. Das \ac{CRC} Wort wird über die 30 Nutzbytes mittels des Generatorpolynoms
 \begin{equation}
 G(x) = x^{16} + x^{12} + x^5 + 1
@@ -44,6 +48,7 @@ berechnet. Das CRC Wort bietet keine Möglichkeit zur Fehlerkorrektur sondern di
 \label{sec:energieverwischung}
 Im nächsten Schritt wird sichergestellt, dass die Binärquelle ideale Eigenschaften erfüllt. Dazu müssen die zu übertragenden Bits gleichverteilt sein um die Entropie der Quelle zu maximieren und zyklischen Wiederholungen von Bitsequenzen durch etwaige Wiederholungen von \ac{FIG}s müssen vermieden werden. Der Bitstream wird dazu über eine Modulo-2 Operation mit einer \ac{PRBS} gescrambled. Die \ac{PRBS} erfüllt die gewünschten Eigenschaften und ist durch das Polynom
 \begin{equation}
+\label{eq:energy_dispersal}
 P(x) = X^9 + X^5 + 1
 \end{equation}
 im Empfänger exakt reproduzierbar.
@@ -177,6 +182,7 @@ Die in Abschn.~\ref{sec:faltungscodierung} beschriebene Faltungscodierung mit an
 Neben der \ac{EEP} gibt es zudem die Möglichkeit einzelne Bit-Blöcke innerhalb eines Frames stärker zu codieren als andere. Die \ac{UEP} ist zum Beispiel für MPEG Audio Frames sehr sinnvoll um die für die subjektive Audioqualität (wenigen) wichtigen Bits mit einer sehr hohen Redundanz zu versehen ohne dabei die Gesamtcoderate deutlich zu erhöhen. Ein Bitfehler im Header kann beispielsweise zu einer Fehlskalierung eines ganzen Frequenzbandes führen was sich beim Hörer als unangenehmes Pfeifen (sog. 'birdies') auswirkt, wohingegen ein einzelner Bitfehler des Zeitsignals unbemerkt bleibt.
 
 \subsection{Zeit-Interleaving}
+\label{sec:time_interleaving_std}
 Die Faltungscodierung kommt schnell an ihre Grenzen, wenn anstelle von einzelnen Bitfehlern ganze Bündelfehler auftreten. Solche zeitlich begrenzten Empfangsausfälle entstehen zum Beispiel bei mobilen Empfängern in Bewegung durch Fadingeffekte. Im \ac{MSC} befindet sich mit dem Zeit-Interleaving deshalb ein zusätzliches Element in der Kanalcodierungskette, das die nicht-korrigierbaren Bündelfehler über die Zeit verteilt wodurch viele korrigierbare Einzelbitfehler entstehen. Der Zeit-Interleaver verzögert die Bits eines Frames nach den Regeln eines Interleaving Vektors um $0$ bis $15$ Logische Frames, was einer maximalen Verzögerung von $T_{delay, max} = 15 \cdot 24ms = 360 ms$ nach sich zieht. $T_{delay, max}$ entspricht also der maximalen Länge von Bündelfehlern die vom Zeit-Interleaver verteilt werden können. \todo{wirklich, oder weniger?} Gleichzeitig ist $T_{delay, max}$ aber auch die Verzögerung der Gesamtübertragung, da ein Frame erst decodiert werden kann, wenn alle Elemente (die maximal eine Verzögerung von $T_{delay, max}$ haben) empfangen wurden. Diese konstante Verzögerung wird im MSC für die verbesserte Fehlerkorrektur in Kauf genommen. Im FIC ist solch eine Verzögerung nicht möglich, da eventuell zeitkritische Daten wie zum Beispiel die Umkonfiguration des DAB Multiplexes übertragen werden, weshalb beim FIC kein Zeit-Interleaving angewendet wird.
 
 \subsection{Multiplexing}
@@ -186,6 +192,7 @@ Die Kapazität des CIFs ist groß genug um eine Vielzahl von Audio- und Datenkan
 Wird das CIF nicht komplett mit Kanälen gefüllt, werden die unbesetzten CUs mit einer \ac{PRBS} (siehe~\ref{sec:energieverwischung}) aufgefüllt um ein ungleiche Energieverteilung im CIF zu verhindern.
 
 \section{OFDM Modulation}
+\label{sec:ofdm_mod}
 \todo{anderer Titel, sowas wie Sendesignal}
 
 
@@ -230,6 +237,7 @@ Wird das CIF nicht komplett mit Kanälen gefüllt, werden die unbesetzten CUs mi
 \end{figure}
 
 \subsection{Partitionierung des OFDM Frames}
+\label{sec:transmission_frame}
 Die Daten aus FIC und MSC werden vor der OFDM Modulation jeweils zu einem Sendeframe zusammengefasst. Ein Frame enthält dabei $4$ CIFs und deren zugehörigen FIBs, was einer Streamdauer von $4\cdot24ms = 96ms$ entspricht. Die Strukturierung des Sendeframes erfolgt in sogenannten OFDM Symbolen, die Pakete von jeweils 1536 QPSK Symbolen darstellen. $K=1536$ entspricht dabei der Anzahl der genutzten OFDM Unterträger (siehe Abschn.~\ref{sec:ofdm}). \todo{Grafik mit Frameaufteilung}
 Zusätzlich zu den Datensymbolen beinhaltet jedes Frame noch das NULL Symbol und das Phasenreferenzsymbol für Synchronisationszwecke.
 
@@ -247,6 +255,7 @@ gilt. Diese Energielücke von bekannter Dauer $T_{NULL} = 1,297ms$ stellt eine M
 Das Phasenreferenzsymbol $z_{1,k}$ bildet das zweite Symbol jedes Frames. Es enthält eine vordefinierte Sequenz an komplexen \ac{CAZAC} Symbolen, deren Amplitude stets konstant, und deren Autokorrelation stets null ist. Das Phasenreferenzsymbol dient zum einen, namensgebend, als Bezugsphase für differentielle Modulation der nachfolgenden D-QPSK Datensymbole. Zum anderen eignet es sich aufgrund seiner \ac{CAZAC} Eigenschaften und der Tatsache, dass das Phasenreferenzsymbol auch im Empfänger bekannt ist, ideal für eine feine Zeitsynchronisation sowie für eine feine und grobe\footnote{Nach \cite{dab_buch} kann durch die CAZAC mittels einer AFC (Automatic Frequency Conrol) ein Frequenzoffset von $\pm 32kHz$ ($\hat{=} \pm 32 \: Unterträger$) eindeutig erkannt werden.} Frequenzsynchronisation über Korrelation.
 
 \subsection{QPSK Modulation}
+\label{sec:qpsk}
 Die Bits des FIC und MSC werden mit QPSK moduliert. Dabei werden $2K=3072$ Bits ($p_{l,n}$ für $n\in[0;2K)$) zu $K=1536$ QPSK Symbolen ($q_l,n$ für $n\in[0;K)$) moduliert, wobei die erste Hälfte der Bits die Realteile $n\in [0;K)$ und die zweite Hälfte die Imaginärteile $n\in [K;2K)$ bilden, sodass sich die modulierten Symbole zu
 \begin{equation}
 q_{l,n} = \frac{1}{\sqrt{2}}\left[\left(1-2p_{l,n}\right)+j\left(1-2p_{l,n+K}\right)\right]
@@ -259,6 +268,7 @@ Die modulierten OFDM Unterträger werden vor der OFDM Modulation durch eine pseu
 
 
 \subsection{Differetielle Modulation}
+\label{sec:diff_mod}
 Die QPSK modulierten und frequenzvertauschten Unterträger werden in einem letzten Schritt vor der OFDM Modulation differentiell codiert. Die Phase jedes Sendesymbols ergibts sich aus der Summe Phase des Symbols zur Phase dessen Vorgängers.
 \begin{equation}
 \begin{aligned}

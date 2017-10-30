@@ -58,8 +58,10 @@ class loopback(gr.top_block):
         if type == "AWGN":
             channel = channels.channel_model_make(noise_voltage=noise_amplitude, frequency_offset=0.0, epsilon=1.0, taps=taps)
         elif type == "Fading":
-            channel1 = channels.channel_model_make(noise_voltage=noise_amplitude, frequency_offset=0.0, epsilon=1.0, taps=LTE_models.AWGN)
-            channel2 = channels.fading_model_make(N=8, fDTs=0.0, LOS=True, K=3, seed=0)
+            norm = blocks.multiply_const_cc_make(1/math.sqrt(2))
+            channel_fading = channels.fading_model_make(N=8, fDTs=0.0, LOS=False, K=3, seed=0)
+            #channel_selective_fading = channels.selective_fading_model_make(N=8, fDTs=0.0, LOS=False, K=3, seed=1, )
+            channel_noise = channels.channel_model_make(noise_voltage=noise_amplitude, frequency_offset=0.0, epsilon=1.0, taps=LTE_models.AWGN)
 
 
 
@@ -88,9 +90,9 @@ class loopback(gr.top_block):
         self.connect(data_source, unpack_ref, ref_data_sink)
         #self.connect(data_source, s2v, mod, add, demod, qpsk1, v2s_qpsk1, head2, fic_sink)
         #self.connect(data_source, s2v, mod, channel, demod, qpsk1, v2s_qpsk1, head2, fic_sink)
-        self.connect(data_source, s2v, mod, channel2, add, demod, qpsk1, v2s_qpsk1, head2, fic_sink)
+        self.connect(data_source, s2v, mod, norm, channel_fading, channel_noise, demod, qpsk1, v2s_qpsk1, head2, fic_sink)
         self.connect((demod, 1), qpsk2, v2s_qpsk2, head3, msc_sink)
-        self.connect(noise_source, (add, 1))
+        #self.connect(noise_source, (add, 1))
         self.connect(trigsrc, (mod, 1))
         self.run()
         self.ref_data = ref_data_sink.data()
@@ -122,7 +124,7 @@ def calc_BER(noise_range, taps, type):
 # CONFIG #############################################################################################################
 iterations = 30 #number of transmission frames
 # SNR vector
-SNR_range = np.arange(4.0, 10.0, 2.0)
+SNR_range = np.arange(3.0, 18.0, 1.0)
 # simulation types
 types = {"AWGN", "Fading"}
 ######################################################################################################################
@@ -130,7 +132,7 @@ types = {"AWGN", "Fading"}
 print "simulating AWGN model"
 BER_AWGN = calc_BER(noise_range=SNR_range, taps=LTE_models.AWGN, type="Fading")
 plt.semilogy(SNR_range, BER_AWGN, 'r')
-np.savetxt("results/BER_AWGN.dat", np.c_[SNR_range, BER_AWGN], delimiter=' ')
+np.savetxt("results/BER_Fading.dat", np.c_[SNR_range, BER_AWGN], delimiter=' ')
 
 # print "simulating LTE EPA model"
 # BER_EPA = calc_BER(noise_range=SNR_range, taps=LTE_models.EPA_samp, type="Fading")
