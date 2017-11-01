@@ -1,5 +1,5 @@
 \section{Implementierung des Senders}
-
+\label{sec:imp_des_transmitters}
 Abb.~\ref{fig:transmitter} zeigt einen funktionsfähigen DAB Sender im GRC. Der Sender transportiert zwei Audio Kanäle im MSC, wobei der obere Kanal DAB+ (MPEG4 und Reed Solomon Encoder) und der untere Kanal DAB (MPEG 2 Encoder) transportiert. Jeder Block in der grafischen Ansicht entspricht einer eigenständigen Klasse, wobei die Kanalcodierer des FIC und MSC sowie der OFDM Modulator hierarchische Blöcke sind, also mehrere Blöcke in sich zusammenfassen. Die Struktur der Blöcke als einzelne Funktionseinheiten ist von der Aufteilung dem DAB Standard nachempfunden. Bei der Implementierung wurde darauf geachtet, möglichst viel Funktionalität in eine Klasse zu integrieren ohne dabei an Flexibilität der Blöcke einzusparen.
 
 \begin{figure}[ht]

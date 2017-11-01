@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Delayed Correlation
-# Generated: Sun Oct 29 14:48:38 2017
+# Generated: Wed Nov  1 11:52:25 2017
 ##################################################
 
 if __name__ == '__main__':
@@ -20,7 +20,6 @@ from PyQt4 import Qt
 from gnuradio import blocks
 from gnuradio import channels
 from gnuradio import eng_notation
-from gnuradio import filter
 from gnuradio import gr
 from gnuradio import qtgui
 from gnuradio.eng_option import eng_option
@@ -63,14 +62,8 @@ class delayed_correlation(gr.top_block, Qt.QWidget):
         ##################################################
         # Blocks
         ##################################################
-        self.rational_resampler_xxx_0 = filter.rational_resampler_ccc(
-                interpolation=1000000,
-                decimation=2048,
-                taps=None,
-                fractional_bw=None,
-        )
         self.qtgui_time_sink_x_1 = qtgui.time_sink_f(
-        	1024, #size
+        	1024*10, #size
         	samp_rate, #samp_rate
         	"", #name
         	1 #number of inputs
@@ -115,14 +108,7 @@ class delayed_correlation(gr.top_block, Qt.QWidget):
         
         self._qtgui_time_sink_x_1_win = sip.wrapinstance(self.qtgui_time_sink_x_1.pyqwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_time_sink_x_1_win)
-        self.channels_channel_model_0 = channels.channel_model(
-        	noise_voltage=0.0,
-        	frequency_offset=0.0,
-        	epsilon=1.0,
-        	taps=([0.5+ 0.5j]),
-        	noise_seed=0,
-        	block_tags=False
-        )
+        self.channels_fading_model_0 = channels.fading_model( 8, 10.0/samp_rate, False, 4.0, 0 )
         self.blocks_vector_source_x_1 = blocks.vector_source_c((0.7+0.7j,0.7+0.7j), True, 1, [])
         self.blocks_rms_xx_0 = blocks.rms_cf(0.0001)
         self.blocks_nlog10_ff_0 = blocks.nlog10_ff(10, 1, 0)
@@ -135,9 +121,8 @@ class delayed_correlation(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_nlog10_ff_0, 0), (self.qtgui_time_sink_x_1, 0))    
         self.connect((self.blocks_rms_xx_0, 0), (self.blocks_multiply_xx_0, 0))    
         self.connect((self.blocks_rms_xx_0, 0), (self.blocks_multiply_xx_0, 1))    
-        self.connect((self.blocks_vector_source_x_1, 0), (self.channels_channel_model_0, 0))    
-        self.connect((self.channels_channel_model_0, 0), (self.rational_resampler_xxx_0, 0))    
-        self.connect((self.rational_resampler_xxx_0, 0), (self.blocks_rms_xx_0, 0))    
+        self.connect((self.blocks_vector_source_x_1, 0), (self.channels_fading_model_0, 0))    
+        self.connect((self.channels_fading_model_0, 0), (self.blocks_rms_xx_0, 0))    
 
     def closeEvent(self, event):
         self.settings = Qt.QSettings("GNU Radio", "delayed_correlation")
@@ -151,6 +136,7 @@ class delayed_correlation(gr.top_block, Qt.QWidget):
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
         self.qtgui_time_sink_x_1.set_samp_rate(self.samp_rate)
+        self.channels_fading_model_0.set_fDTs(10.0/self.samp_rate)
 
 
 def main(top_block_cls=delayed_correlation, options=None):

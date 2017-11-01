@@ -196,45 +196,50 @@ Wird das CIF nicht komplett mit Kanälen gefüllt, werden die unbesetzten CUs mi
 \todo{anderer Titel, sowas wie Sendesignal}
 
 
-\begin{figure}
-\begin{center}
-\begin{tikzpicture}[inner sep=0pt]
+%\begin{figure}
+%\begin{center}
+%\begin{tikzpicture}[inner sep=0pt]
 
 % make a matrix to position nodes after tikz tutorial p.66
-\matrix[row sep=1mm,column sep=8mm] {
+%\matrix[row sep=1mm,column sep=8mm] {
 % First row:
-\node [](y achse oben) {}; & \\
-& \\
-& \\
-& \\
-& \\
-& \\
-& \\
-% center start
-\node [](y achse mitte) {}; &&&&&&&&& \node [](x achse rechts) {};
-& \\
-% center end
-& \\
-& \\
-& \\
-& \\
-& \\
-& \\
+%\node [](y achse oben) {}; & \\
+%%& \\
+%& \\
+%& \\
+%%&& \node[](c1 left){} && \node[](c1 null){} & \\
+%& \\
+%& \\
+%& \\
+%%%%%% center start
+%\node [](y achse mitte) {}; &&&&&&&&& \node [](x achse rechts) {};
+%& \\
+%% center end
+%%%& \\
+%& \\
+%& \\
+%& \\
+%%%& \\
+%& \\
+%& \\
 % Last row:
-\node [](y achse unten) {}; & \\
-};
+%\node [](y achse unten) {}; & \\
+%};
 
 % draw coordinates
-\draw [-] (y achse unten) -- (y achse oben);
-\draw [-] (y achse mitte) -- (x achse rechts);
+%\draw [-] (y achse unten) -- (y achse oben);
+%\draw [-] (y achse mitte) -- (x achse rechts);
+
+% draw circles
+%\node [draw, circle through=(c1 left)] at (c1 null){};
 
 %\draw [-] () -- ();
 
-\end{tikzpicture}
-\end{center}
-\caption{OFDM Sendesignal}
-\label{chart:transmission_frame}
-\end{figure}
+%\end{tikzpicture}
+%\end{center}
+%\caption{OFDM Sendesignal}
+%\label{chart:transmission_frame}
+%\end{figure}
 
 \subsection{Partitionierung des OFDM Frames}
 \label{sec:transmission_frame}

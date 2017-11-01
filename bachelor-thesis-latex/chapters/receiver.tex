@@ -1,6 +1,6 @@
 \let\conjugatet\overline
 \section{Implementierung des Empfängers}
-
+\label{sec:impl_des_receivers}
 Bei der Übertragung des Sendesignals vom Sender zum Empfänger treten Störungen und Effekte auf, die das Empfangssignal vom Sendesignal abweichen lassen. Vor der Demodulation und Auswertung der Daten wird ist die erste Stufe des Empfängers eine Synchronisation. Die Synchronisation hat zum Ziel, das Empfangssignal so zu korrigieren sodass es dem Sendesignal wieder möglichst nahe kommt. Die anschließende Kanaldecodierung und Auswertung der Daten im FIC und MSC findet in den entsprechenden hierarchischen GNU Radio Blöcken statt. Abb.~\ref{fig:grc_receiver} zeigt den Aufbau eines DAB+ Empfängers im GRC.
 
 \begin{figure}[h]

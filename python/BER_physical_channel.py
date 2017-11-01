@@ -36,7 +36,7 @@ Messung der BER des physical channels
 '''
 
 class loopback(gr.top_block):
-    def __init__(self, SNR, taps, type):
+    def __init__(self, SNR):
         gr.top_block.__init__(self)
         dp = dab.parameters.dab_parameters(mode=1, sample_rate=2048000, verbose=False)
 
@@ -55,13 +55,22 @@ class loopback(gr.top_block):
         noise_source = analog.noise_source_c_make(analog.GR_GAUSSIAN, noise_amplitude)
 
         # channel model
-        if type == "AWGN":
-            channel = channels.channel_model_make(noise_voltage=noise_amplitude, frequency_offset=0.0, epsilon=1.0, taps=taps)
-        elif type == "Fading":
-            norm = blocks.multiply_const_cc_make(1/math.sqrt(2))
-            channel_fading = channels.fading_model_make(N=8, fDTs=0.0, LOS=False, K=3, seed=0)
-            #channel_selective_fading = channels.selective_fading_model_make(N=8, fDTs=0.0, LOS=False, K=3, seed=1, )
-            channel_noise = channels.channel_model_make(noise_voltage=noise_amplitude, frequency_offset=0.0, epsilon=1.0, taps=LTE_models.AWGN)
+
+        channel = channels.dynamic_channel_model_make(samp_rate=2048000,
+                                                      sro_std_dev=0.0,
+                                                      sro_max_dev=0.0,
+                                                      cfo_std_dev=0.0,
+                                                      cfo_max_dev=0.0,
+                                                      N=8,
+                                                      doppler_freq=0.0,
+                                                      LOS_model=False,
+                                                      K=0,
+                                                      delays=[1.0],
+                                                      mags=[1.0],
+                                                      ntaps_mpath=1,
+                                                      noise_amp=0.0000001,
+                                                      noise_seed=0
+                                                      )
 
 
 
@@ -82,7 +91,7 @@ class loopback(gr.top_block):
         msc_sink = blocks.vector_sink_b_make()
         null_sink = blocks.null_sink_make(gr.sizeof_gr_complex * 1536)
 
-        head1 = blocks.head_make(gr.sizeof_char, 384*75*iterations*10)
+        head1 = blocks.head_make(gr.sizeof_char, 384*75*iterations*2)
         head2 = blocks.head_make(gr.sizeof_char, 3072*3*iterations)
         head3 = blocks.head_make(gr.sizeof_char, 3072*72*iterations)
 
@@ -90,7 +99,7 @@ class loopback(gr.top_block):
         self.connect(data_source, unpack_ref, ref_data_sink)
         #self.connect(data_source, s2v, mod, add, demod, qpsk1, v2s_qpsk1, head2, fic_sink)
         #self.connect(data_source, s2v, mod, channel, demod, qpsk1, v2s_qpsk1, head2, fic_sink)
-        self.connect(data_source, s2v, mod, norm, channel_fading, channel_noise, demod, qpsk1, v2s_qpsk1, head2, fic_sink)
+        self.connect(data_source, s2v, mod, channel, demod, qpsk1, v2s_qpsk1, head2, fic_sink)
         self.connect((demod, 1), qpsk2, v2s_qpsk2, head3, msc_sink)
         #self.connect(noise_source, (add, 1))
         self.connect(trigsrc, (mod, 1))
@@ -113,40 +122,31 @@ class loopback(gr.top_block):
         self.error_rate = 1.0 - np.sum(self.result == self.ref)/(iterations*3072*75.0)
         print "SNR " + str(SNR) + ", BER = " + str(self.error_rate)
 
-def calc_BER(noise_range, taps, type):
+def calc_BER(noise_range):
     BER = np.zeros(len(noise_range))
     for i, SNR in enumerate(noise_range):
-        flowgraph = loopback(SNR, taps, type)
+        flowgraph = loopback(SNR)
         BER[i] = flowgraph.error_rate
     print "BER = " + str(BER)
     return BER
 
+
 # CONFIG #############################################################################################################
-iterations = 30 #number of transmission frames
+iterations = 10 #number of transmission frames
 # SNR vector
-SNR_range = np.arange(3.0, 18.0, 1.0)
+SNR_range = np.arange(10, 18.0, 2.0)
+# doppler vector
+freq_range = np.arange(0.0, 50.0, 5.0)
 # simulation types
 types = {"AWGN", "Fading"}
 ######################################################################################################################
 
-print "simulating AWGN model"
-BER_AWGN = calc_BER(noise_range=SNR_range, taps=LTE_models.AWGN, type="Fading")
+print "simulating dynamic fading model"
+BER_AWGN = calc_BER(noise_range=SNR_range)
 plt.semilogy(SNR_range, BER_AWGN, 'r')
-np.savetxt("results/BER_Fading.dat", np.c_[SNR_range, BER_AWGN], delimiter=' ')
+np.savetxt("results/BER_Dynamic_Fading.dat", np.c_[SNR_range, BER_AWGN], delimiter=' ')
 
-# print "simulating LTE EPA model"
-# BER_EPA = calc_BER(noise_range=SNR_range, taps=LTE_models.EPA_samp, type="Fading")
-# plt.semilogy(SNR_range, BER_EPA, 'b')
-# np.savetxt("results/BER_AWGN_LTE_EPA.dat", np.c_[SNR_range, BER_EPA], delimiter=' ')
-#
-# print "simulating LTE EVA model"
-# BER_EVA = calc_BER(noise_range=SNR_range, taps=LTE_models.EVA_samp, type="Fading")
-# plt.semilogy(SNR_range, BER_EVA, 'g')
-# np.savetxt("results/BER_AWGN_LTE_EVA.dat", np.c_[SNR_range, BER_EVA], delimiter=' ')
-#
-# print "simulating LTE ETU model"
-# BER_ETU = calc_BER(noise_range=SNR_range, taps=LTE_models.ETU_samp, type="Fading")
-# plt.semilogy(SNR_range, BER_ETU, 'm')
-# np.savetxt("results/BER_AWGN_LTE_ETU.dat", np.c_[SNR_range, BER_ETU], delimiter=' ')
+
+
 
 plt.show()
