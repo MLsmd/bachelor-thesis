@@ -47,11 +47,11 @@ namespace gr {
      */
     firecode_check_bb_impl::firecode_check_bb_impl(int bit_rate_n)
             : gr::block("firecode_check_bb",
-                        gr::io_signature::make(1, 1, 24*bit_rate_n * sizeof(unsigned char)),
+                        gr::io_signature::make(1, 1, sizeof(unsigned char)),
                         gr::io_signature::make(1, 1, sizeof(unsigned char)))
     {
       d_frame_size = 24 * bit_rate_n;
-      //set_output_multiple(d_frame_size * 5); //logical frame
+      set_output_multiple(d_frame_size * 5);
     }
 
     /*
@@ -78,28 +78,30 @@ namespace gr {
       d_nproduced = 0;
       d_nconsumed = 0;
 
-      while (d_nconsumed < noutput_items - 4) {
+      while (d_nconsumed < noutput_items / d_frame_size - 4) {
         if (fc.check(&in[d_nconsumed * d_frame_size])) {
-          GR_LOG_DEBUG(d_logger, format("fire code OK at frame %d")  % (nitems_read(0)));
+          //GR_LOG_DEBUG(d_logger, format("fire code (%d %d) OK at frame %d") %(int)in[d_nconsumed*d_frame_size] %(int)in[d_nconsumed*d_frame_size+1] % (nitems_read(0) / d_frame_size));
           // fire code OK, copy superframe to output
-          memset(out,1,5);
-          out += 5;
+          memset(out + d_nproduced, 1, 5);
           d_nproduced += 5;
           d_nconsumed += 5;
           d_firecode_passed = true;
+          fprintf(stderr, "firecode passed (%d)\n", nitems_written(0));
         } else {
           //GR_LOG_DEBUG(d_logger, format("fire code failed at frame %d") % (nitems_read(0) / d_frame_size));
           // shift of one logical frame
-          *out++ = 0x00;
+          out[d_nproduced] = 0;
+          d_nproduced++;
           d_nconsumed++;
           d_firecode_passed = false;
+          fprintf(stderr, "firecode failed (%d)\n", nitems_written(0));
         }
       }
       // Tell runtime system how many input items we consumed on
       // each input stream.
-      consume_each(d_nconsumed);
+      consume_each(d_nconsumed * d_frame_size);
       // Tell runtime system how many output items we produced.
-      return d_nconsumed;
+      return d_nproduced;
     }
 
   } /* namespace dab */
