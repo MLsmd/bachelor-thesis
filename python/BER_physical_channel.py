@@ -36,7 +36,7 @@ Messung der BER des physical channels
 '''
 
 class loopback(gr.top_block):
-    def __init__(self, SNR):
+    def __init__(self, SNR, type, doppler, seed):
         gr.top_block.__init__(self)
         dp = dab.parameters.dab_parameters(mode=1, sample_rate=2048000, verbose=False)
 
@@ -62,18 +62,15 @@ class loopback(gr.top_block):
                                                       cfo_std_dev=0.0,
                                                       cfo_max_dev=0.0,
                                                       N=8,
-                                                      doppler_freq=0.0,
+                                                      doppler_freq=doppler,
                                                       LOS_model=False,
-                                                      K=0,
-                                                      delays=[1.0],
+                                                      K=4.0,
+                                                      delays=[0.0],
                                                       mags=[1.0],
                                                       ntaps_mpath=1,
-                                                      noise_amp=0.0000001,
-                                                      noise_seed=0
+                                                      noise_amp=noise_amplitude,
+                                                      noise_seed=seed
                                                       )
-
-
-
         # add noise to ofdm signal
         add = blocks.add_cc_make()
 
@@ -96,12 +93,16 @@ class loopback(gr.top_block):
         head3 = blocks.head_make(gr.sizeof_char, 3072*72*iterations)
 
         # connect everything
+        if type == "Dynamic":
+            self.connect(data_source, s2v, mod, channel, demod, qpsk1, v2s_qpsk1, head2, fic_sink)
+        if type == "AWGN":
+            self.connect(data_source, s2v, mod, add, demod, qpsk1, v2s_qpsk1, head2, fic_sink)
+            self.connect(noise_source, (add, 1))
         self.connect(data_source, unpack_ref, ref_data_sink)
         #self.connect(data_source, s2v, mod, add, demod, qpsk1, v2s_qpsk1, head2, fic_sink)
         #self.connect(data_source, s2v, mod, channel, demod, qpsk1, v2s_qpsk1, head2, fic_sink)
-        self.connect(data_source, s2v, mod, channel, demod, qpsk1, v2s_qpsk1, head2, fic_sink)
         self.connect((demod, 1), qpsk2, v2s_qpsk2, head3, msc_sink)
-        #self.connect(noise_source, (add, 1))
+
         self.connect(trigsrc, (mod, 1))
         self.run()
         self.ref_data = ref_data_sink.data()
@@ -122,31 +123,81 @@ class loopback(gr.top_block):
         self.error_rate = 1.0 - np.sum(self.result == self.ref)/(iterations*3072*75.0)
         print "SNR " + str(SNR) + ", BER = " + str(self.error_rate)
 
-def calc_BER(noise_range):
+def calc_BER(noise_range, type, doppler, seed):
     BER = np.zeros(len(noise_range))
     for i, SNR in enumerate(noise_range):
-        flowgraph = loopback(SNR)
+        flowgraph = loopback(SNR, type, doppler, seed)
         BER[i] = flowgraph.error_rate
     print "BER = " + str(BER)
     return BER
 
 
 # CONFIG #############################################################################################################
-iterations = 10 #number of transmission frames
+iterations = 100 #number of transmission frames
 # SNR vector
-SNR_range = np.arange(10, 18.0, 2.0)
+SNR_range = np.arange(10.0, 40.0, 4.0)
 # doppler vector
 freq_range = np.arange(0.0, 50.0, 5.0)
 # simulation types
 types = {"AWGN", "Fading"}
 ######################################################################################################################
+print "simulating dynamic fading model, no doppler"
+BER_AWGN = calc_BER(noise_range=SNR_range, type="Dynamic", doppler=0.0, seed=0)
+plt.semilogy(SNR_range, BER_AWGN, 'b')
+#np.savetxt("results/BER_Dynamic_Fading.dat", np.c_[SNR_range, BER_AWGN], delimiter=' ')
+
+print "simulating dynamic fading model, no doppler"
+BER_AWGN = calc_BER(noise_range=SNR_range, type="Dynamic", doppler=0.0, seed=1)
+plt.semilogy(SNR_range, BER_AWGN, 'b')
+#np.savetxt("results/BER_Dynamic_Fading.dat", np.c_[SNR_range, BER_AWGN], delimiter=' ')
+
+print "simulating dynamic fading model, no doppler"
+BER_AWGN = calc_BER(noise_range=SNR_range, type="Dynamic", doppler=0.0, seed=1)
+plt.semilogy(SNR_range, BER_AWGN, 'b')
+#np.savetxt("results/BER_Dynamic_Fading.dat", np.c_[SNR_range, BER_AWGN], delimiter=' ')
+plt.show()
+print "simulating dynamic fading model, doppler = 10"
+BER_AWGN = calc_BER(noise_range=SNR_range, type="Dynamic", doppler=10.0, seed=0)
+plt.semilogy(SNR_range, BER_AWGN, 'r')
+#np.savetxt("results/BER_Dynamic_Fading.dat", np.c_[SNR_range, BER_AWGN], delimiter=' ')
+
+print "simulating dynamic fading model, doppler = 102"
+BER_AWGN = calc_BER(noise_range=SNR_range, type="Dynamic", doppler=10.0, seed=0)
+plt.semilogy(SNR_range, BER_AWGN, 'r')
+#np.savetxt("results/BER_Dynamic_Fading.dat", np.c_[SNR_range, BER_AWGN], delimiter=' ')
+
+print "simulating dynamic fading model, doppler = 102"
+BER_AWGN = calc_BER(noise_range=SNR_range, type="Dynamic", doppler=10.0, seed=1)
+plt.semilogy(SNR_range, BER_AWGN, 'r')
+#np.savetxt("results/BER_Dynamic_Fading.dat", np.c_[SNR_range, BER_AWGN], delimiter=' ')
+plt.show()
+print "simulating dynamic fading model"
+BER_AWGN = calc_BER(noise_range=SNR_range, type="Dynamic", doppler=20.0,seed=0)
+plt.semilogy(SNR_range, BER_AWGN, 'g')
+#np.savetxt("results/BER_Dynamic_Fading.dat", np.c_[SNR_range, BER_AWGN], delimiter=' ')
 
 print "simulating dynamic fading model"
-BER_AWGN = calc_BER(noise_range=SNR_range)
-plt.semilogy(SNR_range, BER_AWGN, 'r')
-np.savetxt("results/BER_Dynamic_Fading.dat", np.c_[SNR_range, BER_AWGN], delimiter=' ')
+BER_AWGN = calc_BER(noise_range=SNR_range, type="Dynamic", doppler=20.0,seed=1)
+plt.semilogy(SNR_range, BER_AWGN, 'g')
+#np.savetxt("results/BER_Dynamic_Fading.dat", np.c_[SNR_range, BER_AWGN], delimiter=' ')
 
+print "simulating dynamic fading model"
+BER_AWGN = calc_BER(noise_range=SNR_range, type="Dynamic", doppler=20.0, seed=1)
+plt.semilogy(SNR_range, BER_AWGN, 'g')
+#np.savetxt("results/BER_Dynamic_Fading.dat", np.c_[SNR_range, BER_AWGN], delimiter=' ')
+plt.show()
+print "simulating dynamic fading model"
+BER_AWGN = calc_BER(noise_range=SNR_range, type="Dynamic", doppler=30.0,seed=0)
+plt.semilogy(SNR_range, BER_AWGN, 'y')
+#np.savetxt("results/BER_Dynamic_Fading.dat", np.c_[SNR_range, BER_AWGN], delimiter=' ')
 
+print "simulating dynamic fading model"
+BER_AWGN = calc_BER(noise_range=SNR_range, type="Dynamic", doppler=30.0,seed=1)
+plt.semilogy(SNR_range, BER_AWGN, 'y')
+#np.savetxt("results/BER_Dynamic_Fading.dat", np.c_[SNR_range, BER_AWGN], delimiter=' ')
 
-
+print "simulating dynamic fading model"
+BER_AWGN = calc_BER(noise_range=SNR_range, type="Dynamic", doppler=30.0, seed=1)
+plt.semilogy(SNR_range, BER_AWGN, 'y')
+#np.savetxt("results/BER_Dynamic_Fading.dat", np.c_[SNR_range, BER_AWGN], delimiter=' ')
 plt.show()

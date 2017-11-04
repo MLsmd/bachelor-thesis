@@ -1,12 +1,13 @@
 \chapter{DAB Standard}
-\todo{Struktur mit Ensemble Services usw erklären}
+In diesem Kapitel werden die verwendeten Strukturen und Verfahren vorgestellt, die nötig sind um ein funktionierendes DAB Übertragungssystem aufzubauen. Eine vollständige und detailliertere Beschreibung über den kompletten DAB Standard liefert das vom \ac{ETSI} veröffentlichte Dokument~\cite{}.
+\todo{Struktur mit Ensemble Services als Grafik}
 \todo{Erwähnen, dass hier immer nur vom Mode 1 gesprochen wird}
 
-Ein DAB Ensemble beinhaltet in der Regel mehrere Radio Sender und überträgt dadurch eine Vielzahl an Audio und Daten Streams im \ac{MSC}. All diese Streams werden im Main Service Multiplexer zu einem \ac{CIF} gebündelt und übertragen. Ohne Kenntnis über den Aufbau und die Struktur des Mulitplex, ist ein \ac{CIF} am Empfänger nutzlos, da keine Information über die Lage einzelner Audio Streams im Multiplex bekannt ist. Die Übertragung dieser \ac{MCI} ist Aufgabe des \ac{FIC}.
+Ein DAB Ensemble beinhaltet in der Regel mehrere Radiosender, die wiederum aus vielen Audio- und Datenkanälen bestehen können. Alle Kanäle der verschiedenen Radiosender werden im Main Service Multiplexer zu einem \ac{CIF} gebündelt und übertragen. Ohne Kenntnis über den Aufbau und die Struktur des Mulitplex, ist ein \ac{CIF} am Empfänger nutzlos, da keine Information über die Lage einzelner Audio Streams im Multiplex bekannt ist. Die Übertragung dieser \ac{MCI} ist Aufgabe des \ac{FIC}.
 
-\section{FIC}
+\section{Fast Information Channel (FIC)}
 \label{sec:FIC}
-Der \ac{FIC} spielt bei der Übertragung eines DAB Ensembles eine sehr wichtige Rolle, da er sowohl die \ac{MCI} als auch die \ac{SI}, wie zum Beispiel den Namen eines Radiosenders, überträgt. Die Informationen werden Paketweise in sogenannten \ac{FIG} übertragen. Die Bedeutung der \ac{MCI} wurde schon erläutert und ist naheliegend, aber auch die \ac{SI} ist von großer Bedeutung, da ein Nutzer das Radioprogramm nicht ohne dessen Namen auswählen kann. \\
+Der \ac{FIC} spielt bei der Übertragung eines DAB Ensembles eine sehr wichtige Rolle, da er sowohl die \ac{MCI} als auch \ac{SI}, wie zum Beispiel den Namen eines Radiosenders, überträgt. Die Informationen werden Paketweise in sogenannten \acp{FIB} übertragen. Die Bedeutung der \ac{MCI} wurde schon erläutert und ist naheliegend, aber auch die \ac{SI} ist von großer Bedeutung, da ein Nutzer das Radioprogramm nicht ohne dessen Namen auswählen kann. \\
 Die Übertragung des FIC erfordert daher eine hohe Robustheit was durch eine gute Kanalcodierung sichergestellt wird.
 %FIC chain
 \begin{figure} [h]
