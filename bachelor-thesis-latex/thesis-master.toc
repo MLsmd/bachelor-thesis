@@ -1,0 +1,70 @@
+\select@language {ngerman}
+\select@language {ngerman}
+\select@language {ngerman}
+\contentsline {chapter}{\numberline {1}Einf\IeC {\"u}hrung}{3}{chapter.1}
+\contentsline {chapter}{\numberline {2}DAB Standard}{5}{chapter.2}
+\contentsline {section}{\numberline {2.1}Aufbau eines DAB Ensembles}{5}{section.2.1}
+\contentsline {section}{\numberline {2.2}Fast Information Channel (FIC)}{6}{section.2.2}
+\contentsline {subsection}{\numberline {2.2.1}\ac {CRC}}{6}{subsection.2.2.1}
+\contentsline {subsection}{\numberline {2.2.2}Energieverwischung}{6}{subsection.2.2.2}
+\contentsline {subsection}{\numberline {2.2.3}Faltungscodierung}{7}{subsection.2.2.3}
+\contentsline {section}{\numberline {2.3}MSC}{7}{section.2.3}
+\contentsline {subsection}{\numberline {2.3.1}Audio Kompression}{7}{subsection.2.3.1}
+\contentsline {subsection}{\numberline {2.3.2}Energieverwischung}{8}{subsection.2.3.2}
+\contentsline {subsection}{\numberline {2.3.3}Faltungscodierung}{8}{subsection.2.3.3}
+\contentsline {subsection}{\numberline {2.3.4}Zeit-Interleaving}{9}{subsection.2.3.4}
+\contentsline {subsection}{\numberline {2.3.5}Multiplexing}{9}{subsection.2.3.5}
+\contentsline {section}{\numberline {2.4}OFDM Modulation}{9}{section.2.4}
+\contentsline {subsection}{\numberline {2.4.1}Partitionierung des OFDM Frames}{10}{subsection.2.4.1}
+\contentsline {subsubsection}{\nonumberline NULL Symbol}{10}{section*.37}
+\contentsline {subsubsection}{\nonumberline Phasenreferenzsymbol}{10}{section*.40}
+\contentsline {subsection}{\numberline {2.4.2}QPSK Modulation}{10}{subsection.2.4.2}
+\contentsline {subsection}{\numberline {2.4.3}Frequenzinterleaving}{10}{subsection.2.4.3}
+\contentsline {subsection}{\numberline {2.4.4}Differetielle Modulation}{11}{subsection.2.4.4}
+\contentsline {subsection}{\numberline {2.4.5}\ac {OFDM}}{11}{subsection.2.4.5}
+\contentsline {chapter}{\numberline {3}Implementierung eines DAB/DAB+ Transceivers}{13}{chapter.3}
+\contentsline {section}{\numberline {3.1}GNU Radio}{13}{section.3.1}
+\contentsline {section}{\numberline {3.2}Implementierung des Senders}{14}{section.3.2}
+\contentsline {subsection}{\numberline {3.2.1}FIB Quelle}{14}{subsection.3.2.1}
+\contentsline {subsection}{\numberline {3.2.2}FIC Encoder}{15}{subsection.3.2.2}
+\contentsline {subsection}{\numberline {3.2.3}Audio Quellen und Encoder}{15}{subsection.3.2.3}
+\contentsline {subsubsection}{\nonumberline MPEG 1/2 Audio Layer II Encoder (DAB)}{15}{section*.58}
+\contentsline {subsubsection}{\nonumberline MPEG 4 HE-AACv2 (DAB+)}{16}{section*.59}
+\contentsline {subsection}{\numberline {3.2.4}MSC Encoder}{16}{subsection.3.2.4}
+\contentsline {subsection}{\numberline {3.2.5}Multiplexer}{16}{subsection.3.2.5}
+\contentsline {subsection}{\numberline {3.2.6}OFDM Modulator}{16}{subsection.3.2.6}
+\contentsline {subsubsection}{\nonumberline QPSK Mapping}{16}{section*.60}
+\contentsline {subsubsection}{\nonumberline Einf\IeC {\"u}gen des Phasenreferenzsymbols}{17}{section*.61}
+\contentsline {subsubsection}{\nonumberline Differentielle Modulation}{17}{section*.62}
+\contentsline {subsubsection}{\nonumberline Frequenzinterleaving}{17}{section*.63}
+\contentsline {subsubsection}{\nonumberline \ac {IFFT}}{17}{section*.64}
+\contentsline {subsubsection}{\nonumberline Einf\IeC {\"u}gen des Cyclic Prefixes}{17}{section*.67}
+\contentsline {subsubsection}{\nonumberline Einf\IeC {\"u}gen des Nullsymbols}{17}{section*.68}
+\contentsline {section}{\numberline {3.3}Implementierung des Empf\IeC {\"a}ngers}{18}{section.3.3}
+\contentsline {subsection}{\numberline {3.3.1}Zeit Synchronisation}{18}{subsection.3.3.1}
+\contentsline {subsubsection}{\nonumberline Implementierung}{20}{section*.80}
+\contentsline {subsection}{\numberline {3.3.2}Frequenz Synchronisation}{23}{subsection.3.3.2}
+\contentsline {subsubsection}{\nonumberline Feine Frequenz-Sch\IeC {\"a}tzung}{23}{section*.82}
+\contentsline {subsubsection}{\nonumberline Grobe Frequenz-Sch\IeC {\"a}tzung}{24}{section*.86}
+\contentsline {subsection}{\numberline {3.3.3}FFT}{25}{subsection.3.3.3}
+\contentsline {subsection}{\numberline {3.3.4}Frequenzspreizung}{25}{subsection.3.3.4}
+\contentsline {subsection}{\numberline {3.3.5}Demodulation}{25}{subsection.3.3.5}
+\contentsline {subsection}{\numberline {3.3.6}Kanaldecodierung}{25}{subsection.3.3.6}
+\contentsline {subsubsection}{\nonumberline Zeitinterleaving}{25}{section*.96}
+\contentsline {subsubsection}{\nonumberline Faltungsdecodierung und Viterbi-Algorithmus}{26}{section*.97}
+\contentsline {subsubsection}{\nonumberline Energieverwischung}{26}{section*.99}
+\contentsline {subsection}{\numberline {3.3.7}FIC Senke}{26}{subsection.3.3.7}
+\contentsline {subsection}{\numberline {3.3.8}Audio Decoder}{26}{subsection.3.3.8}
+\contentsline {chapter}{\numberline {4}Implementierung einer grafischen Transceiver Applikation}{27}{chapter.4}
+\contentsline {subsection}{\numberline {4.0.1}Struktur}{27}{subsection.4.0.1}
+\contentsline {subsubsection}{\nonumberline Python main}{27}{section*.101}
+\contentsline {subsubsection}{\nonumberline Graphisches Frontend}{27}{section*.102}
+\contentsline {subsection}{\numberline {4.0.2}GNU Radio flowgraphs}{27}{subsection.4.0.2}
+\contentsline {subsubsection}{\nonumberline GNU Radio Blocks}{28}{section*.104}
+\contentsline {subsection}{\numberline {4.0.3}Datenfluss}{28}{subsection.4.0.3}
+\contentsline {subsubsection}{\nonumberline JSON}{28}{section*.108}
+\contentsline {subsection}{\numberline {4.0.4}Graphischer Aufbau}{29}{subsection.4.0.4}
+\contentsline {subsubsection}{\nonumberline Entwicklermodus}{29}{section*.111}
+\contentsline {chapter}{\numberline {5}Evaluation des Systems}{35}{chapter.5}
+\contentsline {chapter}{\numberline {6}Fazit}{37}{chapter.6}
+\contentsline {chapter}{\numberline {A}Abk\IeC {\"u}rzungsverzeichnis}{39}{appendix.A}

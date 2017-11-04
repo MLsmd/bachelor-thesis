@@ -38,41 +38,15 @@
 \path [line] (sender1.south) -- ($(sender1.south)!0.3!(news.north-|sender1.north)$) -| (news.140);
 \path [line] (sender1.south) -- ($(sender1.south)!0.3!(news.north-|sender1.north)$) -| (audio1.north);
 \path [line] (sender1.south) -- ($(sender1.south)!0.3!(news.north-|sender1.north)$) -| (traffic.140);
-\path [line, dashed] (sender2.south) -- ($(sender2.south)!0.7!(audio2.north-|sender2.north)$) -| (audio2.north);
-\path [line, dashed] (sender2.south) -- ($(sender2.south)!0.7!(audio2.north-|sender2.north)$) -| (traffic.40);
-\path [line, dashed] (sender2.south) -- ($(sender2.south)!0.7!(audio2.north-|sender2.north)$) -| (etc.north);
-\path [line, dashed] (sender2.south) -- ($(sender2.south)!0.7!(audio2.north-|sender2.north)$) -| (news.40);
+\path [line, dash dot] (sender2.south) -- ($(sender2.south)!0.7!(audio2.north-|sender2.north)$) -| (audio2.north);
+\path [line, dash dot] (sender2.south) -- ($(sender2.south)!0.7!(audio2.north-|sender2.north)$) -| (traffic.40);
+\path [line, dash dot] (sender2.south) -- ($(sender2.south)!0.7!(audio2.north-|sender2.north)$) -| (etc.north);
+\path [line, dash dot] (sender2.south) -- ($(sender2.south)!0.7!(audio2.north-|sender2.north)$) -| (news.40);
 \path [line] (audio1.south) -- (cif_-2.north-|audio1.south);
 \path [line] (news.south) -- (cif_-1.north-|news.south);
 \path [line] (traffic.south) -- (cif_mid.north-|traffic.south);
 \path [line] (audio2.south) -- (cif_+1.north-|audio2.south);
 \path [line] (etc.south) -- (cif_+2.north-|etc.south);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 \end{tikzpicture}
 \end{document}

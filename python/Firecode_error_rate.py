@@ -27,14 +27,14 @@ import math
 import dab
 import dab_research
 
-iterations = 100
+iterations = 1000
 
 '''
 measure the rate of passed and failed firecodes
 '''
 
 class loopback(gr.top_block):
-    def __init__(self, power, SNR, prot):
+    def __init__(self, power, SNR):
         gr.top_block.__init__(self)
         dp = dab.parameters.dab_parameters(mode=1, sample_rate=2048000, verbose=False)
 
@@ -43,24 +43,23 @@ class loopback(gr.top_block):
         noise_source = analog.noise_source_c_make(analog.GR_GAUSSIAN, noise_amplitude)
         add = blocks.add_cc_make()
         demod = dab.ofdm_demod_cc(dp)
-        msc_decode = dab.msc_decode(dp, 0, 84, prot)
+        msc_decode = dab.msc_decode(dp, 0, 84, 2)
         fic_null = blocks.null_sink_make(gr.sizeof_gr_complex*1536)
         s2v_fire = blocks.stream_to_vector_make(gr.sizeof_char, 336)
         firecode = dab_research.firecode_check_bb_make(14)
         head_iq = blocks.head_make(gr.sizeof_gr_complex, iterations * 49152)
-        head = blocks.head_make(gr.sizeof_char, iterations)
+        head1 = blocks.head_make(gr.sizeof_char, iterations)
+        head2 = blocks.head_make(gr.sizeof_char, iterations*24*112)
         ok_sink = blocks.vector_sink_b_make()
 
         self.connect(data_source, add, demod, fic_null)
-        self.connect((demod, 1), msc_decode, s2v_fire, firecode, head, ok_sink)
+        self.connect((demod, 1), msc_decode, head2, firecode, head1, ok_sink)
         self.connect(noise_source, (add, 1))
         self.run()
         self.ok_data = np.asarray(ok_sink.data())
 
 
-# measure power of iq_data
-iq_gen = np.fromfile('data/pure_dab_long.dat', dtype=np.complex64, count=30720000)
-power = 10 * np.log10(np.mean(np.square(np.absolute(iq_gen))))
+
 #
 # # SNR vector
 # noise_range = np.asarray((10.0, 20.0))
@@ -77,5 +76,5 @@ power = 10 * np.log10(np.mean(np.square(np.absolute(iq_gen))))
 # print "fail rate: " + str((iterations-successes)/iterations)
 
 #np.savetxt("results/.dat", np.c_[noise_range, (iterations-successes)/iterations], delimiter=' ')
-flowgraph = loopback(power, 20, 2)
-print np.count_nonzero(flowgraph.ok_data)
+flowgraph = loopback(-34.0, 20)
+print flowgraph.ok_data

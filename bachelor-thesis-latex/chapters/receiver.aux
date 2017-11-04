@@ -1,0 +1,125 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand{\transparent@use}[1]{}
+\@writefile{toc}{\contentsline {section}{\numberline {3.3}Implementierung des Empf\IeC {\"a}ngers}{18}{section.3.3}}
+\newlabel{sec:impl_des_receivers}{{3.3}{18}{Implementierung des Empfängers}{section.3.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.3}{\ignorespaces DAB+ Empf\IeC {\"a}nger im GRC\relax }}{18}{figure.caption.70}}
+\newlabel{fig:grc_receiver}{{3.3}{18}{DAB+ Empfänger im GRC\relax }{figure.caption.70}{}}
+\@writefile{tdo}{\contentsline {todo}{Es ist also keine Kanalsch\IeC {\"a}tzung n\IeC {\"o}tig}{18}{section*.71}}
+\AC@undonewlabel{acro:AWGN}
+\newlabel{acro:AWGN}{{3.3}{18}{Implementierung des Empfängers}{section*.72}{}}
+\acronymused{AWGN}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.1}Zeit Synchronisation}{18}{subsection.3.3.1}}
+\@writefile{tdo}{\contentsline {todo}{Formel Energie aber Intervall k\IeC {\"u}rzer als T NULL}{18}{section*.74}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.4}{\ignorespaces Aufbau der kompletten Synchronisationskette im \ac {GRC}\relax }}{19}{figure.caption.73}}
+\acronymused{GRC}
+\newlabel{fig:sync_overview}{{3.4}{19}{Aufbau der kompletten Synchronisationskette im \ac {GRC}\relax }{figure.caption.73}{}}
+\newlabel{eq:energy}{{3.2}{19}{Zeit Synchronisation}{equation.3.3.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.5}{\ignorespaces OFDM Symbol und Cyclic Prefix\relax }}{19}{figure.caption.75}}
+\newlabel{chart:cp}{{3.5}{19}{OFDM Symbol und Cyclic Prefix\relax }{figure.caption.75}{}}
+\acronymused{ISI}
+\acronymused{ISI}
+\@writefile{tdo}{\contentsline {todo}{cite}{19}{section*.76}}
+\acronymused{ISI}
+\@writefile{tdo}{\contentsline {todo}{Bild mit Symbol und evt Frame, wo Zeitreferenz markiert ist, auf dem dann die Formeln/Delays basieren k\IeC {\"o}nnen}{19}{section*.77}}
+\@writefile{tdo}{\contentsline {todo}{kl\IeC {\"a}ren, wann $T_G$ Zeit und wann samples angibt, bzw anderes symbol verwenden}{19}{section*.78}}
+\newlabel{eq:corr_einfach}{{3.3}{20}{Zeit Synchronisation}{equation.3.3.3}{}}
+\newlabel{eq:norm_corr}{{3.6}{20}{Zeit Synchronisation}{equation.3.3.6}{}}
+\acronymused{ISI}
+\@writefile{toc}{\contentsline {subsubsection}{\nonumberline Implementierung}{20}{section*.80}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.6}{\ignorespaces Korrelation des Cyclic Prefix\relax }}{21}{figure.caption.79}}
+\newlabel{fig:corr}{{3.6}{21}{Korrelation des Cyclic Prefix\relax }{figure.caption.79}{}}
+\newlabel{eq:moving_sum}{{3.7}{21}{Implementierung}{equation.3.3.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.7}{\ignorespaces Programmablaufplan der Zeitsynchronisation\relax }}{22}{figure.caption.81}}
+\newlabel{chart:zeitsync}{{3.7}{22}{Programmablaufplan der Zeitsynchronisation\relax }{figure.caption.81}{}}
+\newlabel{eq:clockdrift}{{3.8}{23}{Implementierung}{equation.3.3.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.2}Frequenz Synchronisation}{23}{subsection.3.3.2}}
+\acronymused{ICI}
+\@writefile{toc}{\contentsline {subsubsection}{\nonumberline Feine Frequenz-Sch\IeC {\"a}tzung}{23}{section*.82}}
+\newlabel{eq:fine_frequency_estimation}{{3.9}{23}{Feine Frequenz-Schätzung}{equation.3.3.9}{}}
+\acronymused{AWGN}
+\acronymused{AWGN}
+\@writefile{tdo}{\contentsline {todo}{Rechnung zu Varianz bei Mittelung (Gleichverteilung mit unabh. ZVs als Ausgangspunk}{23}{section*.83}}
+\@writefile{tdo}{\contentsline {todo}{Wie korrigieren reinbringen}{23}{section*.84}}
+\newlabel{eq:3sigma_grenze}{{3.10}{23}{Feine Frequenz-Schätzung}{equation.3.3.10}{}}
+\newlabel{plot:varianz_freq_offset}{{\caption@xref {plot:varianz_freq_offset}{ on input line 237}}{24}{Feine Frequenz-Schätzung}{figure.caption.85}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.8}{\ignorespaces Varianz der feinen Frequenzoffsetmessung\relax }}{24}{figure.caption.85}}
+\newlabel{eq:mittelung_fehler}{{3.12}{24}{Feine Frequenz-Schätzung}{equation.3.3.12}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\nonumberline Grobe Frequenz-Sch\IeC {\"a}tzung}{24}{section*.86}}
+\@writefile{tdo}{\contentsline {todo}{arctan bei Eindeutigkeit reinbringen?}{24}{section*.87}}
+\@writefile{tdo}{\contentsline {todo}{grobe fe nach FFT reinbringen}{24}{section*.88}}
+\@writefile{tdo}{\contentsline {todo}{FFT Kapitel vorziehen?}{24}{section*.89}}
+\acronymused{ICI}
+\acronymused{AWGN}
+\@writefile{tdo}{\contentsline {todo}{evt Grafik mit beschriftung auf der die Beschreibung aufbauen kann, $T_u$ als FFT length definieren}{24}{section*.90}}
+\citation{nt1}
+\citation{repo:gr-fft}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.3}FFT}{25}{subsection.3.3.3}}
+\newlabel{sec:FFT}{{3.3.3}{25}{FFT}{subsection.3.3.3}{}}
+\AC@undonewlabel{acro:DFT}
+\newlabel{acro:DFT}{{3.3.3}{25}{FFT}{section*.91}{}}
+\acronymused{DFT}
+\acronymused{DFT}
+\AC@undonewlabel{acro:FFT}
+\newlabel{acro:FFT}{{3.3.3}{25}{FFT}{section*.92}{}}
+\acronymused{FFT}
+\acronymused{FFT}
+\@writefile{tdo}{\contentsline {todo}{zitiere FFT aus SUS Buch}{25}{section*.93}}
+\@writefile{tdo}{\contentsline {todo}{Unbedingt Unterschiedliche Symbole f\IeC {\"u}r Zeit und Samples einf\IeC {\"u}hren!!!}{25}{section*.94}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.4}Frequenzspreizung}{25}{subsection.3.3.4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.5}Demodulation}{25}{subsection.3.3.5}}
+\AC@undonewlabel{acro:ML}
+\newlabel{acro:ML}{{3.3.5}{25}{Demodulation}{section*.95}{}}
+\acronymused{ML}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.6}Kanaldecodierung}{25}{subsection.3.3.6}}
+\@writefile{toc}{\contentsline {subsubsection}{\nonumberline Zeitinterleaving}{25}{section*.96}}
+\citation{nt1}
+\@writefile{toc}{\contentsline {subsubsection}{\nonumberline Faltungsdecodierung und Viterbi-Algorithmus}{26}{section*.97}}
+\AC@undonewlabel{acro:MAP}
+\newlabel{acro:MAP}{{3.3.6}{26}{Faltungsdecodierung und Viterbi-Algorithmus}{section*.98}{}}
+\acronymused{MAP}
+\acronymused{ML}
+\@writefile{toc}{\contentsline {subsubsection}{\nonumberline Energieverwischung}{26}{section*.99}}
+\acronymused{PRBS}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.7}FIC Senke}{26}{subsection.3.3.7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.8}Audio Decoder}{26}{subsection.3.3.8}}
+\@writefile{tdo}{\contentsline {todo}{In Quellen tun}{26}{section*.100}}
+\@setckpt{chapters/receiver}{
+\setcounter{page}{27}
+\setcounter{equation}{15}
+\setcounter{enumi}{0}
+\setcounter{enumii}{0}
+\setcounter{enumiii}{0}
+\setcounter{enumiv}{0}
+\setcounter{footnote}{1}
+\setcounter{mpfootnote}{0}
+\setcounter{part}{0}
+\setcounter{chapter}{3}
+\setcounter{section}{3}
+\setcounter{subsection}{8}
+\setcounter{subsubsection}{0}
+\setcounter{paragraph}{0}
+\setcounter{subparagraph}{0}
+\setcounter{figure}{8}
+\setcounter{table}{0}
+\setcounter{parentequation}{0}
+\setcounter{mn@abspage}{33}
+\setcounter{Item}{0}
+\setcounter{Hfootnote}{3}
+\setcounter{bookmark@seq@number}{37}
+\setcounter{btxromaniannumeral}{0}
+\setcounter{ContinuedFloat}{0}
+\setcounter{subfigure}{0}
+\setcounter{subtable}{0}
+\setcounter{@todonotes@numberoftodonotes}{34}
+\setcounter{nprt@mantissa@digitsbefore}{0}
+\setcounter{nprt@mantissa@digitsafter}{0}
+\setcounter{nprt@exponent@digitsbefore}{0}
+\setcounter{nprt@exponent@digitsafter}{0}
+\setcounter{nprt@digitsfirstblock}{0}
+\setcounter{nprt@blockcnt}{0}
+\setcounter{nprt@cntprint}{0}
+\setcounter{KVtest}{0}
+\setcounter{svgfigure}{0}
+\setcounter{section@level}{2}
+}
