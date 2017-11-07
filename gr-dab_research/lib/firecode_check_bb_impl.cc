@@ -86,7 +86,7 @@ namespace gr {
           d_nproduced += 5;
           d_nconsumed += 5;
           d_firecode_passed = true;
-          fprintf(stderr, "firecode passed (%d)\n", nitems_written(0));
+          //fprintf(stderr, "firecode passed (%d)\n", nitems_written(0));
         } else {
           //GR_LOG_DEBUG(d_logger, format("fire code failed at frame %d") % (nitems_read(0) / d_frame_size));
           // shift of one logical frame

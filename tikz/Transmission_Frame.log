@@ -1,9 +1,9 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.8.23)  5 NOV 2017 18:06
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.8.23)  5 NOV 2017 19:09
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**DAB_ensemble.tex
-(./DAB_ensemble.tex
+**Transmission_Frame.tex
+(./Transmission_Frame.tex
 LaTeX2e <2016/02/01>
 Babel <3.9q> and hyphenation patterns for 10 language(s) loaded.
 (/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
@@ -522,8 +522,8 @@ tex) (/usr/share/texlive/texmf-dist/tex/latex/tkz-euclide/tkz-obj-lines.tex)
 (/usr/share/texlive/texmf-dist/tex/latex/tkz-euclide/tkz-lib-symbols.tex)
 (/usr/share/texlive/texmf-dist/tex/latex/tkz-euclide/tkz-obj-circles.tex)
 (/usr/share/texlive/texmf-dist/tex/latex/tkz-euclide/tkz-obj-addpoints.tex))
-(./DAB_ensemble.aux)
-\openout1 = `DAB_ensemble.aux'.
+(./Transmission_Frame.aux)
+\openout1 = `Transmission_Frame.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 9.
 LaTeX Font Info:    ... okay on input line 9.
@@ -599,48 +599,35 @@ G,.JBIG2,.JB2,.eps]
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-Overfull \hbox (2.25002pt too wide) in paragraph at lines 22--22
- [][][][]\OT1/cmr/m/n/10 "Nachrichten" 
- []
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 31.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 31.
 
-
-Overfull \hbox (9.77754pt too wide) in paragraph at lines 32--32
- [][][][]\OT1/cmr/bx/n/10 Kanal
- []
-
-
-Overfull \hbox (42.13991pt too wide) in paragraph at lines 33--33
- [][][][]\OT1/cmr/bx/n/10 Radiosender
- []
-
-
-Overfull \hbox (27.86916pt too wide) in paragraph at lines 34--34
- [][][][]\OT1/cmr/bx/n/10 Ensemble
- []
-
-
-Overfull \hbox (55.64847pt too wide) in paragraph at lines 51--52
+Overfull \hbox (56.52808pt too wide) in paragraph at lines 83--84
 [][] 
  []
 
 [1
 
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] (./DAB_ensemble.aux) ) 
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
+(./Transmission_Frame.aux) ) 
 Here is how much of TeX's memory you used:
- 15376 strings out of 494860
- 320683 string characters out of 6177602
- 375872 words of memory out of 5000000
- 18343 multiletter control sequences out of 15000+600000
- 3948 words of font info for 15 fonts, out of 8000000 for 9000
+ 15389 strings out of 494860
+ 321006 string characters out of 6177602
+ 380447 words of memory out of 5000000
+ 18357 multiletter control sequences out of 15000+600000
+ 3640 words of font info for 14 fonts, out of 8000000 for 9000
  36 hyphenation exceptions out of 8191
- 55i,6n,67p,414b,611s stack positions out of 5000i,500n,10000p,200000b,80000s
-</us
-r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/shar
-e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb>
-Output written on DAB_ensemble.pdf (1 page, 31345 bytes).
+ 55i,9n,67p,420b,571s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/share/texlive/texmf-dist/fonts/type1/public/a
+msfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cm
+sy10.pfb>
+Output written on Transmission_Frame.pdf (1 page, 33030 bytes).
 PDF statistics:
- 19 PDF objects out of 1000 (max. 8388607)
- 13 compressed objects within 1 object stream
+ 23 PDF objects out of 1000 (max. 8388607)
+ 16 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  13 words of extra memory for PDF output out of 10000 (max. 10000000)
 

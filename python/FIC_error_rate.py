@@ -29,7 +29,7 @@ import dab
 import dab_research
 import DAB_channels
 
-iterations = 1000
+iterations = 10000
 
 '''
 measure the rate of passed and failed FICs (validated over CRC check)
@@ -44,7 +44,7 @@ class loopback(gr.top_block):
         noise_amplitude = 10 ** ((power - SNR) / 20.0)
         noise_source = analog.noise_source_c_make(analog.GR_GAUSSIAN, noise_amplitude)
         add = blocks.add_cc_make()
-        channel = channels.dynamic_channel_model_make(samp_rate=2048000,
+        channel1 = channels.dynamic_channel_model_make(samp_rate=2048000,
                                                       sro_std_dev=0.0,
                                                       sro_max_dev=0.0,
                                                       cfo_std_dev=0.0,
@@ -53,12 +53,45 @@ class loopback(gr.top_block):
                                                       doppler_freq=doppler,
                                                       LOS_model=False,
                                                       K=4.0,
-                                                      delays=DAB_channels.DAB_HT_1_delays,
-                                                      mags=DAB_channels.DAB_HT_1_amplitude,
-                                                      ntaps_mpath=DAB_channels.DAB_HT_1_max_delay,
-                                                      noise_amp=noise_amplitude,
+                                                      delays=[0],
+                                                      mags=[1.0],
+                                                      ntaps_mpath=1,
+                                                      noise_amp=0.0,
                                                       noise_seed=0
                                                       )
+        delay2 = blocks.delay_make(gr.sizeof_gr_complex, 60)
+        channel2 = channels.dynamic_channel_model_make(samp_rate=2048000,
+                                                      sro_std_dev=0.0,
+                                                      sro_max_dev=0.0,
+                                                      cfo_std_dev=0.0,
+                                                      cfo_max_dev=0.0,
+                                                      N=8,
+                                                      doppler_freq=doppler,
+                                                      LOS_model=False,
+                                                      K=4.0,
+                                                      delays=[0],
+                                                      mags=[0.5],
+                                                      ntaps_mpath=1,
+                                                      noise_amp=0.0,
+                                                      noise_seed=0
+                                                      )
+        delay3 = blocks.delay_make(gr.sizeof_gr_complex, 160)
+        channel3 = channels.dynamic_channel_model_make(samp_rate=2048000,
+                                                       sro_std_dev=0.0,
+                                                       sro_max_dev=0.0,
+                                                       cfo_std_dev=0.0,
+                                                       cfo_max_dev=0.0,
+                                                       N=8,
+                                                       doppler_freq=doppler,
+                                                       LOS_model=False,
+                                                       K=4.0,
+                                                       delays=[0],
+                                                       mags=[0.4],
+                                                       ntaps_mpath=1,
+                                                       noise_amp=0.0,
+                                                       noise_seed=0
+                                                       )
+
         demod = dab.ofdm_demod_cc(dp)
         fic_decode = dab_research.fic_decode_vc(dp)
         fic_sink = dab_research.measure_fib_error_rate_make()
@@ -66,27 +99,27 @@ class loopback(gr.top_block):
         head_iq = blocks.head_make(gr.sizeof_gr_complex, iterations * 16384)
         ok_sink = blocks.vector_sink_b_make()
         fail_sink = blocks.vector_sink_b_make()
-        self.connect(data_source, head_iq, channel, demod, fic_decode, fic_sink, ok_sink)
+        self.connect(data_source, head_iq, channel1, add, demod, fic_decode, fic_sink, ok_sink)
         self.connect((demod, 1), msc_null)
         self.connect((fic_sink, 1), fail_sink)
-        #self.connect(noise_source, (add, 1))
+        self.connect(head_iq, delay2, channel2, (add, 1))
+        self.connect(head_iq, delay3, channel3, (add, 2))
+        self.connect(noise_source, (add, 3))
         self.run()
         self.ok_data = np.asarray(ok_sink.data())
         self.fail_data = np.asarray(fail_sink.data())
-        print "simulating SNR = " + str(SNR) + "################"
+        print "simulating SNR = " + str(SNR) + "###Doppler = " + str(doppler) + "#############"
         print "passed: " + str(np.count_nonzero(self.ok_data)) + "von" + str(len(self.ok_data))
         print "failed: " + str(np.count_nonzero(self.fail_data)) + "von" + str(len(self.fail_data))
 
 
 # measure power of iq_data
-iq_gen = np.fromfile('data/pure_dab_long.dat', dtype=np.complex64, count=30720000)
+iq_gen = np.fromfile('data/pure_dab_long.dat', dtype=np.complex64, count=10000000)
 power = 10 * np.log10(np.mean(np.square(np.absolute(iq_gen))))
-
+print "power = " + str(power)
 
 # calculate FIC error rate
 def calc_FIC_errors(noise_range, doppler):
-    flowgraph = loopback(power, 100, 0.0)
-    checksum = np.count_nonzero(flowgraph.ok_data)+np.count_nonzero(flowgraph.fail_data)
 
     successes = np.zeros(len(noise_range))
     fails = np.zeros(len(noise_range))
@@ -100,26 +133,23 @@ def calc_FIC_errors(noise_range, doppler):
     print "############################################################################ RESULTS"
     print "ok: " + str(successes)
     print "fails: " + str(fails)
-    print "checksum: " + str(checksum)
     # num_fibs because every frame passes sync at 60 dB
     print ""
     print "absolute fails:  " + str(fails)
     print "absolute suc:    " + str(successes)
-    print "fail rate:       " + str(1-(successes/checksum))
-    print "success rate:    " + str(successes/checksum)
-    print "throughput:      " + str(np.add(successes, fails)/checksum)
-    return 1-(successes/checksum)
+    print "fail rate:       " + str(np.divide(fails,fails+successes))
+    return np.divide(fails, fails+successes)
 
 # SNR vector
-SNR_range = np.arange(20.0, 41.0, 10.0)
+SNR_range = np.arange(3.0, 40.0, 4.0)
 # doppler vector
-doppler_range = np.arange(1.0, 50.0, 10.0)
+doppler_range = np.arange(5.0, 6.0, 20.0)
 
 results = np.zeros((len(doppler_range), len(SNR_range)))
 
 for x, doppler in enumerate(doppler_range):
     results[x] = calc_FIC_errors(SNR_range, doppler)
-    #np.savetxt("results/doppler/fic_error_rate_doppler" + str(doppler) + ".dat", np.c_[SNR_range, results[x]], delimiter=' ')
+    np.savetxt("results/multipath/171107_fic_error_rate_doppler" + str(doppler) + ".dat", np.c_[SNR_range, results[x]], delimiter=' ')
 
 luca = plt.figure()
 

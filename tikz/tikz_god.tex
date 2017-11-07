@@ -1,0 +1,139 @@
+\documentclass{article}
+\usepackage{wasysym}
+\usepackage[latin1]{inputenc}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usepackage{tkz-euclide}
+\tikzset{line/.style={draw, thick, -latex'}}
+%\usetikzlibrary{shapes,arrows}
+\begin{document}
+\pagestyle{empty}
+\usetikzlibrary{shapes}
+\usetikzlibrary{decorations.pathmorphing}
+
+
+
+\begin{tikzpicture}[node distance = 1cm, auto]
+\tikzstyle{block} = [rectangle, rounded corners, draw, text width=6em, text centered, minimum height=2em]
+\tikzstyle{anc} = [rectangle, rounded corners, text width=0em, text centered, minimum height=0em]
+\tikzstyle{rect} = [rectangle, draw, text width=4em, text centered, minimum height=2em]
+\tikzstyle{matrix} = [rectangle, draw, text width=0.7em, text centered, minimum height=5em]
+\tikzstyle{input} = [rectangle, text width=2em, align=right, minimum height=2em]
+\tikzstyle{tri} = [regular polygon, regular polygon sides=3,
+              draw, text width=0em,
+              inner sep=0.5mm, outer sep=0mm,
+              shape border rotate=180]
+
+
+\node [block, text width=4em](input){Input bits};
+\node [rect, right=5mm of input](sp){S/P};
+\node [rect, ultra thick, draw=red, right=5mm of sp, text width=5em](spat_mod){Spatial modulation};
+\node [block, right=5mm of spat_mod.north east, anchor=south west](active_antenna){Active antenna};
+\node [block, right=5mm of spat_mod.south east, anchor=north west](QAM){$M_{SM}$-QAM/PSK};
+\node [matrix, right=35mm of spat_mod](x1){\rotatebox{90}{x(1)}};
+\node [matrix, right=0mm of x1](x2){\rotatebox{90}{...}};
+\node [matrix, right=0mm of x2](x3){\rotatebox{90}{x(k)}};
+\node [matrix, right=0mm of x3](x4){\rotatebox{90}{...}};
+\node [matrix, right=0mm of x4](x5){\rotatebox{90}{x(K)}};
+\node [rect, right=5mm of x5](add_cp){Add ZP};
+\node [rect, right=5mm of add_cp](rf_chain){RF chain};
+
+\node [tri, right=8mm of rf_chain, fill=red](tx1){};
+\node [tri, below=7mm of tx1](tx2){};
+\node [tri, above=8mm of tx1](tx3){};
+\node [tri, above=5mm of tx3](tx4){};
+
+\node [below=2mm of tx1](node1){};
+\node [below=2mm of tx2](node2){};
+\node [below=2mm of tx3](node3){};
+\node [below=2mm of tx4](node4){};
+
+\node [anc, right=3mm of rf_chain, anchor=center](tx_anchor){};
+\node (tx4_text) at ($(node4)+(-3mm,2mm)$){1};
+\node (tx3_text) at ($(node3)+(-3mm,2mm)$){2};
+\node (tx1_text) at ($(node1)+(-3mm,2mm)$){$_{q(k)}$};
+\node (tx2_text) at ($(node2)+(-3mm,2mm)$){$N_t$};
+
+\node (tx2_text) at ($(node2)+(-3mm,6mm)$){\rotatebox{90}{...}};
+\node (tx2_text) at ($(node1)+(-3mm,6mm)$){\rotatebox{90}{...}};
+
+
+
+\path [line] (input) -- (sp);
+\path [line] (sp) -- (spat_mod);
+\path [line] (spat_mod) -| ($(active_antenna.west)+(-2mm,0.0)$) -- (active_antenna.west);
+\path [line] (spat_mod) -| ($(QAM.west)+(-2mm,0.0)$) -- (QAM.west);
+\path [line] (active_antenna.east) -- ($(active_antenna.east)+(2mm,0.0)$) |- (x1.120);
+\path [line] (QAM.east) -- ($(QAM.east)+(2mm,0.0)$) |- (x1.240);
+\path [line] (x5) -- (add_cp);
+\path [line] (add_cp) -- (rf_chain);
+\path [line] (rf_chain) -- (tx_anchor.center);
+\path [line] (rf_chain) -- (tx_anchor.center) |- (node1.center) -- (tx1.south);
+\draw [-] (rf_chain) -- (tx_anchor.center) |- (node2.center) -- (tx2.south);
+\draw [-] (rf_chain) -- (tx_anchor.center) |- (node3.center) -- (tx3.south);
+\draw [-] (rf_chain) -- (tx_anchor.center) |- (node4.center) -- (tx4.south);
+\draw[-,decorate,decoration=brace] ($(x5.south east)+(0.0,-2mm)$) -- ($(x1.south west)+(0.0,-2mm)$)node [midway, yshift=-1mm]{SM symbols \textbf{x}};
+
+
+
+% rx teil
+
+\node [block, text width=4em, below=5cm of input](output){Output bits};
+\node [rect, right=5mm of output](ps){P/S};
+\node [rect, ultra thick, draw=red, right=5mm of ps, text width=5em](spat_demod){Spatial demodulation};
+\node [rect, right=5mm of spat_demod, text width=8em](eq){Time domain equalization};
+\node [rect, right=5mm of eq](rm_cp){Remove ZP};
+\node (bundle) at ($(rm_cp.east)+(2mm,0.0)$){};
+\node [rect, right=5mm of rm_cp](rf_chain1){RF chain};
+\node [rect, below=5mm of rf_chain1](rf_chain2){RF chain};
+\node [rect, above=5mm of rf_chain1](rf_chain3){RF chain};
+\node [rect, above=5mm of rf_chain3](rf_chain4){RF chain};
+
+
+\node [tri, above right=5mm of rf_chain1, anchor=south, fill=red](rx1){};
+\node [tri, above right=5mm of rf_chain2, anchor=south, fill=red](rx2){};
+\node [tri, above right=5mm of rf_chain3, anchor=south, fill=red](rx3){};
+\node [tri, above right=5mm of rf_chain4, anchor=south, fill=red](rx4){};
+
+\node [below=2mm of tx1](node1){};
+\node [below=2mm of tx2](node2){};
+\node [below=2mm of tx3](node3){};
+\node [below=2mm of tx4](node4){};
+
+\node [anc, right=3mm of rf_chain, anchor=center](tx_anchor){};
+\node (tx4_text) at ($(node4)+(-3mm,2mm)$){1};
+\node (tx3_text) at ($(node3)+(-3mm,2mm)$){2};
+\node (tx1_text) at ($(node1)+(-3mm,2mm)$){$_{q(k)}$};
+\node (tx2_text) at ($(node2)+(-3mm,2mm)$){$N_t$};
+
+\node (tx2_text) at ($(node2)+(-3mm,6mm)$){\rotatebox{90}{...}};
+\node (tx2_text) at ($(node1)+(-3mm,6mm)$){\rotatebox{90}{...}};
+
+\path [line] (rx1.south)|-(rf_chain1.east);
+\path [line] (rx2.south)|-(rf_chain2.east);
+\path [line] (rx3.south)|-(rf_chain3.east);
+\path [line] (rx4.south)|-(rf_chain4.east);
+\path [line] (rf_chain1) -| (bundle.east) -- (rm_cp);
+\path [line] (rf_chain2) -| (bundle.east) -- (rm_cp);
+\path [line] (rf_chain3) -| (bundle.east) -- (rm_cp);
+\path [line] (rf_chain4) -| (bundle.east) -- (rm_cp);
+\path [line] (rm_cp)--(eq);
+\path [line] (eq)--(spat_demod);
+\path [line] (spat_demod)--(ps);
+\path [line] (ps)--(output);
+
+\node (rx4_text) at ($(rx4.south)+(-3mm,-2mm)$){1};
+\node (rx3_text) at ($(rx3.south)+(-3mm,-2mm)$){2};
+\node (rx1_text) at ($(rx1.south)+(-3mm,-2mm)$){$_{q(k)}$};
+\node (rx2_text) at ($(rx2.south)+(-3mm,-2mm)$){$N_t$};
+
+\node [right=1.5cm of rx1](blitz){
+\begin{tabular}{cc}
+MIMO \\
+channel
+\end{tabular}};
+\draw [->,decorate,decoration={snake,amplitude=.4mm,segment length=2mm,post length=1mm}] ($(tx2_text)+(0.0,-2cm)$) -- (blitz);
+\draw [->,decorate,decoration={snake,amplitude=.4mm,segment length=2mm,post length=1mm}] (blitz) -- ($(blitz.west)+(-1cm,0.0)$);
+
+\end{tikzpicture}
+\end{document}

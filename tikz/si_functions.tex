@@ -1,0 +1,70 @@
+\documentclass{article}
+
+\usepackage[latin1]{inputenc}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usepackage{tkz-euclide}
+\tikzset{line/.style={draw, thick, -latex'}}
+\usepackage{tikz}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{siunitx}
+\usepackage{pgfplots}
+\usepackage{filecontents}
+\usepackage{tikz}
+\usetikzlibrary{datavisualization}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows,calc,fit}
+\tikzset{line/.style={draw, thick, -latex'}}
+\usepackage{ trfsigns}
+\usepackage{tkz-euclide}
+\usepackage{svg}
+%\usetikzlibrary{shapes,arrows}
+\begin{document}
+\pagestyle{empty}
+\newcommand{\iterations}{200}
+
+\begin{tikzpicture}[node distance = 1cm, auto]
+\begin{axis}[
+domain=-5:5,
+enlarge x limits=false,
+samples = \iterations,
+height=\textwidth*0.5,
+width=\textwidth,
+xticklabels={,,,-3$\Delta f$,-2$\Delta f$,$-\Delta f$,$0$,$+\Delta f$,$+2\Delta f$,$+3\Delta f$},
+xlabel={Frequenz},
+ylabel={$\frac{sin(x)}{x}$},
+]
+    \addplot [mark=none, thick, red] {sin(deg(x*pi))/(x*pi)};
+    \addplot [mark=none, densely dotted] {sin(deg((x-1)*pi))/((x-1)*pi)};
+    \addplot [mark=none, densely dotted] {sin(deg(((x+1)*pi)))/(((x+1)*pi))};
+    \addplot [mark=none, densely dotted] {sin(deg((x-2)*pi))/((x-2)*pi)};
+    \addplot [mark=none, densely dotted] {sin(deg(((x+2)*pi)))/(((x+2)*pi))};
+    \addplot [mark=none, densely dotted] {sin(deg((x-3)*pi))/((x-3)*pi)};
+    \addplot [mark=none, densely dotted] {sin(deg(((x+3)*pi)))/(((x+3)*pi))};
+    \addplot [mark=none, very thick] {sin(deg(x*pi))/(x*pi) + sin(deg((x-1)*pi))/((x-1)*pi) + sin(deg(((x+1)*pi)))/(((x+1)*pi)) + sin(deg((x-2)*pi))/((x-2)*pi) + sin(deg(((x+2)*pi)))/(((x+2)*pi)) + sin(deg((x-3)*pi))/((x-3)*pi) + sin(deg(((x+3)*pi)))/(((x+3)*pi))};
+
+\addplot+[only marks,mark=o,mark options={scale=2},text mark as node=true, dashed] coordinates {
+	(0,0)    
+    (1,0) 
+    (2,0) 
+    (3,0) 
+    (-1,0) 
+    (-2,0) 
+    (-3,0)
+};
+\addplot+[only marks,mark=o,mark options={scale=2},text mark as node=true, dashed] coordinates {
+	(0,1)
+    (1,1) 
+    (2,1) 
+    (3,1) 
+    (-1,1) 
+    (-2,1) 
+    (-3,1)
+};
+
+\end{axis}
+
+\end{tikzpicture}
+\end{document}

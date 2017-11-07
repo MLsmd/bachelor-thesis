@@ -30,20 +30,19 @@ import LTE_models
 import math
 import dab
 import dab_research
-
+import measure_Power
 '''
 Messung der BER des physical channels
 '''
-
 class loopback(gr.top_block):
-    def __init__(self, SNR, type, doppler):
+    def __init__(self, power, SNR, doppler):
         gr.top_block.__init__(self)
         dp = dab.parameters.dab_parameters(mode=1, sample_rate=2048000, verbose=False)
 
         # random but known bit data as source
-        data_source = analog.random_uniform_source_b_make(0, 256, 0)
-        unpack_ref = blocks.packed_to_unpacked_bb_make(1, gr.GR_MSB_FIRST)
-        ref_data_sink = blocks.vector_sink_b_make()
+        random_bit_vector = np.random.randint(low=0, high=2, size=3072)
+        data_source = blocks.vector_source_b_make(random_bit_vector, True)
+        pack = blocks.unpacked_to_packed_bb_make(1, gr.GR_MSB_FIRST)
         s2v = blocks.stream_to_vector_make(gr.sizeof_char, 384)
         trigsrc = blocks.vector_source_b([1] + [0] * (dp.symbols_per_frame - 2), True)
 
@@ -51,11 +50,11 @@ class loopback(gr.top_block):
         mod = dab.ofdm_mod(dp)
 
         # noise source
-        noise_amplitude = 10**((-34.4220877-SNR)/20.0)
+        noise_amplitude = 10**((power-SNR)/20.0)
         noise_source = analog.noise_source_c_make(analog.GR_GAUSSIAN, noise_amplitude)
+        add = blocks.add_cc_make()
 
         # channel model
-
         channel1 = channels.dynamic_channel_model_make(samp_rate=2048000,
                                                        sro_std_dev=0.0,
                                                        sro_max_dev=0.0,
@@ -66,7 +65,7 @@ class loopback(gr.top_block):
                                                        LOS_model=False,
                                                        K=4.0,
                                                        delays=[0],
-                                                       mags=[0.837],
+                                                       mags=[1.0],
                                                        ntaps_mpath=1,
                                                        noise_amp=0.0,
                                                        noise_seed=0
@@ -82,7 +81,7 @@ class loopback(gr.top_block):
                                                        LOS_model=False,
                                                        K=4.0,
                                                        delays=[0],
-                                                       mags=[0.4185],
+                                                       mags=[0.5],
                                                        ntaps_mpath=1,
                                                        noise_amp=0.0,
                                                        noise_seed=0
@@ -98,91 +97,64 @@ class loopback(gr.top_block):
                                                        LOS_model=False,
                                                        K=4.0,
                                                        delays=[0],
-                                                       mags=[0.353],
+                                                       mags=[0.4],
                                                        ntaps_mpath=1,
                                                        noise_amp=0.0,
                                                        noise_seed=0
                                                        )
-        # add noise to ofdm signal
-        add = blocks.add_cc_make()
+
 
         # demodulate noisy signal
         demod = dab.ofdm_demod_cc(dp)
-        qpsk1 = dab_research.qpsk_demod_vcvb_make()
-        qpsk2 = dab_research.qpsk_demod_vcvb_make()
-        v2s_qpsk1 = blocks.vector_to_stream_make(gr.sizeof_char, 3072)
-        v2s_qpsk2 = blocks.vector_to_stream_make(gr.sizeof_char, 3072)
+        qpsk = dab_research.qpsk_demod_vcvb_make()
+        v2s_qpsk = blocks.vector_to_stream_make(gr.sizeof_char, 3072)
 
         # data sinks
-        pack1 = blocks.unpacked_to_packed_bb_make(1, gr.GR_MSB_FIRST)
-        fic_sink = blocks.vector_sink_b_make()
-        pack2 = blocks.unpacked_to_packed_bb_make(1, gr.GR_MSB_FIRST)
+        fic_null_sink = blocks.null_sink_make(gr.sizeof_gr_complex * 1536)
+        head = blocks.head_make(gr.sizeof_char, iterations)
         msc_sink = blocks.vector_sink_b_make()
-        null_sink = blocks.null_sink_make(gr.sizeof_gr_complex * 1536)
-
-        head1 = blocks.head_make(gr.sizeof_char, 384*75*iterations*2)
-        head2 = blocks.head_make(gr.sizeof_char, 3072*3*iterations)
-        head3 = blocks.head_make(gr.sizeof_char, 3072*72*iterations)
 
         # connect everything
-        if type == "Dynamic":
-            self.connect(data_source, s2v, mod, channel1, add, demod, qpsk1, v2s_qpsk1, head2, fic_sink)
-            self.connect(mod, delay2, channel2, (add, 1))
-            self.connect(mod, delay3, channel3, (add, 2))
-            self.connect(noise_source, (add, 3))
-        if type == "AWGN":
-            self.connect(data_source, s2v, mod, add, demod, qpsk1, v2s_qpsk1, head2, fic_sink)
-            self.connect(noise_source, (add, 1))
-        self.connect(data_source, unpack_ref, ref_data_sink)
-        #self.connect(data_source, s2v, mod, add, demod, qpsk1, v2s_qpsk1, head2, fic_sink)
-        #self.connect(data_source, s2v, mod, channel, demod, qpsk1, v2s_qpsk1, head2, fic_sink)
-        self.connect((demod, 1), qpsk2, v2s_qpsk2, head3, msc_sink)
-
+        self.connect(data_source, pack, s2v, mod, channel1, add)
         self.connect(trigsrc, (mod, 1))
+        self.connect(mod, delay2, channel2, (add, 1))
+        self.connect(mod, delay3, channel3, (add, 2))
+        self.connect(noise_source, (add, 3))
+        self.connect(add, demod, fic_null_sink)
+        self.connect((demod, 1), qpsk, v2s_qpsk, head, msc_sink)
         self.run()
-        self.ref_data = ref_data_sink.data()
-        self.ref = np.asarray(self.ref_data)
-        self.ref = self.ref[0:iterations*3072*75]
-        #print "ref bytes: " + str(self.ref)
-        self.fic_data = fic_sink.data()
-        self.fic = np.asarray(self.fic_data)
-        #print "FIC bits: " + str(self.fic)
-        self.msc_data = msc_sink.data()
-        self.msc = np.asarray(self.msc_data)
-        #print "MSC bits: " + str(self.msc)
-        self.result = np.zeros(iterations*3072*75)
-        for i in range(0, iterations):
-            self.result[i*3072*75:i*3072*75+3072*3] = self.fic[i*3072*3 : 3072*3*i + 3072*3]
-            self.result[i*3072*75 + 3*3072 : i*3072*75 + 75*3072] = self.msc[i * 3072 * 72: 3072 * 72 * (i + 1)]
-        #print "output: " + str(self.result)
-        self.error_rate = 1.0 - np.sum(self.result == self.ref)/(iterations*3072*75.0)
-        print "SNR " + str(SNR) + "doppler = " + str(doppler) + ", BER = " + str(self.error_rate)
+        # results
+        result = np.array(msc_sink.data())
+        successes = np.sum(result == np.tile(random_bit_vector, symbols))
+        if len(result) != iterations:
+            self.fail_rate = -1
+            print "ERROR, result is shorter than input vector"
+        else:
+            self.fail_rate = 1 - float(successes) / iterations
+            print "BER = " + str(self.fail_rate) + " SNR = " + str(SNR) + ", doppler = " + str(doppler)
 
-def calc_BER(noise_range, type, doppler):
+def calc_BER(Power, noise_range, doppler):
     BER = np.zeros(len(noise_range))
     for i, SNR in enumerate(noise_range):
-        flowgraph = loopback(SNR, type, doppler)
-        BER[i] = flowgraph.error_rate
-    print "BER = " + str(BER) + "fuer Doppler = " + str(doppler)
+        flowgraph = loopback(Power, SNR, doppler)
+        BER[i] = flowgraph.fail_rate
+    print "total results: BER = " + str(BER) + " for Doppler = " + str(doppler) + " +++++++++++++++++++++++"
     return BER
 
-
-# CONFIG #############################################################################################################
-iterations = 100 #number of transmission frames
-# SNR vector
-SNR_range = np.arange(5.0, 41.0, 5.0)
-# doppler vector
-freq_range = np.arange(5.0, 50.0, 10.0)
-# simulation types
-types = {"AWGN", "Fading"}
-######################################################################################################################
-
+# settings ##########################
+symbols = 1000
+iterations = symbols * 3072
+noise_range = np.arange(5.0, 60.0, 5.0)
+doppler_range = np.arange(5.0, 150.0, 20.0)
+power_meter = measure_Power.measure_power(1000000)
+power = power_meter.get_power()
+#####################################
 plot = plt.figure()
 
-for freq in freq_range:
-    print "simulating dynamic fading model" + str(freq) + "Hz"
-    BER = calc_BER(noise_range=SNR_range, type="Dynamic", doppler=freq)
-    plt.semilogy(SNR_range, BER, 'y')
-    np.savetxt("results/multipath/BER/BER_Dynamic_Fading" + str(freq) + ".dat", np.c_[SNR_range, BER], delimiter=' ')
+for doppler in doppler_range:
+    BER_array = calc_BER(power, noise_range, 5.0)
+    plt.semilogy(noise_range, BER_array)
+    np.savetxt("results/multipath/BER/BER_Dynamic_Fading" + str(doppler) + ".dat", np.c_[noise_range, BER_array], delimiter=' ')
+    print "final result for doppler = " + str(doppler) + ": " + str(BER_array)
 
 plt.show()
