@@ -117,9 +117,9 @@ class loopback(gr.top_block):
         # connect everything
         self.connect(data_source, pack, s2v, mod, channel1, add)
         self.connect(trigsrc, (mod, 1))
-        self.connect(mod, delay2, channel2, (add, 1))
-        self.connect(mod, delay3, channel3, (add, 2))
-        self.connect(noise_source, (add, 3))
+        #self.connect(mod, delay2, channel2, (add, 1))
+        #self.connect(mod, delay3, channel3, (add, 2))
+        self.connect(noise_source, (add, 1))
         self.connect(add, demod, fic_null_sink)
         self.connect((demod, 1), qpsk, v2s_qpsk, head, msc_sink)
         self.run()
@@ -142,19 +142,20 @@ def calc_BER(Power, noise_range, doppler):
     return BER
 
 # settings ##########################
-symbols = 1000
+symbols = 30000
 iterations = symbols * 3072
-noise_range = np.arange(5.0, 60.0, 5.0)
-doppler_range = np.arange(5.0, 150.0, 20.0)
+noise_range = np.arange(5.0, 40.0, 1.0)
+#doppler_range = np.arange(5.0, 200.0, 180.0)
+doppler_range = np.array([5.5])
 power_meter = measure_Power.measure_power(1000000)
 power = power_meter.get_power()
 #####################################
 plot = plt.figure()
 
 for doppler in doppler_range:
-    BER_array = calc_BER(power, noise_range, 5.0)
+    BER_array = calc_BER(power, noise_range, doppler)
     plt.semilogy(noise_range, BER_array)
-    np.savetxt("results/multipath/BER/BER_Dynamic_Fading" + str(doppler) + ".dat", np.c_[noise_range, BER_array], delimiter=' ')
+    np.savetxt("results/multipath/BER/171108_BER_dynamic_doppler_" + str(doppler) + ".dat", np.c_[noise_range, BER_array], delimiter=' ')
     print "final result for doppler = " + str(doppler) + ": " + str(BER_array)
 
 plt.show()
