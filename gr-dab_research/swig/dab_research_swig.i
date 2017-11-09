@@ -28,3 +28,4 @@ GR_SWIG_BLOCK_MAGIC2(dab_research, measure_fib_error_rate);
 
 %include "dab_research/firecode_check_bb.h"
 GR_SWIG_BLOCK_MAGIC2(dab_research, firecode_check_bb);
+

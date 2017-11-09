@@ -117,9 +117,9 @@ class loopback(gr.top_block):
         # connect everything
         self.connect(data_source, pack, s2v, mod, channel1, add)
         self.connect(trigsrc, (mod, 1))
-        #self.connect(mod, delay2, channel2, (add, 1))
-        #self.connect(mod, delay3, channel3, (add, 2))
-        self.connect(noise_source, (add, 1))
+        self.connect(mod, delay2, channel2, (add, 1))
+        self.connect(mod, delay3, channel3, (add, 2))
+        self.connect(noise_source, (add, 3))
         self.connect(add, demod, fic_null_sink)
         self.connect((demod, 1), qpsk, v2s_qpsk, head, msc_sink)
         self.run()
@@ -134,19 +134,26 @@ class loopback(gr.top_block):
             print "BER = " + str(self.fail_rate) + " SNR = " + str(SNR) + ", doppler = " + str(doppler)
 
 def calc_BER(Power, noise_range, doppler):
+    BER_multi = np.zeros((repetitions, len(noise_range)))
     BER = np.zeros(len(noise_range))
-    for i, SNR in enumerate(noise_range):
-        flowgraph = loopback(Power, SNR, doppler)
-        BER[i] = flowgraph.fail_rate
+    for j in range(0, repetitions, 1):
+        for i, SNR in enumerate(noise_range):
+            flowgraph = loopback(Power, SNR, doppler)
+            BER[i] = flowgraph.fail_rate
+        BER_multi[j] = BER
+        print "finished repetition " + str(j)
+    print "multi BER = " + str(BER_multi)
+    BER = np.mean(BER_multi, axis=0)
     print "total results: BER = " + str(BER) + " for Doppler = " + str(doppler) + " +++++++++++++++++++++++"
     return BER
 
 # settings ##########################
-symbols = 30000
+symbols = 10000
 iterations = symbols * 3072
-noise_range = np.arange(5.0, 40.0, 1.0)
+repetitions = 50
+noise_range = np.arange(33.0, 34.0, 4.0)
 #doppler_range = np.arange(5.0, 200.0, 180.0)
-doppler_range = np.array([5.5])
+doppler_range = np.array([5.0])
 power_meter = measure_Power.measure_power(1000000)
 power = power_meter.get_power()
 #####################################
@@ -155,7 +162,7 @@ plot = plt.figure()
 for doppler in doppler_range:
     BER_array = calc_BER(power, noise_range, doppler)
     plt.semilogy(noise_range, BER_array)
-    np.savetxt("results/multipath/BER/171108_BER_dynamic_doppler_" + str(doppler) + ".dat", np.c_[noise_range, BER_array], delimiter=' ')
+    np.savetxt("results/multipath/BER/171109_BER_dynamic_doppler_" + str(doppler) + ".dat", np.c_[noise_range, BER_array], delimiter=' ')
     print "final result for doppler = " + str(doppler) + ": " + str(BER_array)
 
 plt.show()

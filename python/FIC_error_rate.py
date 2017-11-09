@@ -110,7 +110,7 @@ class loopback(gr.top_block):
         successes = np.count_nonzero(result)
         if len(result) != iterations:
             self.fail_rate = -1
-            print "ERROR, result is shorter than input vector"
+            print "ERROR, result is shorter than input vector (" + str(len(result)) + ")"
         else:
             self.fail_rate = 1 - float(successes) / iterations
             print "PER = " + str(self.fail_rate) + " SNR = " + str(SNR) + ", doppler = " + str(doppler)
@@ -132,9 +132,9 @@ def calc_PER(noise_range, doppler):
 
 
 # settings ##########################
-iterations = 1000
+iterations = 10000
 reserve = 100
-noise_range = np.arange(4.0, 5.0, 1.0)
+noise_range = np.arange(0.0, 1.0, 1.0)
 #doppler_range = np.arange(5.0, 200.0, 180.0)
 doppler_range = np.array([5.5])
 #####################################

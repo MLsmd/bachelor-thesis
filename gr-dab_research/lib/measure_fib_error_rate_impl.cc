@@ -43,7 +43,7 @@ namespace gr {
     measure_fib_error_rate_impl::measure_fib_error_rate_impl()
       : gr::sync_block("measure_fib_error_rate",
               gr::io_signature::make(1, 1, sizeof(char)*32),
-              gr::io_signature::make(2, 2, sizeof(char)))
+              gr::io_signature::make(1, 1, sizeof(char)))
     {}
 
     /*
@@ -59,17 +59,14 @@ namespace gr {
         gr_vector_void_star &output_items)
     {
       const char *in = (const char *) input_items[0];
-      char *out_ok = (char *) output_items[0];
-      char *out_fail = (char *) output_items[1];
+      char *out = (char *) output_items[0];
 
       for (int i = 0; i < noutput_items; ++i) {
         if (crc16(in, FIB_LENGTH, FIB_CRC_POLY, FIB_CRC_INITSTATE) != 0){
-          out_ok[i] = 0;
-          out_fail[i] = 1;
+          out[i] = 0;
         }
         else{
-          out_ok[i] = 1;
-          out_fail[i] = 0;
+          out[i] = 1;
         }
         in += 32;
       }

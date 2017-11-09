@@ -21,5 +21,6 @@ install(FILES
     dab_research_measure_freq_offset_cf.xml
     dab_research_qpsk_demod_vcvb.xml
     dab_research_fic_decode_vc.xml
-    dab_research_measure_fib_error_rate.xml DESTINATION share/gnuradio/grc/blocks
+    dab_research_measure_fib_error_rate.xml
+    DESTINATION share/gnuradio/grc/blocks
 )

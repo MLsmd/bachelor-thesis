@@ -26,5 +26,6 @@ install(FILES
     measure_freq_offset_cf.h
     qpsk_demod_vcvb.h
     measure_fib_error_rate.h 
-    firecode_check_bb.h DESTINATION include/dab_research
+    firecode_check_bb.h
+    DESTINATION include/dab_research
 )

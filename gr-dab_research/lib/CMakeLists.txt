@@ -31,7 +31,8 @@ list(APPEND dab_research_sources
     crc16.cc
     measure_fib_error_rate_impl.cc 
     firecode-checker.cpp
-    firecode_check_bb_impl.cc)
+    firecode_check_bb_impl.cc
+    )
 
 set(dab_research_sources "${dab_research_sources}" PARENT_SCOPE)
 if(NOT dab_research_sources)
