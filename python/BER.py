@@ -148,12 +148,12 @@ def calc_BER(Power, noise_range, doppler):
     return BER
 
 # settings ##########################
-symbols = 10000
+symbols = 20000
 iterations = symbols * 3072
-repetitions = 50
-noise_range = np.arange(33.0, 34.0, 4.0)
+repetitions = 80
+noise_range = np.arange(29.0, 34.0, 4.0)
 #doppler_range = np.arange(5.0, 200.0, 180.0)
-doppler_range = np.array([5.0])
+doppler_range = np.array([25.0])
 power_meter = measure_Power.measure_power(1000000)
 power = power_meter.get_power()
 #####################################
@@ -162,7 +162,7 @@ plot = plt.figure()
 for doppler in doppler_range:
     BER_array = calc_BER(power, noise_range, doppler)
     plt.semilogy(noise_range, BER_array)
-    np.savetxt("results/multipath/BER/171109_BER_dynamic_doppler_" + str(doppler) + ".dat", np.c_[noise_range, BER_array], delimiter=' ')
+    np.savetxt("results/multipath/BER/171113_dynamic_doppler_" + str(doppler) + "_BER.dat", np.c_[noise_range, BER_array], delimiter=' ')
     print "final result for doppler = " + str(doppler) + ": " + str(BER_array)
 
 plt.show()

@@ -2,3 +2,4 @@ gr-dab_research/build/
 python/data/
 *.pyc
 .idea/
+literature/
