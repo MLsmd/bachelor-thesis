@@ -3,3 +3,4 @@ python/data/
 *.pyc
 .idea/
 literature/
+python/results/
