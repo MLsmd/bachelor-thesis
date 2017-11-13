@@ -1,95 +1,121 @@
 \chapter{Evaluation des Systems}
 \label{sec:evaluation}
+Nach erfolgreicher Implementierung des DAB/DAB+ Transceivers erfolgt in diesem Abschnitt eine Evaluation des Systems. Für die grundsätzliche Verifikation wird der Empfänger gegen das DAB+ Ensemble eines lokalen Radiosenders über die Luft getestet. In der Simulation wird der Transceiver anschließend auf sein Verhalten und seine Robustheit bei verschiedene Übertragungskanälen untersucht. \\
+Für quantitative Aussagen stellt die \ac{BER} ein gängiges Gütekriterium zur Bewertung der Übertragungsqualität des physikalischen Kanals dar. Die \ac{BER} allein ist jedoch kein außreichendes Maß für die vom Nutzer subjektiv empfundene Qualität des Empfangssignals, da sowohl im FIC als auch im MSC letzlich ein CRC darüber entscheidet ob ein FIB beziehungsweise ein MPEG Frame korrekt ist und es dementsprechend weiterverarbeitet oder verwirft. Das Audiosignal wird daher, im Gegensatz zu FM, nicht verrauschter, sonder die Ausfallrate, auch \ac{PER} genannt, steigt. Es ist daher sinnvoll, die Fehlerrate dieser CRC Checks als Gütekriterium für eine praktische bzw. subjektive Übertragungsqualität zusätzlich zur Bitfehlerraten heranzuziehen.\\
 
+Die Performanz des Systems hängt von vielen Faktoren ab. Die Konzeption der Systemarchitektur entscheidet über die grundlegenden Eigeschaften des Systems und ist durch den ETSI DAB Standard \cite{etsi:dab_main} festgelegt. Ein weiter wesentlicher Faktor ist das Design der Synchronisation, die nicht im Standard spezifiziert ist und deshalb von der Implementierung abhängt.
+
+\section{Verifikation des Empfängers}
+Der Empfänger wird gegen ein lokales DAB+ Ensemble des Südwestrundfunks verifiziert. Die Sendestation ist in ca. 10 km Entfernung und sendet mit einer \ac{ERP} von $5 kW$. Der Empfang findet im Gebäude und ohne Bewegung des Empfängers statt. Es wurden insgesamt 3 Empfängerkonfigurationen getestet:
+\begin{figure}
+\begin{tabular}{l | c | c}
+Hardwarekonfiguration & SNR & subjektive Empfangsqualität \\
+\hline
+USRP B210 mit Rundstrahlantenne (für DAB+ ausgelegt) & $\approx 50\, dB$ & komplett störungsfrei \\
+USRP B210 mit Teleskopantenne & $\approx 28\, dB$ & komplett störungsfrei \\
+RTL-SDR mit DVB-T kleiner Rundstrahlantenne & $\approx 18\, dB$ & gestört
+\end{tabular}
+\caption{getestete Hardwarekonfigurationen und deren Ergebnisse}
+\label{tab:hardware}
+\end{figure}
+Durch den erfolgreichen Empfang des SWR DAB+ Ensembles ist der Empfänger verifiziert. Die SNR Werte spiegeln wie zu erwarten die Eignung der jeweiligen Antenne für den DAB Empfang wieder. Der hohe Qualitätsunterschied der SDR-Geräte ist bei der reinen SNR Messung noch nicht berücksichtigt, wirkt sich aber im weiteren Verlauf der Synchronisations- und Decodierungskette auf die Empfangsqualität aus.\\
+Zur subjektiven Empfangsqualität seien zwei Anmerkungen gemacht: Die subjektive Audioqualität der DAB+ Übertragung ist im Vergleich zu FM wesentlich besser; dies kommt jedoch nur bei der Verwendung eines hochwertigen Lautsprechers bzw. hochwertiger Kopfhörerer zum Tragen. Bei kostengünstigen Lautsprechern ist ein Qualitätsunterschied kaum hörbar. Im sehr schlechten Übertragungsfall fallen einzelne DAB+ Audioframes aus und unterbrechen dadurch den Audiostream für die Dauer eines Superframes von $120 ms$. Auch wenn die restlichen Audioframes komplett fehlerfrei und rauschfrei sind, ist in diesem Fall das sehr verrauschte aber unterbrechungslose FM Audiosignal angenehmer. Eine mögliche Verbesserung der subjektiven Empfindung könnte durch weiches Aus- und Einblenden vor bzw. nach einem Frameausfall erreicht werden.
+
+
+\section{AWGN Kanal}
+Der \ac{AWGN} Kanal ist das einfachste hier verwendete Kanalmodell. Der Kanal addiert dabei bei der Übertragung weißes, gaußsches Rauschen auf das Sendesignal.
+\begin{equation}
+R(t) = S(t) + N(t) \quad \text{mit} \quad %N \mathcal{N} \sim (\mu,\,\sigma^{2})
+\end{equation}
+
+\subsection{Bitfehlerrate}
+Die simulierte Bitfehlerrate des DAB Systems wurde über dem SNR gemessen, indem bei bekannter Signalleistung die Rauschleistung entsprechend dem SNR eingestellt wurde. Um aussagekräftige Ergebnisse über die Performanz einer digitalen Übertragung zu erhalten ist nach \cite{snr:sklar2001digital} die Bitenergie im Verhältnis zur Rauschleistungsdichte $E_b/N_0$ ein sinnvolleres Gütemaß als das SNR, da Energie Bits überträgt, und nicht Leistung.
+Die Umrechnung von SNR zu $E_b/N_0$ ergibt:
+\begin{equation}
+\begin{aligned}
+\frac{E_b}{N_0} &= \frac{P}{N} \cdot \frac{B}{R} \quad \text{mit} \; P=1,\; B=1,\; N=\frac{1}{\sigma^2} \\
+&= \frac{1}{\sigma^2} \cdot \frac{1}{R} \\
+&= \frac{1}{\sigma^2} \cdot \frac{1}{\frac{K}{N_{Tr\ddot{a}ger}} \cdot \log_2 M \cdot \frac{T_S}{T_G+T_S}}
+\end{aligned}
+\end{equation}
+Die Bitrate $R$ ergibt sich aus den beschriebenen Systemparametern. Symbolratenverluste entstehen durch $K=1536$ belegten von insgesamt $N_{Tr\ddot{a}ger}=2048$ verfügbaren OFDM Unterträgern. Die redundante Wiederholung von QPSK Symbolen im Cyclic Prefix verkleinert die effektive Symbolrate weiter. Jedes QPSK Symbol transportiert dabei $\log_2 4 = 2$ Bits. Damit ergibt sich
+\begin{equation}
+\frac{E_b}{N_0} = SNR \; - \; 10\cdot \log_{10} \left(\frac{1536}{2048} \cdot 2 \cdot \frac{2048}{504+2048} \right) \approx SNR \; - \; 0,8054\, dB
+\end{equation}
+Diese Umrechnung erlaubt es nun die Bitfehlerrate des DAB Systems mit der theoretischen Bitfehlerrate einer reinen D-QPSK Übertragung zu vergleichen. Beide Kurven sind in Abb. \ref{plot:awgn_ber} dargestellt.
+
+% BER von AWGN
+\begin{figure}[htb]
 \begin{center}
 \begin{tikzpicture}
 \begin{axis}[
-title=\ac{FIB} Fehlerrate,
 ymode=log,
-xlabel={$SNR \ [dB]$},
+xlabel={SNR},
+ylabel={BER},
+grid=major,
+legend entries={D-QPSK, DAB},
+]
+\addplot [blue, mark=diamond*]table {simulation/AWGN/BER/171109_BER_DQPSK_Matlab.dat};
+\addplot [red, mark=diamond*]table {simulation/AWGN/BER/171112_BER_AWGN_EbN0.dat};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+\caption{BER über $E_b/N_0$ bei AWGN Kanal}
+\label{plot:awgn_ber}
+\end{figure}
+
+Wie zu erkennen ist, hat die BER Kurve des DAB Systems den gleichen Verlauf wie die D-QPSK BER Kurve und ist um etwa $1\, dB$ nach rechts verschoben. Um also die gleiche BER zu erreichen, benötigt der DAB Empfänger ein um $1\, dB$ besseres $E_b/N_0$. Der Performanzverlust ist durch den für die Synchronisation notwendigen Overhead durch Cyclic Prefix und unbelegte Unterträgern zu erklären. Ein Implementationsverlust ist lediglich unter ca. $3\, dB$ zu erkennen, bei dem die BER des DAB Empfänger sehr schnell gegen einem Wert von $0,5$ geht.\\
+Das Verhalten kann unter Berücksichtigung der Durchsatzrate des Synchronisationsblocks erklärt werden, der in Abb.~\ref{plot:awgn_per} aufgetragen ist. Unter $2\, dB$ nimmt die Durchsatzrate rapide ab und bei etwa $0\, dB$ wird quasi kein Frame von der Synchronisation erkannt. In dieser Simulation wurde eine Nicht-Erkennung eines Frames und dessen Bits als BER $= 0,5$ gewertet, was einem Raten der gleichverteilten Bits entspricht. Unter 2dB ist die Rauschleistung in der gleichen Größenordnung wie die Signalleistung wodurch das Nullframe nicht mehr mit großer Sicherheit erkannt werden kann. Aus diesem Grund wurde die Empfindlichkeitsschwelle für die Synchronisation (siehe \ref{sec:time_sync}) bewusst auf $2\, dB$ gesetzt. Ein zu geringer Schwellwert für die Energiedifferenz zwischen Nullframe und Phasenrefernzsymbol kann dazu führen, dass Leistungsschwankungen zu einem Falschalarm bei der Framedetektion führen können, was unbedingt vermieden werden sollte. Zudem liefern $E_b/N_0$ Werte unter $2\, dB$ so hohe Bitfehlerraten dass ein sinnvoller Betrieb nicht mehr möglich ist.
+
+\subsection{Paketfehlerrate}
+In einem zweiten Schritt wird nun die Paketfehlerrate (PER) untersucht. Die PER Simulation soll dabei so weit wie möglich einer Ende zu Ende Übertragung entsprechen, da dieser Fall der subjektiven Übertragungsqualität am nächsten kommt. Deshalb wird bei der Simulation des PER die komplette Kanalcodierungskette in die Simulationsumgebung integriert.
+Im FIC wird nach der Kanalcodierung ein CRC über jedes FIB berechnet, das direkt für die PER Berechnung verwendet werden kann. Da der CRC jeweils über das komplette FIB berechnet wird, kann man bei erfolgreichem CRC von einem fehlerfreien FIB ausgehen. Die PER entspricht also genau der Fehlerrate der FIB und ist aussagekräftig für die effektive Übertragungsfehlerrate des FIC. Abb.~\ref{plot:awgn_per} zeigt die PER des FIC über dem SNR. Eine PER Kurve schneidet in der Regel deutlich schlechter als eine äquivalente BER Kurve ab, da alle Bits für ein erfolgreiches Paket richtig sein müssen, aber schon ein einzelnes falsches Bit zum Scheitern eines Paketes führen, während bei der BER jedes Bit unabhängig betrachtet wird. Trotzdem schneidet die PER Vergleich zur BER aus Abb.~\ref{plot:awgn_ber} im Bereich von $10^{-3}$ um etwa 3-4 dB besser ist, als die BER Kurve. Hier ist der Effekt der Kanalcodierung und der damit verbundenen Fehlerkorrektur des Faltungscodecs deutlich zu erkennen. \\
+Im Bereich von ca. 3 dB abwärts verlässt die PER des FIC ihren typischen AWGN Verlauf und konvergiert deutlich schneller gegen eine totale Ausfallrate als erwartet.
+\\
+\\
+Die PER des MSC wird aus dem Firecode-Check berechnet, der nach der Kanalcodierung und vor der Reed-Solomon Korrektur stattfindet.
+
+% PER von AWGN
+\begin{figure}[htb]
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+ymode=log,
+xlabel={SNR},
 ylabel={FIB Fehlerrate},
 grid=major,
 ]
-\addplot [blue, mark=diamond*]table {data/171022_fic_error_rate.dat};
-\addplot [red, mark=diamond*]table {data/171022_fic_throughput_rate.dat};
+\addplot [blue, mark=diamond*]table {simulation/AWGN/PER/171108_AWGN_PER_FIC.dat};
+\addplot [yellow, mark=diamond*]table {simulation/AWGN/PER/171022_throughput_rate.dat};
+%\addplot [orange, mark=diamond*]table {chapters/simulation/AWGN/PER/171022_1-throughput_rate.dat};
+\addplot [red, mark=diamond*]table {data/171106_AWGN_Firecode_A3.dat};
+\addplot [green, mark=diamond*]table {data/171106_AWGN_Firecode_A1.dat};
 \end{axis}
-\label{plot:varianz_freq_offset}
 \end{tikzpicture}
 \end{center}
+\caption{PER über SNR bei AWGN}
+\label{plot:awgn_per}
+\end{figure}
 
+% BER over SNR, different doppler spreads
+\begin{figure}[htb]
 \begin{center}
 \begin{tikzpicture}
 \begin{axis}[
-title=BER,
 ymode=log,
-xlabel={$SNR \ [dB]$},
+xlabel={SNR},
 ylabel={BER},
 grid=major,
 ]
-\addplot [blue, mark=diamond*]table {data/171026_BER.dat};
+\addplot [black, mark=diamond*]table {simulation/dynamic/BER/171109_dynamic_doppler_5.0_BER.dat};
+\addplot [blue, mark=diamond*]table {simulation/dynamic/BER/171109_dynamic_doppler_10.0_BER.dat};
+\addplot [green, mark=diamond*]table {simulation/dynamic/BER/171109_dynamic_doppler_20.0_BER.dat};
+\addplot [red, mark=diamond*]table {simulation/dynamic/BER/171112_dynamic_doppler_25.0_BER.dat};
+\addplot [orange, mark=diamond*]table {simulation/dynamic/BER/171109_dynamic_doppler_50.0_BER.dat};
+\addplot [yellow, mark=diamond*]table {simulation/dynamic/BER/171109_dynamic_doppler_100.0_BER.dat};
 \end{axis}
-\label{plot:varianz_freq_offset}
 \end{tikzpicture}
 \end{center}
-
-\begin{center}
-\begin{tikzpicture}
-\begin{axis}[
-title=BER,
-ymode=log,
-xlabel={$SNR \ [dB]$},
-ylabel={BER},
-grid=major,
-legend style={nodes={scale=0.5, transform shape}},
-legend entries={AWGN, LTE EPA, LTE EVA, LTE ETU, Rayleigh Fading},
-]
-\addplot [red, mark=diamond*]table {data/171029_BER_AWGN.dat};
-\addplot [blue, mark=diamond*]table {data/171029_BER_AWGN_LTE_EPA.dat};
-\addplot [green, mark=diamond*]table {data/171029_BER_AWGN_LTE_EVA.dat};
-\addplot [orange, mark=diamond*]table {data/171029_BER_AWGN_LTE_ETU.dat};
-\addplot [black, mark=diamond*]table {data/171030_BER_Fading.dat};
-\end{axis}
-\label{plot:LTE}
-\end{tikzpicture}
-\end{center}
-
-\begin{center}
-\begin{tikzpicture}
-\begin{axis}[
-title=BER,
-ymode=log,
-xlabel={$SNR \ [dB]$},
-ylabel={FIC error rate},
-grid=major,
-colormap name=hot,
-cycle list={
-    [colors of colormap={0,50,...,1000}]},
-%
-cycle from colormap manual style,
-colorbar,colorbar style={xtick=data},
-]
-\addplot table {data/doppler/fic_error_rate_doppler0.0.dat};
-\addplot table {data/doppler/fic_error_rate_doppler10.0.dat};
-\addplot table {data/doppler/fic_error_rate_doppler30.0.dat};
-\addplot table {data/doppler/fic_error_rate_doppler40.0.dat};
-\addplot table {data/doppler/fic_error_rate_doppler50.0.dat};
-\addplot table {data/doppler/fic_error_rate_doppler60.0.dat};
-\addplot table {data/doppler/fic_error_rate_doppler70.0.dat};
-\addplot table {data/doppler/fic_error_rate_doppler80.0.dat};
-\addplot table {data/doppler/fic_error_rate_doppler90.0.dat};
-\addplot table {data/doppler/fic_error_rate_doppler100.0.dat};
-\addplot table {data/doppler/fic_error_rate_doppler110.0.dat};
-\addplot table {data/doppler/fic_error_rate_doppler120.0.dat};
-\addplot table {data/doppler/fic_error_rate_doppler130.0.dat};
-\addplot table {data/doppler/fic_error_rate_doppler140.0.dat};
-\addplot table {data/doppler/fic_error_rate_doppler150.0.dat};
-\addplot table {data/doppler/fic_error_rate_doppler160.0.dat};
-\addplot table {data/doppler/fic_error_rate_doppler170.0.dat};
-\addplot table {data/doppler/fic_error_rate_doppler180.0.dat};
-\addplot table {data/doppler/fic_error_rate_doppler190.0.dat};
-
-
-\end{axis}
-\label{plot:LTE}
-\end{tikzpicture}
-\end{center}
+\caption{BER über SNR bei frequenzselektivem Kanal}
+\label{plot:doppler_ber}
+\end{figure}

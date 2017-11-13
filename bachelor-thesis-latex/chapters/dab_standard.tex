@@ -1,8 +1,9 @@
 \chapter{DAB Standard}
+\label{sec:standard}
 In diesem Kapitel werden die verwendeten Strukturen und Verfahren vorgestellt, die nötig sind um ein funktionierendes DAB Übertragungssystem aufzubauen. Eine vollständige und detailliertere Beschreibung über den kompletten DAB Standard liefert das vom \ac{ETSI} veröffentlichte Dokument \cite{etsi:dab_main}. Die in Abschn.~\ref{sec:intro} angesprochenen Übertragungsmodi basieren alle auf dem selben Prinzip und sind nur quantitativ auf ihre jeweiligen Einsatzbereiche angepasst. Diese Arbeit bezieht sich bei quantitativen Betrachtungen immer auf den Übertragungsmodus I, der bei der terrestrischen Übertragung verwendet wird.
 
 \section{Aufbau eines DAB Ensembles}
-Der Aufbau eines DAB Services gestaltet sich wesentlich komplexer, aber auch flexibler als die feste Struktur einer FM Übertragung, bei der jeder Radiosender genau einen Audiokanal überträgt und ein eigenes Frequenzband belegt. Ein DAB Ensemble beinhaltet in der Regel mehrere Radiosender, die wiederum aus vielen Audio- und Datenkanälen bestehen können. Es erfolgt also eine Trennung von Radiosender und Audio-/Datenkanal. Ein Beispiel für ein DAB Ensemble zeigt Abb.~\ref{chart:ensemble}.\\
+Der Aufbau einer DAB Struktur gestaltet sich wesentlich komplexer, aber auch flexibler als die feste Struktur einer FM Übertragung, bei der jeder Radiosender\footnote{\dq Radiosender\dq bezeichnet hier die Organisationseinheit (engl. \dq Service\dq) und nicht den physikalischen Sender.} genau einen Audiokanal überträgt und ein eigenes Frequenzband belegt. Ein sog. DAB Ensemble beinhaltet in der Regel mehrere Radiosender, die wiederum aus vielen Audio- und Datenkanälen bestehen können. Ein Beispiel für ein DAB Ensemble zeigt Abb.~\ref{chart:ensemble}. Das Ensemble \dq Campus Radio\dq enthält zwei Radiosender die jeweils einen separaten Audiokanal beinhalten und beide den Datenkanal \dq Stauinfo\dq sowie den Audiokanal \dq Nachrichten\dq nutzen.\\
 
 \begin{figure}[htb]
 \begin{center}
@@ -43,21 +44,21 @@ Der Aufbau eines DAB Services gestaltet sich wesentlich komplexer, aber auch fle
 \path [line] (traffic.south) -- (cif_mid.north-|traffic.south);
 \path [line] (audio2.south) -- (cif_+1.north-|audio2.south);
 \path [line] (etc.south) -- (cif_+2.north-|etc.south);
-\label{chart:ensemble}
 \end{tikzpicture}
 \end{center}
-
 \caption{Beispielhafte Struktur eines DAB Ensembles}
+\label{chart:ensemble}
 \end{figure}
-Diese Trennung erlaubt es besipielsweise, dass mehrer Radiosender den selben Datenkanal, der zum Beispiel Verkehrsinformationen transportiert, gleichzeitig zu nutzt. Dies spart auf der auf der einen Seite eine redundante Datenübertragung und ermöglicht es den Radiosendern zudem, ihr Programm bzw. Angebot breiter zu fächern bzw. flexibel anzupassen. Alle Kanäle der verschiedenen Radiosender werden im Main Service Multiplexer zu einem \ac{CIF} gebündelt und übertragen. Ohne Kenntnis über den Aufbau und die Struktur des Mulitplex, ist ein \ac{CIF} am Empfänger nutzlos, da keine Information über die Lage einzelner Audio Streams im Multiplex bekannt ist. Die Übertragung dieser \ac{MCI} ist Aufgabe des \ac{FIC}.
+Es erfolgt also eine Entkopplung von Radiosendern zu den Audio-/Datenkanälen. Diese Trennung erlaubt es, wie in diesem Beispiel, dass mehrer Radiosender den selben Kanal nutzen können. Das spart auf der einen Seite eine redundante Datenübertragung und ermöglicht es den Radiosendern zudem ihr Programm bzw. Angebot breiter zu fächern und flexibel anzupassen. Alle Kanäle der verschiedenen Radiosender werden im Main Service Multiplexer zu einem \ac{CIF} gebündelt und in 24ms Frames übertragen. \\
+Ohne Kenntnis über den Aufbau und die Struktur des Mulitplex, ist ein \ac{CIF} am Empfänger wertlos, da keine Information über die Lage einzelner Audio Streams im Multiplex bekannt ist. Die Übertragung dieser \ac{MCI} ist Aufgabe des \ac{FIC}.
 \todo{Struktur mit Ensemble Services als Grafik}
 
-\section{Fast Information Channel (FIC)}
+\section{Fast Information Channel}
 \label{sec:FIC}
-Der \ac{FIC} spielt bei der Übertragung eines DAB Ensembles eine sehr wichtige Rolle, da er sowohl die \ac{MCI} als auch \ac{SI}, wie zum Beispiel den Namen eines Radiosenders, überträgt. Die Informationen werden Paketweise in sogenannten \acp{FIB} übertragen. Die Bedeutung der \ac{MCI} wurde schon erläutert und ist naheliegend, aber auch die \ac{SI} ist von großer Bedeutung, da ein Nutzer das Radioprogramm nicht ohne dessen Namen auswählen kann. \\
-Die Übertragung des FIC erfordert daher eine hohe Robustheit was durch eine gute Kanalcodierung sichergestellt wird.
+Der Fast Information Channel (FSC) spielt bei der Übertragung eines DAB Ensembles eine sehr wichtige Rolle, da er sowohl die \ac{MCI} als auch \ac{SI}, wie zum Beispiel den Namen eines Radiosenders, überträgt. Die Informationen werden Paketweise in sogenannten \acp{FIB} übertragen. Die Bedeutung der \ac{MCI} wurde schon erläutert und ist naheliegend, aber auch die \ac{SI} ist von großer Bedeutung, da ein Nutzer das Radioprogramm zum Beispiel nicht ohne dessen Namen auswählen kann. \\
+Die Übertragung des FIC erfordert daher eine hohe Robustheit gegen Übertragungsfehler, was durch eine gute Kanalcodierung sichergestellt wird. Abb.~\ref{chart:fic_encoder} zeigt die Kanalcodierungskette des FIC, deren Elemente im Folgenden erläutert werden.\\
 %FIC chain
-\begin{figure} [h]
+\begin{figure} [htb]
 \begin{center}
 \begin{tikzpicture}
 \tikzstyle{block} = [rectangle, rounded corners, draw, text width=5em, text centered, minimum height=4em]
@@ -80,30 +81,30 @@ Die Übertragung des FIC erfordert daher eine hohe Robustheit was durch eine gut
     \path [line] (conv.east) -- ++(0.5,0);
 \end{tikzpicture}
 \end{center}
-\label{chart:fic_encoder}
 \caption{Quelle und Kanalcodierung des FIC}
+\label{chart:fic_encoder}
 \end{figure}
 
-\subsection{\ac{CRC}}
+\subsection{Zyklische Redundanzprüfung (CRC)}
 \label{sec:crc}
-Jedem \ac{FIB} der Länge 30 bytes (bestehend aus \ac{FIG}) wird ein 16 bit \ac{CRC} Wort angehängt. Das \ac{CRC} Wort wird über die 30 Nutzbytes mittels des Generatorpolynoms
+Jedem \ac{FIB} der Länge 30 bytes wird ein 16 bit CRC (Cyclic Redundancy Check) Wort angehängt. Das CRC Wort wird über die 30 Nutzbytes mittels des Generatorpolynoms
 \begin{equation}
 G(x) = x^{16} + x^{12} + x^5 + 1
 \end{equation}
-berechnet. Das CRC Wort bietet keine Möglichkeit zur Fehlerkorrektur sondern dient lediglich der Fehlerdetektion, wofür es nach \cite{crc:recommendation} optimiert ist.
+berechnet und im Empfänger mit einer erneuten Berechnung der Empfangsbits verglichen. Der CRC bietet keine Möglichkeiten zur Fehlerkorrektur sondern dient lediglich der Fehlerdetektion, wofür er nach \cite{crc:recommendation} optimiert ist.
 
 \subsection{Energieverwischung}
 \label{sec:energieverwischung}
-Im nächsten Schritt wird sichergestellt, dass die Binärquelle ideale Eigenschaften erfüllt. Dazu müssen die zu übertragenden Bits gleichverteilt sein um die Entropie der Quelle zu maximieren und zyklischen Wiederholungen von Bitsequenzen durch etwaige Wiederholungen von \ac{FIG}s müssen vermieden werden. Der Bitstream wird dazu über eine Modulo-2 Operation mit einer \ac{PRBS} gescrambled. Die \ac{PRBS} erfüllt die gewünschten Eigenschaften und ist durch das Polynom
+Im nächsten Schritt wird sichergestellt, dass die Binärquelle ideale Eigenschaften erfüllt. Dazu müssen die zu übertragenden Bits gleichverteilt sein um die Entropie der Quelle zu maximieren und zyklischen Wiederholungen von Bitsequenzen müssen vermieden werden. Der Bitstream wird dazu über eine Modulo-2 Operation mit einer \ac{PRBS} verwürfelt. Die \ac{PRBS} erfüllt die gewünschten Eigenschaften und kann über das Polynom
 \begin{equation}
 \label{eq:energy_dispersal}
-P(x) = X^9 + X^5 + 1
+P(X) = X^9 + X^5 + 1
 \end{equation}
-im Empfänger exakt reproduzierbar.
+eindeutig generiert werden. Die PRBS ist im Empfänger exakt reproduzierbar.
 
 \subsection{Faltungscodierung}
 \label{sec:faltungscodierung}
-Eine Kanalcodierung ermöglicht die Erkennung und Korrektur von Bitfehlern auf Kosten einer geringeren Nutzdatenrate. Das DAB System verwendet eine Faltungscodierung mit der Coderate $R=1/4$ und einer Einflusslänge von 7 Bits. Für jedes Eingangsbit produziert der Encoder also ein Codewort der Länge 4 bit, das über die Polynome
+Eine Kanalcodierung ermöglicht die Erkennung und Korrektur von Bitfehlern auf Kosten einer geringeren Nutzdatenrate. Das DAB System verwendet eine Faltungscodierung mit der Coderate $R=1/4$ und einer Einflusslänge von 7 bit. Für jedes Eingangsbit produziert der Encoder also ein Codewort der Länge 4 bit, das über die Polynome
 \begin{equation}
 \begin{aligned}
 g_1(x) &= 1 + x^2 + x^3 + x^5 + x^6 \\
@@ -112,53 +113,58 @@ g_3(x) &= 1 + x + x^4 + x^6 \\
 g_4(x) &= 1 + x^2 + x^3 + x^5 + x^6
 \end{aligned}
 \end{equation}
-berechnet werden. \\
-\todo{reinbringen, dass Blockweise? Lese Friedrichs}
+berechnet wird. \\
 Um die Coderate $R$ zu erhöhen wird die punktierte Faltungscodierung verwendet, bei der aus einer Gruppen von Codebits ein Teil der Bits wieder gestrichen (punktiert) wird. Dadurch ergeben sich eine Vielzahl an möglichen Coderaten
 \begin{equation}
-R_{punktiert} = \frac{8}{8 + PI} \text{mit} PI \in [1;24]
+R_{punktiert} = \frac{8}{8 + PI} \quad \text{mit} \quad PI \in [1;24]
 \end{equation}
-wobei $R = 1/4 \leq R_{punktiert} \leq 1$ gilt.\\
-Der FIC verwendet eine konstante Coderate von $R_{punktiert, FIC} = 1/3$.
+wobei $R = 1/4 \leq R_{punktiert} \leq 1$ gilt. Der FIC verwendet eine konstante Coderate von $R_{punktiert, FIC} = 1/3$.
 
+\section{Main Service Channel}
+Der Main Service Channel (MSC) umfasst alle Audio- und Datenkanäle, die im DAB Ensemble enthalten sind. Wie in Abb.~\ref{chart:msc} zu sehen ist, wird jeder Kanal separat codiert. Audiokanäle werden zusätzlich vor ihrer Kanalcodierung komprimiert. Anschließend werden alle Kanäle durch einen Multiplexer zu sogennanten Common Interleaved Frames (CIFs) zusammengefasst. Ein CIF enthält ein sog. Logisches Frame von jedem Kanal. Ein Logisches Frame enthält dabei die Daten eines Streams in einem Zeitfenster von 24ms. Die Größe variiert daher in Abhängigkeit der Datenrate eines jeden Kanals.  Neben dem Stream Modus der bei allen Audiokanälen und manchen Datenkanälen verwendet wird, können Daten auch Paketweise übertragen werden. Dies wird zum Beispiel bei der Übertragung von Bildern verwendet. Im Folgenden ist die Kanalcodierungskette und der Multiplex eines Audiokanals beschrieben.
 
-
-\section{MSC}
 % MSC chain
-\begin{figure} [h]
+\begin{figure} [htb]
 \begin{center}
 \begin{tikzpicture}
 \tikzstyle{block} = [rectangle, rounded corners, draw, text width=5em, text centered, minimum height=4em]
-\tikzstyle{input} = [rectangle, text width=2em, align=right, minimum height=0em]
+\tikzstyle{input} = [rectangle, text width=0em, minimum height=0em]
 
 % blocks
     % audio1
-    \node [](audio1){Audio (stereo)};
-    \node [](audio left)[above=0cm of audio1]{};
-    \node [](audio right)[below=0cm of audio1]{};
-    \node [block, right=0.4cm of audio1] (MPEG) {Audio Kompression};
+    \node [](audio1){\begin{tabular}{cc}
+Audiokanal \\
+(stereo)
+\end{tabular}};
+    \node [block, right=0.2cm of audio1] (MPEG) {Audio Kompression};
+    \node [](audio left)[left=1.5cm of MPEG.153]{};
+    \node [](audio right)[left=1.5cm of MPEG.207]{};
     \node [block, right=0.5cm of MPEG, text width=6em] (Energy) {Energie- verwischung};
     \node [block, right=0.5cm of Energy] (conv) {Faltungs- encoder};
     \node [block, right=0.5cm of conv] (time) {Zeit- Interleaver};
-    \node [right=0.5cm of time](end1){};
+    \node [input, right=0.5cm of time](end1){};
     % audioN
     %\node [below=1cm of audio1](audioN){\rotatebox{270}{\dotso}};
-    \node [circle, draw, below of= audio1, node distance = 1.5cm](audioN){};
+    %\node [circle, draw, below of= audio1, node distance = 1.5cm](audioN){};
     \node [below of=MPEG, node distance=1.5cm](audioNpoint){};
-    \node [below of=end1, node distance = 1.5cm](end2){};
+    \node [](AudioN text)[above=0cm of audioNpoint]{weitere Audiokanäle};
+    \node [input, below of=end1, node distance = 1.5cm](end2){};
     % data1
     \node [block, below of = Energy, node distance=3cm, text width=6em] (Energy2) {Energie- verwischung};
-    \node [left=1cm of Energy2](data1){};
-    \node [](Data text)[above=0cm of data1]{Daten};
+    \node [left=1.4cm of Energy2](data1){};
+    \node [](Data text)[above=0cm of data1]{Datenkanal};
     \node [block, right=0.5cm of Energy2] (conv2) {Faltungs- encoder};
     \node [block, right=0.5cm of conv2] (time2) {Zeit- Interleaver};
-    \node [right=0.5cm of time2](end3){};
+    \node [input, right=0.5cm of time2](end3){};
     % dataN
-    \node [below of= data1, node distance = 1.5cm](dataN){rotatebox{90}{...}};
-    \node [below of=end3, node distance = 1.5cm](end4){};
+    \node [below of= data1, node distance = 1.5cm](dataN){};
+    \node [](DataN text)[above=0cm of dataN]{weitere Datenkanäle};
+    \node [input, below of=end3, node distance = 1.5cm](end4){};
     % Mux
-    \node (muxpoint) at ($(end1)!0.5!(end4)$) {};
-    \node [rectangle, rounded corners, draw, text width=3em, text centered, minimum height=16em, right=0cm of muxpoint](mux){\rotatebox{90}{Main Service Multiplexer}};
+    \node [input] (muxpoint) at ($(end1)!0.5!(end4)$){};
+    \node [rectangle, rounded corners, draw, text width=3em, text centered, minimum height=17em, left=0.0cm of muxpoint, anchor=west](mux) {\rotatebox{90}{Main Service Multiplexer}};
+    \node [](CIF_point)[right=0.5cm of mux]{};
+    \node [](CIF)[above=0.0cm of CIF_point]{CIF};
 % arrows
     % audio1
     \path [line] (audio left.east) -- (MPEG.west|-audio left);
@@ -174,15 +180,17 @@ Der FIC verwendet eine konstante Coderate von $R_{punktiert, FIC} = 1/3$.
     \path [line] (Energy2.east) -- (conv2.west);
     \path [line] (conv2.east) -- (time2.west);
     \path [line] (time2.east) -- (end3);
+    \path [line] (mux.east) -- (CIF_point.east);
     % dataN
     \path [line, dotted] (dataN.east) -- (end4.west);
 \end{tikzpicture}
 \end{center}
+\caption{Aufbau des Main Service Channels}
+\label{chart:msc}
 \end{figure}
 
-\todo{logical Frames, Audio und Data, Packed und Stream}
 \subsection{Audio Kompression}
-Die subjektiv empfundene Qualität der übertragenen Audio Streams soll der einer Audio CD gleichen. Audio CDs verwenden $16$ PCM pro Monokanal bei einer Samplerate von $44,1 kHz$. Dies entpricht einer gesamten Bitrate von $1,41 Mbit/s$ für eine einzelne Audioübertragung mit Stereokanälen. Nimmt man nun noch eine Faltungscodierung mit exemplarischer Coderate von $R=1/2$ in die Rechnung auf, übersteigt schon diese einzelne Audioübertragung die Gesamtkapazität des \ac{MSC} von $2,304 Mbit/s$ (siehe \ref{sec:MUX}). Um daher eine Vielzahl von Audiokanälen im \ac{MSC} unterbringen zu können, ist die Notwendigkeit einer Audiokompression ersichtlich, deren Kompressionsrate etwa einer Größenordnung entsprechen muss. Die verwendete Audiokompression ist \ac{MPEG 2}~\cite{etsi:mp2} für den DAB Standard und MPEG4 HE-AACv2 für DAB+. \todo{schon erklärt was DAB+ ist?! (bzw DAB+ erst nach erklärung von MPEG 2 bringen?}
+Die subjektiv empfundene Qualität der übertragenen Audio Streams soll der einer Audio CD gleichen. Audio CDs verwenden $16$ PCM pro Monokanal bei einer Samplerate von $44,1 kHz$. Dies entpricht einer gesamten Bitrate von $1,41 Mbit/s$ für eine einzelne Audioübertragung mit Stereokanälen. Nimmt man nun noch eine Faltungscodierung mit exemplarischer Coderate von $R=1/2$ in die Rechnung auf, übersteigt schon diese einzelne Audioübertragung die Gesamtkapazität des \ac{MSC} von $2,304 Mbit/s$ (siehe \ref{sec:MUX}). Um daher eine Vielzahl von Audiokanälen im \ac{MSC} unterbringen zu können, ist die Notwendigkeit einer Audiokompression ersichtlich, die eine Datenreduktion um etwa eine Größenordnung durchführen muss. Die verwendete Audiokompression ist \ac{MPEG 2}~\cite{etsi:mp2} für den DAB Standard und der optimierte Audiocodec MPEG4 HE-AACv2 für DAB+.
 
 \ac{MPEG 2} ist ein generischer Audiocodec der verschiedene Effekte zur verlustbehafteten Kompression verwendet. Zum einen wird die Redundanz des Audiosignals reduziert, indem durch statistische Korrelation eine Vorhersage über das Zeitsignal getroffen werden kann \cite{dab_buch}. Zudem verwendet \ac{MPEG 2} ein psychoakustisches Modell des menschlichen Ohres. Damit ist es möglich die spektrale Hörschwelle an einem bestimmten Zeitpunkt zu bestimmen. Diese Information kann genutzt werden, um das in 32 Frequenzbänder zerteilte Signal in Abhängigkeit der temporären Empfindlichkeit des Ohres zu Quantisieren und somit das Quantisierungsrauschen in jedem Frequenzband knapp unter der Hörschwelle zu halten. Abb.~\ref{chart:MPEG} zeigt dieses Prinzip als Blockschaltbild. 
 \todo{Nochmal blöcke oder iwas erklären? Masking reinbringen??}
@@ -220,120 +228,148 @@ Die subjektiv empfundene Qualität der übertragenen Audio Streams soll der eine
 \end{center}
 \end{figure}
 
-Mit \ac{MPEG 2} lässt sich die erwähnte CD Qualität subjektiv mit einer Bitrate von etwa 192 kbit/s erreichen. Eine noch stärkere Komprimierung bietet \ac{MPEG 4}, welches nach subjektiven Hörtests dieselbe Qualität bei einer geringeren Daterate von 96 - 128 kbit/s erreich~\cite{mpeg:audio_tests}. \ac{MPEG 4} stellt eine eine Weiterentwicklung von \ac{MPEG 2} dar und basiert auf dem selben Prinzip. Um die Datenrate noch weiter zu reduzieren werden Verfahren wie Spektralbandrepilaktion und Kanalkopplung (Joint-Stereo) genutzt. Der \ac{MPEG 4} Codec wurde zusammen mit einer zusätzlichen Reed-Solomon Fehlerkorrektur in den DAB Standard integriert und wird in Deutschland seit 2011 als "DABplus\" ausgestrahlt. \todo{Spektralbandrepilkation und Kanlkopplung erklären? Mehr zu RS?}
+Mit \ac{MPEG 2} lässt sich die erwähnte CD Qualität subjektiv mit einer Bitrate von etwa 192 kbit/s erreichen. Eine noch stärkere Komprimierung bietet \ac{MPEG 4}, welches nach subjektiven Hörtests dieselbe Qualität bei einer geringeren Daterate von 96 - 128 kbit/s erreich~\cite{mpeg:audio_tests}. \ac{MPEG 4} stellt eine eine Weiterentwicklung von \ac{MPEG 2} dar und basiert auf dem selben Prinzip. Um die Datenrate noch weiter zu reduzieren werden Verfahren wie Spektralbandrepilaktion und Kanalkopplung (Joint-Stereo) genutzt. Der \ac{MPEG 4} Codec wurde zusammen mit einer zusätzlichen Reed-Solomon Fehlerkorrektur in den DAB Standard integriert und wird in Deutschland seit 2011 als DAB+ ausgestrahlt. \todo{Spektralbandrepilkation und Kanlkopplung erklären? Mehr zu RS?}
 
 \subsection{Energieverwischung}
 Eine Energieverwischung wird wie in Abschn.~\ref{sec:energieverwischung} auch im \ac{MSC} durchgeführt.
 
 \subsection{Faltungscodierung}
 Die in Abschn.~\ref{sec:faltungscodierung} beschriebene Faltungscodierung mit anschließender Punktierung kann im \ac{MSC} genutzt werden, um die Coderate jedes einzelnen Kanals individuell einzustellen. Dabei stehen sog. Protection Level zur Verfügung die durch eine Kombination verschiedener Punktierungsmuster Coderaten von $R=1/4$ bis $4/5$ erzeugen.\\
-Neben der \ac{EEP} gibt es zudem die Möglichkeit einzelne Bit-Blöcke innerhalb eines Frames stärker zu codieren als andere. Die \ac{UEP} ist zum Beispiel für MPEG Audio Frames sehr sinnvoll um die für die subjektive Audioqualität (wenigen) wichtigen Bits mit einer sehr hohen Redundanz zu versehen ohne dabei die Gesamtcoderate deutlich zu erhöhen. Ein Bitfehler im Header kann beispielsweise zu einer Fehlskalierung eines ganzen Frequenzbandes führen was sich beim Hörer als unangenehmes Pfeifen (sog. 'birdies') auswirkt, wohingegen ein einzelner Bitfehler des Zeitsignals unbemerkt bleibt.
+Neben der \ac{EEP} gibt es zudem die Möglichkeit einzelne Bit-Blöcke innerhalb eines Frames stärker zu codieren als andere. Die \ac{UEP} ist zum Beispiel für MPEG Audio Frames sehr sinnvoll um einzelne, für die subjektive Audioqualität wichtigen Bits mit einer sehr hohen Redundanz zu versehen ohne dabei die Gesamtcoderate deutlich zu erhöhen. Ein Bitfehler im Header kann beispielsweise zu einer Fehlskalierung eines ganzen Frequenzbandes führen was sich beim Hörer als unangenehmes Pfeifen (sog. 'birdies') auswirkt, wohingegen ein einzelner Bitfehler des Zeitsignals nahezu unbemerkt bleibt.
 
 \subsection{Zeit-Interleaving}
 \label{sec:time_interleaving_std}
-Die Faltungscodierung kommt schnell an ihre Grenzen, wenn anstelle von einzelnen Bitfehlern ganze Bündelfehler auftreten. Solche zeitlich begrenzten Empfangsausfälle entstehen zum Beispiel bei mobilen Empfängern in Bewegung durch Fadingeffekte. Im \ac{MSC} befindet sich mit dem Zeit-Interleaving deshalb ein zusätzliches Element in der Kanalcodierungskette, das die nicht-korrigierbaren Bündelfehler über die Zeit verteilt wodurch viele korrigierbare Einzelbitfehler entstehen. Der Zeit-Interleaver verzögert die Bits eines Frames nach den Regeln eines Interleaving Vektors um $0$ bis $15$ Logische Frames, was einer maximalen Verzögerung von $T_{delay, max} = 15 \cdot 24ms = 360 ms$ nach sich zieht. $T_{delay, max}$ entspricht also der maximalen Länge von Bündelfehlern die vom Zeit-Interleaver verteilt werden können. \todo{wirklich, oder weniger?} Gleichzeitig ist $T_{delay, max}$ aber auch die Verzögerung der Gesamtübertragung, da ein Frame erst decodiert werden kann, wenn alle Elemente (die maximal eine Verzögerung von $T_{delay, max}$ haben) empfangen wurden. Diese konstante Verzögerung wird im MSC für die verbesserte Fehlerkorrektur in Kauf genommen. Im FIC ist solch eine Verzögerung nicht möglich, da eventuell zeitkritische Daten wie zum Beispiel die Umkonfiguration des DAB Multiplexes übertragen werden, weshalb beim FIC kein Zeit-Interleaving angewendet wird.
+Die Faltungscodierung kommt schnell an ihre Grenzen, wenn anstelle von einzelnen Bitfehlern ganze Bündelfehler auftreten. Solche zeitlich begrenzten Empfangsausfälle entstehen zum Beispiel bei mobilen Empfängern durch Fadingeffekte beim Mehrwegempfang. Im \ac{MSC} befindet sich mit dem Zeit-Interleaving deshalb ein zusätzliches Element in der Kanalcodierungskette, das die nicht-korrigierbaren Bündelfehler über die Zeit verteilt, wodurch viele korrigierbare Einzelbitfehler entstehen. Der Zeit-Interleaver verzögert die Bits eines Frames nach den Regeln eines Interleaving Vektors um $0$ bis $15$ Logische Frames, was einer maximalen Verzögerung von $T_{delay, max} = 15 \cdot 24ms = 360 ms$ nach sich zieht. $T_{delay, max}$ entspricht also der maximalen Länge von Bündelfehlern die vom Zeit-Interleaver verteilt werden können. Gleichzeitig ist $T_{delay, max}$ aber auch die Verzögerung der Gesamtübertragung, da ein Frame erst decodiert werden kann, wenn alle Elemente (die maximal eine Verzögerung von $T_{delay, max}$ haben) empfangen wurden. Diese konstante Verzögerung wird im MSC für die verbesserte Fehlerkorrekturfähigkeit in Kauf genommen. Im FIC ist solch eine Verzögerung nicht akzeptabel, da eventuell zeitkritische Daten wie zum Beispiel die Umkonfiguration des DAB Multiplexes übertragen werden, weshalb im FIC kein Zeit-Interleaving angewendet wird.
 
 \subsection{Multiplexing}
 \label{sec:MUX}
-Im Multiplexer werden alle Kanäle des MSC gebündelt. Dabei beinhaltet das resultierende \ac{CIF} jeweils ein logisches Frame aus jedem Kanal, also Daten von $24ms$ jedes Streams. Das CIF wird in sog. \ac{CU} von jeweils $64 bit$ partitioniert und besitzt eine Gesamtkapazität von $864 \ac{CU}s$, also $55296 bit$. Über die \ac{CU}s erfolgt auch die Adressierung der einzelnen Kanäle, was den wichtigsten Teil der in \ref{sec:FIC} beschriebenen \ac{MCI} ausmacht.\\
-Die Kapazität des CIFs ist groß genug um eine Vielzahl von Audio- und Datenkanälen zu transportieren. \todo{Auf DAB Ensemble beziehen, das weiter oben erwähnt werden muss} Ein typischer \footnote{Bezogen auf ein in Karlsruhe (Deutschland) empfangenes DAB+ Ensembles des Südwestrundfunks.} $16 bit$ PCM Stereo Audio Stream mit der Abtastrate $32 kHz$ hat nach der Komprimierung eine Bitrate von $2\cdot64kbit/s$. Bei einem Protection Level von A3 ($\hat{=}$ Coderate $R=1/2$) können also beispielsweise 10 Audiostreams parallel übertragen werden.
+Im Multiplexer werden alle Kanäle des MSC gebündelt. Dabei beinhaltet das resultierende \ac{CIF} jeweils ein Logisches Frame aus jedem Kanal. Das CIF wird in sog. \acp{CU} von jeweils $64 \, bit$ partitioniert und besitzt eine Gesamtkapazität von $864 \, \ac{CU}s$, also $55296 \, bit$. Über die \ac{CU}s erfolgt auch die Adressierung der einzelnen Kanäle, was den wichtigsten Teil der in \ref{sec:FIC} beschriebenen \ac{MCI} ausmacht.\\
+Die Kapazität des CIFs ist groß genug um eine Vielzahl von Audio- und Datenkanälen zu transportieren. \todo{Auf DAB Ensemble beziehen, das weiter oben erwähnt werden muss} Ein typischer \footnote{Bezogen auf ein in Karlsruhe (Deutschland) empfangenes DAB+ Ensembles des Südwestrundfunks.} $16 \, bit$ PCM Stereo Audio Stream mit der Abtastrate $32\, kHz$ hat nach der Komprimierung eine Bitrate von $2\cdot64\, kbit/s$. Bei einem Protection Level von A3 ($\hat{=}$ Coderate $R=1/2$) können also beispielsweise 10 Audiostreams parallel übertragen werden.
 Wird das CIF nicht komplett mit Kanälen gefüllt, werden die unbesetzten CUs mit einer \ac{PRBS} (siehe~\ref{sec:energieverwischung}) aufgefüllt um ein ungleiche Energieverteilung im CIF zu verhindern.
 
-\section{OFDM Modulation}
+\section{Erzeugung des Sendesignals}
 \label{sec:ofdm_mod}
-\todo{anderer Titel, sowas wie Sendesignal}
+Die generierten und codierten Bitstreams des FIC und MSC sollen nun per Funk übertragen werden. Um die Übertragung dabei möglichst robust und effizient zu gestalten, werden verschiedene Modulationsverfahren wie zum Beispiel \ac{OFDM} eingesetzt.
 
-
-%\begin{figure}
-%\begin{center}
-%\begin{tikzpicture}[inner sep=0pt]
-
-% make a matrix to position nodes after tikz tutorial p.66
-%\matrix[row sep=1mm,column sep=8mm] {
-% First row:
-%\node [](y achse oben) {}; & \\
-%%& \\
-%& \\
-%& \\
-%%&& \node[](c1 left){} && \node[](c1 null){} & \\
-%& \\
-%& \\
-%& \\
-%%%%%% center start
-%\node [](y achse mitte) {}; &&&&&&&&& \node [](x achse rechts) {};
-%& \\
-%% center end
-%%%& \\
-%& \\
-%& \\
-%& \\
-%%%& \\
-%& \\
-%& \\
-% Last row:
-%\node [](y achse unten) {}; & \\
-%};
-
-% draw coordinates
-%\draw [-] (y achse unten) -- (y achse oben);
-%\draw [-] (y achse mitte) -- (x achse rechts);
-
-% draw circles
-%\node [draw, circle through=(c1 left)] at (c1 null){};
-
-%\draw [-] () -- ();
-
-%\end{tikzpicture}
-%\end{center}
-%\caption{OFDM Sendesignal}
-%\label{chart:transmission_frame}
-%\end{figure}
-
-\subsection{Partitionierung des OFDM Frames}
+\subsection{Partitionierung des Sendeframes}
 \label{sec:transmission_frame}
-Die Daten aus FIC und MSC werden vor der OFDM Modulation jeweils zu einem Sendeframe zusammengefasst. Ein Frame enthält dabei $4$ CIFs und deren zugehörigen FIBs, was einer Streamdauer von $4\cdot24ms = 96ms$ entspricht. Die Strukturierung des Sendeframes erfolgt in sogenannten OFDM Symbolen, die Pakete von jeweils 1536 QPSK Symbolen darstellen. $K=1536$ entspricht dabei der Anzahl der genutzten OFDM Unterträger (siehe Abschn.~\ref{sec:ofdm}). \todo{Grafik mit Frameaufteilung}
-Zusätzlich zu den Datensymbolen beinhaltet jedes Frame noch das NULL Symbol und das Phasenreferenzsymbol für Synchronisationszwecke.
+Die Daten aus FIC und MSC werden vor der OFDM Modulation jeweils zu einem Sendeframe zusammengefasst. Ein Frame enthält dabei $4$ CIFs und deren zugehörigen FIBs, was einer Streamdauer von $4\cdot24ms = 96ms$ entspricht. Die Strukturierung des Sendeframes erfolgt in sogenannten OFDM Symbolen, die Pakete von jeweils 1536 QPSK Symbolen darstellen. $K=1536$ entspricht dabei der Anzahl der genutzten OFDM Unterträger (siehe Abschn.~\ref{sec:ofdm}). Zusätzlich zu den Datensymbolen beinhaltet jedes Frame noch das NULL Symbol und das Phasenreferenzsymbol für Synchronisationszwecke. Die Struktur des Sendeframes mit den insgesamt 77 OFDM Symbolen ist in Abb.~\ref{chart:t_frame} dargestellt.
+
+\begin{figure}[htb]
+\begin{center}
+\begin{tikzpicture}[node distance = 0.5cm, auto]
+\tikzstyle{block} = [rectangle, rounded corners, draw, text width=6em, text centered, minimum height=2em]
+\tikzstyle{rect} = [rectangle, draw, text width=6em, text centered, minimum height=2em]
+\tikzstyle{input} = [rectangle, text width=2em, align=right, minimum height=2em]
+\tikzstyle{ci} = [circle, draw, inner sep=1.5em, opacity=0.5]
+\tikzstyle{cii} = [circle, fill, draw, inner sep=0.15em]
+
+\node [rect, text width=7em](null){NULL};
+\node [rect, right=0.0cm of null.east](pilot){PRS};
+\node [rect, right=0.0cm of pilot.east](fic1){FIC};
+\node [rect, right=0.0cm of fic1.east, text width=2em](fic2){...};
+\node [rect, right=0.0cm of fic2.east, text width=2em](fic3){...};
+\node [rect, right=0.0cm of fic3.east](cif1){MSC};
+\node [rect, right=0.0cm of cif1.east, text width=2em](cif2){...};
+\node [rect, right=0.0cm of cif2.east, text width=2em](cif3){...};
+
+% geschweifte klammern
+\draw[-,decorate,decoration=brace] 
+    ($(null.south east)+(-0.2mm,-2mm)$) -- ($(null.south west)+(0.2mm,-2mm)$) node [midway, yshift=-0.3cm]{\begin{tabular}{cc}
+1 Symbol \\
+($1\times 1297\, \mu s $)
+\end{tabular}};
+\draw[-,decorate,decoration=brace] 
+    ($(pilot.south east)+(-0.2mm,-2mm)$) -- ($(pilot.south west)+(0.2mm,-2mm)$) node [midway, yshift=-0.3cm]{\begin{tabular}{cc}
+1 Symbol \\
+($1\times 1246\, \mu s $)
+\end{tabular}};
+\draw[-,decorate,decoration=brace] 
+    ($(fic3.south east)+(-0.2mm,-2mm)$) -- ($(fic1.south west)+(0.2mm,-2mm)$) node [midway, yshift=-0.3cm]{\begin{tabular}{cc}
+3 Symbole \\
+($3\times 1246\, \mu s $)
+\end{tabular}};
+\draw[-,decorate,decoration=brace] 
+    ($(cif3.south east)+(-0.2mm,-2mm)$) -- ($(cif1.south west)+(0.2mm,-2mm)$) node [midway, yshift=-0.3cm]{\begin{tabular}{cc}
+72 Symbole \\
+($72\times 1246\, \mu s $)
+\end{tabular}};
+
+% circles
+\node [ci, above=0.7cm of null.north](c1){};
+	\node [cii](c11) at (c1) {};
+	\draw [line, opacity=0.5] ($(c1.south)+(0.0,-3.5mm)$)--($(c1.north)+(0.0,3.5mm)$);
+	\draw [line, opacity=0.5] ($(c1.west)+(-3.5mm,0.0)$)--($(c1.east)+(3.5mm,0.0)$);
+	
+\node [ci, above=0.7cm of pilot.north](c2){};
+	\node [cii](c21) at (c2.0) {};
+	\node [cii](c22) at (c2.90) {};
+	\node [cii](c23) at (c2.180) {};
+	\node [cii](c24) at (c2.270) {};
+	\draw [line, opacity=0.5] ($(c2.south)+(0.0,-3.5mm)$)--($(c2.north)+(0.0,3.5mm)$);
+	\draw [line, opacity=0.5] ($(c2.west)+(-3.5mm,0.0)$)--($(c2.east)+(3.5mm,0.0)$);
+	
+\node [ci, above=0.7cm of fic1.north, anchor=south](c2){};
+	\node [cii](c21) at (c2.45) {};
+	\node [cii](c22) at (c2.135) {};
+	\node [cii](c23) at (c2.225) {};
+	\node [cii](c24) at (c2.315) {};
+	\draw [line, opacity=0.5] ($(c2.south)+(0.0,-3.5mm)$)--($(c2.north)+(0.0,3.5mm)$);
+	\draw [line, opacity=0.5] ($(c2.west)+(-3.5mm,0.0)$)--($(c2.east)+(3.5mm,0.0)$);
+\node [above=1.45cm of fic2.north east, anchor=center](.1){...};
+
+\node [ci, above=0.7cm of cif1.north, anchor=south](c2){};
+	\node [cii](c21) at (c2.45) {};
+	\node [cii](c22) at (c2.135) {};
+	\node [cii](c23) at (c2.225) {};
+	\node [cii](c24) at (c2.315) {};
+	\draw [line, opacity=0.5] ($(c2.south)+(0.0,-3.5mm)$)--($(c2.north)+(0.0,3.5mm)$);
+	\draw [line, opacity=0.5] ($(c2.west)+(-3.5mm,0.0)$)--($(c2.east)+(3.5mm,0.0)$);
+\node [above=1.45cm of cif2.north east, anchor=center](.1){...};
+\end{tikzpicture}
+\end{center}
+\caption{Belegung und Modulation der OFDM Symbole}
+\label{chart:t_frame}
+\end{figure}
+
 
 \subsubsection{NULL Symbol}
 Das erste OFDM Symbol jedes Sendeframes $m$ ist das Nullsymbol $z_{0,k}$, für das
 \begin{equation}
-S(t) = 0 \; \text{für} \: t \in [0, T_{NULL}]
+S(t) = 0 \quad \text{für} \quad t \in [0, T_{NULL}]
 \end{equation}
-\todo{gescheiten zeitparameter t, zumindest durchgängig gleich}
-gilt. Diese Energielücke von bekannter Dauer $T_{NULL} = 1,297ms$ stellt eine Möglichkeit für eine sehr einfache und robuste grobe Zeitsynchronisation auf die Sendeframes dar.
-\todo{Ansatz von dab buch mit matched filter hier oder in der implementierung??}
+gilt. Diese Energielücke von bekannter Dauer $T_{NULL} = 1,297ms$ stellt eine robuste Möglichkeit für eine grobe Zeitsynchronisation auf die Sendeframes dar.
 
 \subsubsection{Phasenreferenzsymbol}
 \label{sec:phasenreferenzsymbol}
-Das Phasenreferenzsymbol $z_{1,k}$ bildet das zweite Symbol jedes Frames. Es enthält eine vordefinierte Sequenz an komplexen \ac{CAZAC} Symbolen, deren Amplitude stets konstant, und deren Autokorrelation stets null ist. Das Phasenreferenzsymbol dient zum einen, namensgebend, als Bezugsphase für differentielle Modulation der nachfolgenden D-QPSK Datensymbole. Zum anderen eignet es sich aufgrund seiner \ac{CAZAC} Eigenschaften und der Tatsache, dass das Phasenreferenzsymbol auch im Empfänger bekannt ist, ideal für eine feine Zeitsynchronisation sowie für eine feine und grobe\footnote{Nach \cite{dab_buch} kann durch die CAZAC mittels einer AFC (Automatic Frequency Conrol) ein Frequenzoffset von $\pm 32kHz$ ($\hat{=} \pm 32 \: Unterträger$) eindeutig erkannt werden.} Frequenzsynchronisation über Korrelation.
+Das Phasenreferenzsymbol $z_{1,k}$ bildet das zweite Symbol jedes Frames. Es enthält eine vordefinierte Sequenz an komplexen \ac{CAZAC} Symbolen, deren Amplitude stets konstant, und deren Autokorrelation stets null ist. Das Phasenreferenzsymbol dient zum einen, namensgebend, als Bezugsphase für differentielle Modulation der nachfolgenden D-QPSK Datensymbole. Zum anderen eignet es sich aufgrund seiner \ac{CAZAC} Eigenschaften und der Tatsache, dass das Phasenreferenzsymbol auch im Empfänger bekannt ist, ideal für eine feine Zeitsynchronisation sowie für eine feine und grobe\footnote{Nach \cite{dab_buch} kann durch die CAZAC mittels einer AFC (Automatic Frequency Conrol) ein Frequenzoffset von $\pm 32kHz$ ($\hat{=} \pm 32 \: \text{Unterträger}$) eindeutig erkannt werden.} Frequenzsynchronisation durch Kreuzkorrelation.
 
 \subsection{QPSK Modulation}
 \label{sec:qpsk}
-Die Bits des FIC und MSC werden mit QPSK moduliert. Dabei werden $2K=3072$ Bits ($p_{l,n}$ für $n\in[0;2K)$) zu $K=1536$ QPSK Symbolen ($q_l,n$ für $n\in[0;K)$) moduliert, wobei die erste Hälfte der Bits die Realteile $n\in [0;K)$ und die zweite Hälfte die Imaginärteile $n\in [K;2K)$ bilden, sodass sich die modulierten Symbole zu
+Die Bits des FIC und MSC werden mit QPSK moduliert. Dabei werden $2K=3072$ Bits ($p_{l,n}$ für $n\in[0;2K)$) zu $K=1536$ QPSK Symbolen ($q_l,n$ für $n\in[0;K)$) moduliert, wobei die erste Hälfte $n\in [0;K)$ der Bits die Realteile und die zweite Hälfte $n\in [K;2K)$ die Imaginärteile bilden, sodass sich die modulierten Symbole zu
 \begin{equation}
 q_{l,n} = \frac{1}{\sqrt{2}}\left[\left(1-2p_{l,n}\right)+j\left(1-2p_{l,n+K}\right)\right]
 \end{equation}
-ergeben.
-\todo{evt. Bild mit Contellationsdiagramm}
+ergeben. Die möglichen Werte von $q_{l,n}$ sind in Abb.~\ref{chart:t_frame} im Konstellationsdiagramm dargestellt.
 
 \subsection{Frequenzinterleaving}
 Die modulierten OFDM Unterträger werden vor der OFDM Modulation durch eine pseudo-zufällige Folge untereinander vertauscht. Bei langsamer Bewegung oder Stillstand führt ein Mehrwegeempfang zu langsamem selektivem Fading. Daraus resultierende Bündelfehler auf einzelnen Unterträgern übersteigen die Einflussdauer des Zeitinterleavers. Durch das Vertauschen der Unterträger werden die Effekte eines solchen frequenzselektives Fadings minimiert. \todo{samples gehen durch freq-interleaving von q zu y über}
 
 
-\subsection{Differetielle Modulation}
+\subsection{Differentielle Modulation}
 \label{sec:diff_mod}
-Die QPSK modulierten und frequenzvertauschten Unterträger werden in einem letzten Schritt vor der OFDM Modulation differentiell codiert. Die Phase jedes Sendesymbols ergibts sich aus der Summe Phase des Symbols zur Phase dessen Vorgängers.
+Die QPSK modulierten und frequenzvertauschten Unterträger werden in einem letzten Schritt vor der OFDM Modulation differentiell codiert. Die Phase jedes Sendesymbols ergibts sich aus der Summe der Phase des Symbols zur Phase dessen Vorgängers.
 \begin{equation}
 \begin{aligned}
-z_{l,k} = &z_{l-1,k}\cdot y_{l,k} = e^{j\varphi_z} \cdot e^{j\varphi_y} \\
-&\text{mit} \: \varphi_z \in \{n \cdot \frac{\pi}{4}: l \: \text{gerade}\} \cup \{\frac{\pi}{4} + n \cdot \frac{\pi}{2}: l \: \text{ungerade}\}, \; n\in \mathbb{N} 
+z_{l,k}\; =\; &z_{l-1,k}\cdot y_{l,k}\; =\; e^{j\varphi_z} \cdot e^{j\varphi_y} \\
+\text{mit} \; \; &\varphi_z \in \{n \cdot \frac{\pi}{4}: \; l \: \text{gerade}\} \cup \{\frac{\pi}{4} + n \cdot \frac{\pi}{2}: \quad l \: \text{ungerade}\}, \; n\in \mathbb{N} 
 \end{aligned}
 \end{equation}
-Die zu übertragende Information wandert also von der eigentlichen Phase des Symbols in die relative Änderung der Phase des Vorgängersymbols zum aktuellen Symbol. Der Vorgänger des ersten Datensymbols $z_{1,k}$ eines jeden Frames ist das Phasenreferenzsymbol $z_{0,k}$ aus \ref{sec:phasenreferenzsymbol}. Die differentielle Modulation hat den großen Vorteil, dass der Empfänger den Übertragungskanal nicht kennen bzw. nicht schätzen muss. Beispielsweise habt sich eine konstante Phasendrehung im Kanal durch die Differenzbildung im Empfänger wieder auf.
+Die zu übertragende Information wandert also von der eigentlichen Phase des Symbols in die relative Änderung der Phase des Vorgängersymbols zum aktuellen Symbol. Der Vorgänger des ersten Datensymbols $z_{1,k}$ eines jeden Frames ist das Phasenreferenzsymbol $z_{0,k}$ aus \ref{sec:phasenreferenzsymbol} das selbst nicht differentiell moduliert wird. Die differentielle Modulation hat den großen Vorteil, dass der Empfänger den Übertragungskanal nicht kennen bzw. nicht schätzen muss. Beispielsweise hebt sich eine konstante Phasendrehung im Kanal durch die Differenzbildung im Empfänger wieder auf.
 
-\subsection{\ac{OFDM}}
+\subsection{Orthogonales Frequenzmultiplexverfahren (OFDM)}
 \label{sec:ofdm}
-Das DAB System verwendet ein \ac{FDM} zur Übertragung. Dabei werden die D-QPSK Symbole $z_{l,k}$ nicht seriell mit einer Symbolrate von $1,2 M Samples / s$ übertragen, sondern die zu übertragenden Symbole werden auf $N=2048$ Unterträgern verteilt. Die gesamte Bandbreite $B = 2,048 MHz$ wird also unter den einzelnen Unterträgern $k$ gleichmäßig aufgeteilt, sodass sich ein Unterträgerabstand von $\Delta f = \frac{B}{N} = 1kHz$ ergibt. Diese schmalbandigen und niederratigen Unterträger haben in der Summe die gleiche Symbolrate wie eine serielle Übertragung, sie bieten aber vorteilhafte Übertragungseigenschaften:
+Das DAB System verwendet ein \ac{FDM} zur Übertragung. Dabei werden die D-QPSK Symbole $z_{l,k}$ nicht seriell mit einer Symbolrate von $1,2\, M Samples / s$ übertragen, sondern die zu übertragenden Symbole werden auf $N=2048$ Unterträgern verteilt. Die gesamte Bandbreite $B = 2,048 MHz$ wird also unter den einzelnen Unterträgern $k$ gleichmäßig aufgeteilt, sodass sich ein Unterträgerabstand von $\Delta f = \frac{B}{N} = 1kHz$ ergibt. Diese schmalbandigen und niederratigen Unterträger haben in der Summe die gleiche Symbolrate wie eine serielle Übertragung, sie bieten aber vorteilhafte Übertragungseigenschaften:
 \begin{itemize}
 \item Der Übertragungskanal kann pro Unterträger als flach angenommen werden.
 \item \ac{ISI} wird wegen der deutlich größeren Symboldauer im Vergleich zur Seriellübertragung stark reduziert.
@@ -341,7 +377,7 @@ Das DAB System verwendet ein \ac{FDM} zur Übertragung. Dabei werden die D-QPSK 
 Das resultierende Basisbandsignal $S(t)$ ergibt sich dann als Summe der einzelnen Unterträgern, die mit dem Abstand $\Delta f$ über dem Basisband verteilt sind.
 
 \begin{equation}
-    S(t) = \frac{1}{K} \sum \limits_{k=-K/2}^{K/2} z_{l,k} \: g_{k,l}(t-lT_S) \: e^{j2\pi k \Delta f t}
+    S(t) = \frac{1}{K} \sum \limits_{k=-K/2}^{K/2} z_{l,k} \; g_{k,l}(t-lT_S) \: e^{j2\pi k \Delta f t}
 \label{eq:ofdm_dft}
 \end{equation}
 \todo{n=0 nicht belegt wegen DC Anteil!!}
@@ -352,42 +388,70 @@ Die Symbole werden dabei mit $g_{l,k}(t)$ pulsgeformt. Damit sich die Unterträg
 \begin{aligned}
 g_{k,l}(t) &= Rect(t/T_S) = 
     \begin{cases}
-    1, \; \text{für} \: 0 \leq t < T_S \\
-    0, \; \text{sonst}
+    1, \quad \text{für} \: 0 \leq t < T_S \\
+    0, \quad \text{sonst}
     \end{cases}\\
 \rotatebox{270}{\laplace} \\
-G_{k,l}(f) &= T_S si\left(\pi f T_S\right) e^{-j \pi f T_S}
+G_{k,l}(f) &= T_S \; si\left(\pi f T_S\right)\: e^{-j \pi f T_S}
 \end{aligned}
 \end{equation}
-erreicht werden. Wie in Abb.~\ref{fig:OFDM} zu sehen ist, haben die si-Funktionen, die sich nach \ref{eq:rectangle} aus den Rechteckfunktionen im Frequenzbereich ergeben, jeweils Nullstellen bei ganzzahligen Vielfachen von $\Delta f$, also genau an den Maxima aller anderen Unterträger. Diese Orthogonalität vermeidet \ac{ICI}, unter der Annahme dass die Unterträger an ihrer exakten Mittenfrequenz abgetastet werden.
+erreicht werden. Wie in Abb.~\ref{fig:OFDM} zu sehen ist, haben die si-Funktionen, die sich nach \ref{eq:rectangle} aus den Rechteckfunktionen im Frequenzbereich ergeben, jeweils Nullstellen bei ganzzahligen Vielfachen von $\Delta f$ (blaue Markierungen), also genau an den Maxima aller anderen Unterträgern. Diese Orthogonalität der Unterträger vermeidet \ac{ICI}, da das Gesamtsignal, welches sich aus der Überlagerung aller Unterträger ergibt, an Vielfachen von $\Delta f$ jeweils genau den Werte des jeweiligen Unterträgers annimmt. Diese Orthogonalität gilt nur unter der Annahme dass die Unterträger an ihrer exakten Mittenfrequenz abgetastet werden.\\
 
+\begin{figure}
 \begin{center}
 \begin{tikzpicture}
-\label{fig:OFDM}
 \begin{axis}[
-domain=-20:20,
+domain=-5:5,
+enlarge x limits=false,
 samples = \iterations,
 height=\textwidth*0.5,
 width=\textwidth,
+xticklabels={,,,-3$\Delta f$,-2$\Delta f$,$-\Delta f$,$0$,$+\Delta f$,$+2\Delta f$,$+3\Delta f$},
+xlabel={Frequenz},
+ylabel={$\frac{sin(\frac{f \pi}{\Delta f})}{\frac{f \pi}{\Delta f}}$},
 ]
-    \addplot [mark=none, thick, red] {sin(deg(x))/x};
-    \addplot [mark=none, densely dotted] {sin(deg(x-pi))/(x-pi)};
-    \addplot [mark=none, densely dotted] {sin(deg(x+pi))/(x+pi)};
-    \addplot [mark=none, dotted] {sin(deg(x-2*pi))/(x-2*pi)};
-    \addplot [mark=none, dotted] {sin(deg(x+2*pi))/(x+2*pi)};
-    \addplot [mark=none, dotted] {sin(deg(x-3*pi))/(x-3*pi)};
-    \addplot [mark=none, dotted] {sin(deg(x+3*pi))/(x+3*pi)};
-    \addplot [mark=none, very thick] {sin(deg(x))/x + sin(deg(x-pi))/(x-pi) + sin(deg(x+pi))/(x+pi) + sin(deg(x-2*pi))/(x-2*pi) + sin(deg(x+2*pi))/(x+2*pi) + sin(deg(x-3*pi))/(x-3*pi) + sin(deg(x+3*pi))/(x+3*pi)};
+    \addplot [mark=none, thick, red] {sin(deg(x*pi))/(x*pi)};
+    \addplot [mark=none, densely dotted] {sin(deg((x-1)*pi))/((x-1)*pi)};
+    \addplot [mark=none, densely dotted] {sin(deg(((x+1)*pi)))/(((x+1)*pi))};
+    \addplot [mark=none, densely dotted] {sin(deg((x-2)*pi))/((x-2)*pi)};
+    \addplot [mark=none, densely dotted] {sin(deg(((x+2)*pi)))/(((x+2)*pi))};
+    \addplot [mark=none, densely dotted] {sin(deg((x-3)*pi))/((x-3)*pi)};
+    \addplot [mark=none, densely dotted] {sin(deg(((x+3)*pi)))/(((x+3)*pi))};
+    \addplot [mark=none, very thick] {sin(deg(x*pi))/(x*pi) + sin(deg((x-1)*pi))/((x-1)*pi) + sin(deg(((x+1)*pi)))/(((x+1)*pi)) + sin(deg((x-2)*pi))/((x-2)*pi) + sin(deg(((x+2)*pi)))/(((x+2)*pi)) + sin(deg((x-3)*pi))/((x-3)*pi) + sin(deg(((x+3)*pi)))/(((x+3)*pi))};
+
+\addplot+[only marks,mark=o,mark options={scale=2},text mark as node=true, dashed] coordinates {
+	(0,0)    
+    (1,0) 
+    (2,0) 
+    (3,0) 
+    (-1,0) 
+    (-2,0) 
+    (-3,0)
+};
+\addplot+[only marks,mark=o,mark options={scale=2},text mark as node=true, dashed] coordinates {
+	(0,1)
+    (1,1) 
+    (2,1) 
+    (3,1) 
+    (-1,1) 
+    (-2,1) 
+    (-3,1)
+};
+
 \end{axis}
 \end{tikzpicture}
 \end{center}
+\caption{Überlagerung frequenzverschobener, orthogonaler si-Funktionen}
+\label{fig:OFDM}
+\end{figure}
 %\todo{article ofdm_dft zitieren und reinbringen}
 
-Von den $N = 2048$ möglichen Unterträgern sind im DAB System nur $K = 1536$ belegt. Zum einen wurde der zentrale Unterträger ($k=0 \Leftrightarrow k\cdot \Delta f = 0kHz$) nicht belegt um einen Gleichanteil im Basisbandsignal zu vermeiden. Die restlichen unbelegten Unterträger liegen am rechten und linken Rand des Spektrums und bilden damit ein Schutzintervall gegenüber benachbarten Übertragungen.
+Von den $N = 2048$ möglichen Unterträgern sind im DAB System nur $K = 1536$ belegt. Zum einen wurde der zentrale Unterträger ($k=0 \Leftrightarrow k\cdot \Delta f = 0kHz$) nicht belegt um einen Gleichanteil im Basisbandsignal zu vermeiden. Die restlichen unbelegten Unterträger liegen am rechten und linken Rand des Spektrums und bilden damit ein Schutzintervall gegen grobe Frequenzverschiebungen.\\
+Wie in \cite{ofdm:idft} gezeigt wird, kann das OFDM-Basisbandsignal mit einer \ac{IDFT} und einer anschließenden parallel-seriell Wandlung aus den OFDM Symbolen erzeugt werden. Um noch robuster gegen Mehrwegempfang zu sein, wird jedem OFDM Symbol ein Guard-Intervall der Länge $T_G=246\mu s$ vorangestellt. $T_G$ entspricht damit der Zeit, in der Echos des Vorgängersymbols abklingen können ohne das neue Symbol zu stören. Der Inhalt des Guard-Intervalls entspricht dem Ende des darauf folgenden Symbols. Das hat den Vorteil, dass durch die periodische Wiederholung des Signals kaum Signalanteile wegen Mehrwegeempfang verloren gehen~\cite{nt1}.
+
 Das gesamte Sendesignal ergibt sich letztendlich nach dem Hochmischen auf die Trägerfrequenz $f_c$ zu dem Bandpasssignal
 
 \begin{equation}
 S_{BP}(t) = \operatorname{Re} \left\{e^{j2 \pi f_c t} \sum \limits_{m=-\infty}^{\infty} \sum \limits_{l=0}^{L}   \sum \limits_{k=- \frac{K}{2}}^{\frac{K}{2}} z_{m,l,k} \: g_{k,l}(t-mT_F-T_{NULL}-(l-1)T_S) \: e^{j2\pi k \Delta f t}\right\}
 \end{equation}
 \todo{evt noch Guard intervall in Formle aufnehmen (t zu (t-guard time))}
-Wie in \cite{ofdm:idft} gezeigt wird, kann eine \ac{IDFT} verwendet werden um das OFDM-Sendesignals zu erzeugen.

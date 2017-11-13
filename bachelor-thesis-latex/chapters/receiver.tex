@@ -23,7 +23,9 @@ In der folgenden Signalverarbeitungskette werden die genannten, relevanten Effek
 	\caption{Aufbau der kompletten Synchronisationskette im \ac{GRC}}
 	\label{fig:sync_overview}
 \end{figure}
+
 \subsection{Zeit Synchronisation}
+\label{sec:time_sync}
 Eine geeignete Zeitsynchonisation muss sowohl eine grobe Synchronisation des OFDM Frames als auch eine feine Synchonisation der einzelnen OFDM Symbole sicherstellen. \\
 
 Der Beginn eines jeden Frames $ k $ wird durch das Nullsymbol $z_{0,k}$ markiert. Wegen $S(t) = 0$ für $t \in [0, T_{NULL}]$ stellt es eine zuverlässige Möglichkeit dar den Anfang eines Frames über eine Energiemessung zu detektieren.
