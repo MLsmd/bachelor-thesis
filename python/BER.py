@@ -35,7 +35,7 @@ import measure_Power
 Messung der BER des physical channels
 '''
 class loopback(gr.top_block):
-    def __init__(self, power, SNR, doppler):
+    def __init__(self, SNR, doppler):
         gr.top_block.__init__(self)
         dp = dab.parameters.dab_parameters(mode=1, sample_rate=2048000, verbose=False)
 
@@ -50,7 +50,7 @@ class loopback(gr.top_block):
         mod = dab.ofdm_mod(dp)
 
         # noise source
-        noise_amplitude = 10**((power-SNR)/20.0)
+        noise_amplitude = 10**((-SNR)/20.0)
         noise_source = analog.noise_source_c_make(analog.GR_GAUSSIAN, noise_amplitude)
         add = blocks.add_cc_make()
 
@@ -65,12 +65,12 @@ class loopback(gr.top_block):
                                                        LOS_model=False,
                                                        K=4.0,
                                                        delays=[0],
-                                                       mags=[1.0],
+                                                       mags=[0.686],
                                                        ntaps_mpath=1,
                                                        noise_amp=0.0,
-                                                       noise_seed=0
+                                                       noise_seed=np.random.random_sample()*(-10**(5))
                                                        )
-        delay2 = blocks.delay_make(gr.sizeof_gr_complex, 60)
+        delay2 = blocks.delay_make(gr.sizeof_gr_complex, 40)
         channel2 = channels.dynamic_channel_model_make(samp_rate=2048000,
                                                        sro_std_dev=0.0,
                                                        sro_max_dev=0.0,
@@ -81,12 +81,12 @@ class loopback(gr.top_block):
                                                        LOS_model=False,
                                                        K=4.0,
                                                        delays=[0],
-                                                       mags=[0.5],
+                                                       mags=[0.514],
                                                        ntaps_mpath=1,
                                                        noise_amp=0.0,
-                                                       noise_seed=0
+                                                       noise_seed=np.random.random_sample()*(-10**(5))
                                                        )
-        delay3 = blocks.delay_make(gr.sizeof_gr_complex, 160)
+        delay3 = blocks.delay_make(gr.sizeof_gr_complex, 80)
         channel3 = channels.dynamic_channel_model_make(samp_rate=2048000,
                                                        sro_std_dev=0.0,
                                                        sro_max_dev=0.0,
@@ -97,10 +97,10 @@ class loopback(gr.top_block):
                                                        LOS_model=False,
                                                        K=4.0,
                                                        delays=[0],
-                                                       mags=[0.4],
+                                                       mags=[0.514],
                                                        ntaps_mpath=1,
                                                        noise_amp=0.0,
-                                                       noise_seed=0
+                                                       noise_seed=np.random.random_sample()*(-10**(5))
                                                        )
 
 
@@ -133,12 +133,12 @@ class loopback(gr.top_block):
             self.fail_rate = 1 - float(successes) / iterations
             print "BER = " + str(self.fail_rate) + " SNR = " + str(SNR) + ", doppler = " + str(doppler)
 
-def calc_BER(Power, noise_range, doppler):
+def calc_BER(noise_range, doppler):
     BER_multi = np.zeros((repetitions, len(noise_range)))
     BER = np.zeros(len(noise_range))
     for j in range(0, repetitions, 1):
         for i, SNR in enumerate(noise_range):
-            flowgraph = loopback(Power, SNR, doppler)
+            flowgraph = loopback(SNR, doppler)
             BER[i] = flowgraph.fail_rate
         BER_multi[j] = BER
         print "finished repetition " + str(j)
@@ -148,19 +148,17 @@ def calc_BER(Power, noise_range, doppler):
     return BER
 
 # settings ##########################
-symbols = 20000
+symbols = 1000
 iterations = symbols * 3072
-repetitions = 80
-noise_range = np.arange(29.0, 34.0, 4.0)
+repetitions = 100
+noise_range = np.arange(5.0, 39.0, 4.0)
 #doppler_range = np.arange(5.0, 200.0, 180.0)
 doppler_range = np.array([25.0])
-power_meter = measure_Power.measure_power(1000000)
-power = power_meter.get_power()
 #####################################
 plot = plt.figure()
 
 for doppler in doppler_range:
-    BER_array = calc_BER(power, noise_range, doppler)
+    BER_array = calc_BER(noise_range, doppler)
     plt.semilogy(noise_range, BER_array)
     np.savetxt("results/multipath/BER/171113_dynamic_doppler_" + str(doppler) + "_BER.dat", np.c_[noise_range, BER_array], delimiter=' ')
     print "final result for doppler = " + str(doppler) + ": " + str(BER_array)
