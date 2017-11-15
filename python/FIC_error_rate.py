@@ -119,17 +119,24 @@ class loopback(gr.top_block):
 
 # calculate FIC error rate
 def calc_PER(noise_range, doppler):
-    BER = np.zeros(len(noise_range))
-    for i, SNR in enumerate(noise_range):
-        flowgraph = loopback(SNR, doppler)
-        BER[i] = flowgraph.fail_rate
-    print "total results: BER = " + str(BER) + " for Doppler = " + str(doppler) + " +++++++++++++++++++++++"
-    return BER
+    PER_multi = np.zeros((repetitions, len(noise_range)))
+    PER = np.zeros(len(noise_range))
+    for j in range(0, repetitions, 1):
+        for i, SNR in enumerate(noise_range):
+            flowgraph = loopback(SNR, doppler)
+            PER[i] = flowgraph.fail_rate
+        PER_multi[j] = PER
+        print "finished repetition " + str(j)
+    print "multi PER = " + str(PER_multi)
+    PER = np.mean(PER_multi, axis=0)
+    print "total results: PER = " + str(PER) + " for Doppler = " + str(doppler) + " +++++++++++++++++++++++"
+    return PER
 
 
 # settings ##########################
-iterations = 10000
+iterations = 1000
 reserve = 100
+repetitions = 100
 noise_range = np.arange(5.0, 41.0, 5.0)
 #doppler_range = np.arange(5.0, 200.0, 180.0)
 doppler_range = np.array([5.0])
