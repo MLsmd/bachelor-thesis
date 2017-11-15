@@ -36,7 +36,7 @@ measure the rate of passed and failed FICs (validated over CRC check)
 '''
 
 class loopback(gr.top_block):
-    def __init__(self, SNR, doppler, iterations):
+    def __init__(self, SNR, doppler):
         gr.top_block.__init__(self)
         dp = dab.parameters.dab_parameters(mode=1, sample_rate=2048000, verbose=False)
 
@@ -119,29 +119,34 @@ class loopback(gr.top_block):
 
 # calculate FIC error rate
 def calc_PER(noise_range, doppler):
-    PER_multi = np.zeros((repetitions, len(noise_range)))
+    PER_multi = np.zeros((max_repetitions, len(noise_range)))
     PER = np.zeros(len(noise_range))
-    for j in range(0, repetitions, 1):
+
+    for j in range(0, max_repetitions, 1):
         for i, SNR in enumerate(noise_range):
-            # calculate necessary iterations = total_iterations/repetitions
-            iterations = int(1.0 / (5 * (0.1 + ((SNR-5.0)*((0.0001-0.1)/35.0)))))
-            print "iterations: " + str(iterations)
-            flowgraph = loopback(SNR, doppler, iterations)
-            PER[i] = flowgraph.fail_rate
+            # calculate necessary repetitions = total_iterations/iterations
+            repetitions = int(1.0 / ((0.1 + ((SNR - 5.0) * ((0.0001 - 0.1) / 35.0)))))
+            print "repetitions: " + str(repetitions)
+            if j > repetitions:
+                PER[i] = np.nan
+            else:
+                flowgraph = loopback(SNR, doppler)
+                PER[i] = flowgraph.fail_rate
         PER_multi[j] = PER
         print "finished repetition " + str(j)
     print "multi PER = " + str(PER_multi)
-    PER = np.mean(PER_multi, axis=0)
+    PER = np.nanmean(PER_multi, axis=0)
     print "total results: PER = " + str(PER) + " for Doppler = " + str(doppler) + " +++++++++++++++++++++++"
     return PER
 
 
 # settings ##########################
-repetitions = 500
+iterations = 5000
+max_repetitions = 1000
 reserve = 50
-noise_range = np.arange(40.0, 41.0, 30.0)
+noise_range = np.arange(5.0, 36.0, 3.0)
 #doppler_range = np.arange(5.0, 200.0, 180.0)
-doppler_range = np.array([20.0])
+doppler_range = np.array([20.0, 50.0])
 #####################################
 plot = plt.figure()
 
