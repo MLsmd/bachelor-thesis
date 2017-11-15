@@ -36,7 +36,7 @@ measure the rate of passed and failed FICs (validated over CRC check)
 '''
 
 class loopback(gr.top_block):
-    def __init__(self, SNR, doppler):
+    def __init__(self, SNR, doppler, iterations):
         gr.top_block.__init__(self)
         dp = dab.parameters.dab_parameters(mode=1, sample_rate=2048000, verbose=False)
 
@@ -123,7 +123,10 @@ def calc_PER(noise_range, doppler):
     PER = np.zeros(len(noise_range))
     for j in range(0, repetitions, 1):
         for i, SNR in enumerate(noise_range):
-            flowgraph = loopback(SNR, doppler)
+            # calculate necessary iterations = total_iterations/repetitions
+            iterations = int(1.0 / (5 * (0.1 + ((SNR-5.0)*((0.0001-0.1)/35.0)))))
+            print "iterations: " + str(iterations)
+            flowgraph = loopback(SNR, doppler, iterations)
             PER[i] = flowgraph.fail_rate
         PER_multi[j] = PER
         print "finished repetition " + str(j)
@@ -134,12 +137,11 @@ def calc_PER(noise_range, doppler):
 
 
 # settings ##########################
-iterations = 1000
-reserve = 100
-repetitions = 100
-noise_range = np.arange(5.0, 41.0, 5.0)
+repetitions = 500
+reserve = 50
+noise_range = np.arange(40.0, 41.0, 30.0)
 #doppler_range = np.arange(5.0, 200.0, 180.0)
-doppler_range = np.array([5.0])
+doppler_range = np.array([20.0])
 #####################################
 plot = plt.figure()
 

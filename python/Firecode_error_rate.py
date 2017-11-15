@@ -96,8 +96,8 @@ class loopback(gr.top_block):
         msc_decode = dab.msc_decode(dp, address, size, protection)
         fic_null = blocks.null_sink_make(gr.sizeof_gr_complex*1536)
         firecode = dab_research.firecode_check_bb_make(14)
-        head_syms = blocks.head_make(gr.sizeof_gr_complex * 1536, iterations / 4 + reserve / 4)
-        head_iterations = blocks.head_make(gr.sizeof_char, iterations)
+        head_syms = blocks.head_make(gr.sizeof_gr_complex * 1536, iterations * 72/4 + reserve * 72/4)
+        head_iterations = blocks.head_make(gr.sizeof_char, iterations+15) # the first 15 firecodes fail because of time_interleaver
         ok_sink = blocks.vector_sink_b_make()
 
         self.connect(data_source, channel1, add, demod, fic_null)
@@ -106,7 +106,14 @@ class loopback(gr.top_block):
         self.connect(data_source, delay3, channel3, (add, 2))
         self.connect(noise_source, (add, 3))
         self.run()
-        self.ok_data = np.asarray(ok_sink.data())
+        result = np.asarray(ok_sink.data())
+        if len(result) != iterations+15:
+            self.fail_rate = -1
+            print "ERROR, result is shorter than input vector (" + str(len(result)) + ")"
+        else:
+            successes = np.count_nonzero(result[15:])
+            self.fail_rate = 1 - float(successes) / iterations
+            print "PER = " + str(self.fail_rate) + " SNR = " + str(SNR) + ", doppler = " + str(doppler)
 
 # calculate MSC Firecode error rate
 def calc_PER(noise_range, doppler, protection, address, size):
@@ -125,19 +132,19 @@ def calc_PER(noise_range, doppler, protection, address, size):
 
 
 # settings ##########################
-iterations = 1000
-reserve = 100
-repetitions = 100
-noise_range = np.arange(5.0, 41.0, 5.0)
+iterations = 4000
+reserve = 50
+repetitions = 2
+noise_range = np.arange(40.0, 41.0, 20.0)
 #doppler_range = np.arange(5.0, 200.0, 180.0)
-doppler_range = np.array([5.0])
+doppler_range = np.array([5.0, 10.0, 20.0, 50.0])
 #####################################
 plot = plt.figure()
 
 for doppler in doppler_range:
     PER_array = calc_PER(noise_range, doppler, 2, 0, 84)
-    plt.semilogy(noise_range, PER_array)
     np.savetxt("results/171115_dynamic_doppler_" + str(doppler) + "_MSC_A3.dat", np.c_[noise_range, PER_array], delimiter=' ')
+    plt.semilogy(noise_range, PER_array)
     print "final result for doppler = " + str(doppler) + ": " + str(PER_array)
 
 plt.show()
