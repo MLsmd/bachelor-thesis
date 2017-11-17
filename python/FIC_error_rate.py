@@ -125,7 +125,7 @@ def calc_PER(noise_range, doppler):
     for j in range(0, max_repetitions, 1):
         for i, SNR in enumerate(noise_range):
             # calculate necessary repetitions = total_iterations/iterations
-            repetitions = int(1.0 / ((0.1 + ((SNR - 5.0) * ((0.0001 - 0.1) / 35.0)))))
+            repetitions = 2*int(1.0 / ((0.1 + ((SNR - 5.0) * ((0.0001 - 0.1) / 35.0)))))
             print "repetitions: " + str(repetitions)
             if j > repetitions:
                 PER[i] = np.nan
@@ -141,7 +141,7 @@ def calc_PER(noise_range, doppler):
 
 
 # settings ##########################
-iterations = 5000
+iterations = 1000
 max_repetitions = 1000
 reserve = 50
 noise_range = np.arange(5.0, 36.0, 3.0)
