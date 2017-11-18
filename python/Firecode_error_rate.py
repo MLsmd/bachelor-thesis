@@ -38,8 +38,8 @@ class loopback(gr.top_block):
         gr.top_block.__init__(self)
         dp = dab.parameters.dab_parameters(mode=1, sample_rate=2048000, verbose=False)
 
-        data_source = blocks.file_source_make(gr.sizeof_gr_complex, "data/pure_dab_norm.dat", False)
-        noise_amplitude = 10 ** ((-SNR) / 20.0)
+        data_source = blocks.file_source_make(gr.sizeof_gr_complex, "data/pure_dab_long.dat", False)
+        noise_amplitude = 10 ** ((power-SNR) / 20.0)
         noise_source = analog.noise_source_c_make(analog.GR_GAUSSIAN, noise_amplitude)
         add = blocks.add_cc_make()
 
@@ -100,7 +100,7 @@ class loopback(gr.top_block):
         head_iterations = blocks.head_make(gr.sizeof_char, iterations+15) # the first 15 firecodes fail because of time_interleaver
         ok_sink = blocks.vector_sink_b_make()
 
-        self.connect(data_source, channel1, add, demod, fic_null)
+        self.connect(data_source, add, channel1, demod, fic_null)
         self.connect((demod, 1), head_syms, msc_decode, firecode, head_iterations, ok_sink)
         self.connect(data_source, delay2, channel2, (add, 1))
         self.connect(data_source, delay3, channel3, (add, 2))
@@ -130,12 +130,15 @@ def calc_PER(noise_range, doppler, protection, address, size):
     print "total results: PER = " + str(PER) + " for Doppler = " + str(doppler) + " +++++++++++++++++++++++"
     return PER
 
-
+# measure power of iq_data
+iq_gen = np.fromfile('data/pure_dab_long.dat', dtype=np.complex64, count=30720000)
+power = 10 * np.log10(np.mean(np.square(np.absolute(iq_gen))))
+print "measured power = " + str(power)
 # settings ##########################
-iterations = 4000
+iterations = 1000
 reserve = 50
-repetitions = 2
-noise_range = np.arange(40.0, 41.0, 20.0)
+repetitions = 35
+noise_range = np.arange(5.0, 23.0, 3.0)
 #doppler_range = np.arange(5.0, 200.0, 180.0)
 doppler_range = np.array([5.0, 10.0, 20.0, 50.0])
 #####################################

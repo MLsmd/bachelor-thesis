@@ -29,7 +29,7 @@
       <file leaf-file-name="measure_fib_error_rate_impl.cc" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/measure_fib_error_rate_impl.cc">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="638">
+            <state relative-caret-position="975">
               <caret line="65" column="13" lean-forward="false" selection-start-line="65" selection-start-column="13" selection-end-line="65" selection-end-column="13" />
               <folding />
             </state>
@@ -319,11 +319,12 @@
       <workItem from="1510149090258" duration="1746000" />
       <workItem from="1510334786113" duration="16000" />
       <workItem from="1510758994150" duration="617000" />
+      <workItem from="1510935119355" duration="21000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="28249000" />
+    <option name="totallyTimeSpent" value="28270000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="24" width="1920" height="1056" extended-state="6" />
@@ -686,7 +687,7 @@
     <entry file="file://$PROJECT_DIR$/measure_fib_error_rate2_impl.cc" />
     <entry file="file://$PROJECT_DIR$/measure_fib_error_rate_impl.cc">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="638">
+        <state relative-caret-position="975">
           <caret line="65" column="13" lean-forward="false" selection-start-line="65" selection-start-column="13" selection-end-line="65" selection-end-column="13" />
           <folding />
         </state>

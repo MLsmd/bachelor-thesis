@@ -4,4 +4,5 @@ python/data/
 .idea/
 literature/
 python/results/
-python/.idea/
+.idea/*
+python/.idea/*
