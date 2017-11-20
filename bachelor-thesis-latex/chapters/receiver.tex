@@ -1,7 +1,7 @@
 \let\conjugatet\overline
 \section{Implementierung des Empfängers}
 \label{sec:impl_des_receivers}
-Bei der Übertragung des Sendesignals vom Sender zum Empfänger treten Störungen und Effekte auf, die das Empfangssignal vom Sendesignal abweichen lassen. Vor der Demodulation und Auswertung der Daten wird ist die erste Stufe des Empfängers eine Synchronisation. Die Synchronisation hat zum Ziel, das Empfangssignal so zu korrigieren sodass es dem Sendesignal wieder möglichst nahe kommt. Die anschließende Kanaldecodierung und Auswertung der Daten im FIC und MSC findet in den entsprechenden hierarchischen GNU Radio Blöcken statt. Abb.~\ref{fig:grc_receiver} zeigt den Aufbau eines DAB+ Empfängers im GRC.
+Bei der Übertragung des Sendesignals vom Sender zum Empfänger treten Störungen und Effekte auf, die das Empfangssignal vom Sendesignal abweichen lassen. Vor der Demodulation und Auswertung der Daten ist die erste Stufe des Empfängers eine Synchronisation. Ziel der Synchronisation ist Empfangssignal so zu korrigieren, dass es dem Sendesignal wieder möglichst nahe kommt. Die anschließende Kanaldecodierung und Auswertung der Daten im FIC und MSC findet in den entsprechenden hierarchischen GNU Radio Blöcken statt. Abb.~\ref{fig:grc_receiver} zeigt den Aufbau eines DAB+ Empfängers im GRC.
 
 \begin{figure}[h]
 \centering
@@ -14,8 +14,8 @@ Das Empfangssignal $r(t)$ wird in folgender Beziehung zum Sendesignal $s(t)$ ang
 \begin{equation}
 r(t) = a(t,f) \cdot s(t-\tau_{off}) \cdot e^{j(2 \pi f_{off} t + \varphi_{off})} + n(t)
 \end{equation}
-Das Signal wird um einen Zeitoffset $\tau_{off}$ verzögert und hat wegen Doppler-Verschiebungen einen Frequenzoffset $f_{off}$. Ein konstanter Phasenfoffset $\varphi_{off}$ der durch Reflektionen der Welle entsteht, wirkt sich in diesem Fall nicht auf das demodulierte QPSK Signal aus, da sich wegen der differentiellen Modulation eine konstante Phase bei der Differenzbildung heraushebt. \todo{Es ist also keine Kanalschätzung nötig} Die Amplitude des Signals wird durch frequenzselektives Fading über der Zeit und der Frequenz unterschiedlich stark gedämpft. Wegen der Schmalbandigkeit der Unterträger bei OFDM kann der Kanal trotzdem in jedem Unterträger als flach angenommen werden. Die Dämpfung des Signals ist für die Entscheidungsgrenzen bei PSK zudem nicht ausschlaggebend. Letztendlich wird das Signal noch durch \ac{AWGN} überlagert. 
-In der folgenden Signalverarbeitungskette werden die genannten, relevanten Effekte schrittweise gemessen und korrigiert um eine möglichst optimale Synchronisations zu erreichen.
+Das Signal wird um einen Zeitoffset $\tau_{off}$ verzögert und hat wegen Doppler-Verschiebungen und Ungenauigkeiten der Oszillatoren einen Frequenzoffset $f_{off}$. Ein konstanter Phasenoffset $\varphi_{off}$, der durch Reflektionen der Welle entsteht, wirkt sich in diesem Fall nicht auf das demodulierte QPSK Signal aus, da sich wegen der differentiellen Modulation eine konstante Phase bei der Differenzbildung heraushebt. \todo{Es ist also keine Kanalschätzung nötig} Die Amplitude des Signals wird durch frequenzselektives Fading über der Zeit und der Frequenz unterschiedlich stark gedämpft. Wegen der Schmalbandigkeit der Unterträger bei OFDM kann der Kanal trotzdem in jedem Unterträger als flach angenommen werden. Die Dämpfung des Signals ist für die Entscheidungsgrenzen bei PSK zudem nicht ausschlaggebend. Letztendlich wird das Signal noch durch \ac{AWGN} überlagert. 
+Um eine möglichst optimale Synchronisations zu erreichen, werden in der folgenden Signalverarbeitungskette relevanten Effekte schrittweise gemessen und korrigiert.
 
 \begin{figure}[h]
 \centering
@@ -28,7 +28,7 @@ In der folgenden Signalverarbeitungskette werden die genannten, relevanten Effek
 \label{sec:time_sync}
 Eine geeignete Zeitsynchonisation muss sowohl eine grobe Synchronisation des OFDM Frames als auch eine feine Synchonisation der einzelnen OFDM Symbole sicherstellen. \\
 
-Der Beginn eines jeden Frames $ k $ wird durch das Nullsymbol $z_{0,k}$ markiert. Wegen $S(t) = 0$ für $t \in [0, T_{NULL}]$ stellt es eine zuverlässige Möglichkeit dar den Anfang eines Frames über eine Energiemessung zu detektieren.
+Der Beginn eines jeden Frames $ k $ wird durch das Nullsymbol $z_{0,k}$ markiert. Wegen $S(t) = 0$ für $t \in [0, T_{NULL}]$ stellt es eine zuverlässige Möglichkeit dar, den Anfang eines Frames über eine Energiemessung zu detektieren.
 \todo{Formel Energie aber Intervall kürzer als T NULL}
 
 \begin{equation}
@@ -36,7 +36,7 @@ E[i] = \sum \limits_{j=i}^{T_G}|x[j]|^2
 \label{eq:energy}
 \end{equation}
 
-Nachdem der Anfang eines Frames detektiert wurde, muss im Folgenden der Beginn jedes OFDM Symbols $z_{l,k}$ ($l \in [1, 76]$) festgelegt werden. Diese feine Zeitsynchronisation erfordert keine sehr hohe Genauigkeit, da jedem Symbol ein Cyclic Prefix der Dauer $T_G = 246 \mu s $ vorgeschoben ist, dessen Inhalt dem Ende des eigentlichen Symbols entspricht. Dadurch ergibt sich ein Zeitbereich von  $T_D \in [0,T_G]$ in dem der Symbolanfang fehlerfrei gesetzt werden kann, also das gesetzte Symbolfenster nicht in das vorhergehende oder nachfolgende Symbol hereinragt.
+Nachdem der Anfang eines Frames detektiert wurde, muss im Folgenden der Beginn jedes OFDM Symbols $z_{l,k}$ ($l \in [1, 76]$) festgelegt werden. Diese feine Zeitsynchronisation erfordert keine sehr hohe Genauigkeit, da jedem Symbol ein Cyclic Prefix der Dauer $T_G = 246 \mu s $ vorgeschoben ist, dessen Inhalt dem Ende des eigentlichen Symbols entspricht. Dadurch ergibt sich ein Zeitbereich von  $T_D \in [0,T_G]$, in dem der Symbolanfang fehlerfrei gesetzt werden kann. Das gesetzte Symbolfenster kann also nicht in das vorhergehende oder nachfolgende Symbol hereinragen.
 
 % cyclic prefix figure
 \begin{figure}[h]
@@ -84,7 +84,7 @@ Um \ac{ISI} zu minimieren ist der theoretisch optimale Abtastzeitpunkt genau am 
 
 \todo{Bild mit Symbol und evt Frame, wo Zeitreferenz markiert ist, auf dem dann die Formeln/Delays basieren können}
 
-Um den exakten Anfang eines Symbols zu bestimmen, wird die zyklische Wiederholung des Symbolanteils im Cyclic Prefix genutzt. Durch eine Korrelation des abgetasteten Empfangssignal $r[i]$ mit einer um $T_S$ verzögerten Version desselben Signals $r[i+T_S]$ über das Intervall $[i, i+T_G]$ kann der Anfang des Cyclic Prefix über einen Peak der Korrelation identifiziert werden.
+Um den exakten Anfang eines Symbols zu bestimmen, wird die zyklische Wiederholung des Symbolanteils im Cyclic Prefix genutzt. Durch eine Korrelation des abgetasteten Empfangssignals $r[i]$ mit einer um $T_S$ verzögerten Version desselben Signals $r[i+T_S]$ über das Intervall $[i, i+T_G]$ kann der Anfang des Cyclic Prefix über einen Peak der Korrelation identifiziert werden.
 
 \todo{klären, wann $T_G$ Zeit und wann samples angibt, bzw anderes symbol verwenden}
 %einfache correlation
@@ -117,7 +117,7 @@ Die Korrelation ist dabei auf die Energieanteile des Cyclic Prefixes und dessen 
     \label{eq:norm_corr}
 \end{equation}
 
-In Abbildung~\ref{fig:corr} ist zu erkennen, dass die Flanken der Korrelation linear ansteigen. Die Breite einer Flanke entspricht $T_G$, also gerade dem Entscheidungsbereich für $T_D$. Durch die Linearität der Flanke und der Normierung, kann der relative Abtastzeitpunkt innerhalb des Cyclic Prefix über einen Schwellwert eingestellt werden. Der tatsächliche Abtastzeitpunkt wird anschließend mit einer Verzögerung von $T_G$ gestetzt. In der Implementierung von Abbildung~\ref{fig:corr} wurde ein Schwellwert von $0,85$ eingestellt, der sich als guter Kompromiss zwischen \ac{ISI} Unterdrückung und einem Sicherheitsabstand zu $T_D > T_G$ herausgestellt hat. Man beachte, dass $T_D > T_G$ dazu führt, dass Samples vom nachfolgenden Symbol im gesetzen Symbolfenster liegen was zum Empfang von falscher Information führt. Dieser Fall entspricht einer fehlerhaften Zeitsynchronisation.
+In Abbildung~\ref{fig:corr} ist zu erkennen, dass die Flanken der Korrelation linear ansteigen. Die Breite einer Flanke entspricht $T_G$, also gerade dem Entscheidungsbereich für $T_D$. Durch die Linearität der Flanke und der Normierung, kann der relative Abtastzeitpunkt innerhalb des Cyclic Prefix über einen Schwellwert eingestellt werden. Der tatsächliche Abtastzeitpunkt wird anschließend mit einer Verzögerung von $T_G$ gesetzt. In der Implementierung von Abbildung~\ref{fig:corr} wurde ein Schwellwert von $0,85$ eingestellt, der sich als guter Kompromiss zwischen \ac{ISI} Unterdrückung und einem Sicherheitsabstand zu $T_D > T_G$ herausgestellt hat. Man beachte, dass wegen $T_D > T_G$ Samples vom nachfolgenden Symbol im gesetzen Symbolfenster liegen, was zum Empfang von falscher Information führt. Dieser Fall entspricht einer fehlerhaften Zeitsynchronisation.
 
 \begin{figure}[h]
 \centering
@@ -127,7 +127,7 @@ In Abbildung~\ref{fig:corr} ist zu erkennen, dass die Flanken der Korrelation li
 \end{figure}
 
 \subsubsection{Implementierung}
-Um eine mehrfache Berechnung von Gleichung~\ref{eq:energy} für die Energiemessung (Gl.~\ref{eq:energy}) sowie die normierte Korrelation (Gl.~\ref{eq:norm_corr}) zu vermeiden, wurde die feine und grobe Zeitsynchronisation in einer gemeinsamen Klasse implementiert.
+Um eine mehrfache Berechnung von Gleichung~\ref{eq:energy} für die Energiemessung (Gl.~\ref{eq:energy}), sowie die normierte Korrelation (Gl.~\ref{eq:norm_corr}) zu vermeiden, wurde die feine und grobe Zeitsynchronisation in einer gemeinsamen Klasse implementiert.
 
 \begin{figure}
 \begin{center}
@@ -179,13 +179,13 @@ Um eine mehrfache Berechnung von Gleichung~\ref{eq:energy} für die Energiemessu
 \label{chart:zeitsync}
 \end{figure}
 
-Abbildung~\ref{chart:zeitsync} zeigt den Programmablaufplan der Zeitsynchronisation. Er ist aufgeteilt in die beiden Zweige "Suche Frame Start" und "Kontrolle". Der Zweig "Suche Frame Start" kommt bei einem der folgenden Fälle zum Einsatz:
+Abbildung~\ref{chart:zeitsync} zeigt den Programmablaufplan der Zeitsynchronisation. Er ist aufgeteilt in die beiden Zweige \dq Suche Frame Start\dq und \dq Kontrolle\dq. Der Zweig \dq Suche Frame Start\q kommt bei einem der folgenden Fälle zum Einsatz:
 \begin{itemize}
 \item Die Synchronisation wird initial gestartet.
 \item Das Programm ist nicht mehr in Synchronisation.
 \item Das Ende eines Frames wurde erreicht.
 \end{itemize}
-Alle diese Situationen haben gemeinsam, dass im Folgenden nach dem Peak des Symbols $z_1,k$ (erstes Symobl nach dem Nullsymbol) gesucht wird. Es wird iterativ für jedes Sample des Zeitsignals $x[i]$ eine Korrelation $y[i]$ nach Gl.~\ref{eq:norm_corr} durchgeführt. Dadurch können (analog zu Abb.~\ref{fig:corr}) Korrelationspeaks detektiert werden die jeweils dem Start eines Symbols entsprechen. Durch die Energiemessung das Symbols $z_{1,k}$ von den restlichen Symbolen $z_{l,k},$ mit  $l \in [2,76]$ unterschieden werden.
+Alle diese Situationen haben gemeinsam, dass im Folgenden nach dem Peak des Symbols $z_1,k$ (erstes Symobl nach dem Nullsymbol) gesucht wird. Es wird iterativ für jedes Sample des Zeitsignals $x[i]$ eine Korrelation $y[i]$ nach Gl.~\ref{eq:norm_corr} durchgeführt. Dadurch können (analog zu Abb.~\ref{fig:corr}) Korrelationspeaks detektiert werden, die jeweils dem Start eines Symbols entsprechen. Durch die Energiemessung kann das Symbol $z_{1,k}$ von den restlichen Symbolen $z_{l,k},$ mit  $l \in [2,76]$ unterschieden werden.
 
 Die Komplexität der Korrelationsoperation kann drastisch reduziert werden, indem die Summe, die laut Gl.~\ref{eq:corr_einfach} in jedem Schritt $T_G = 504$ Additionen durchführt, durch eine gleitende Summe ersetzt wird.
 %gleitende Summe
@@ -195,9 +195,9 @@ Die Komplexität der Korrelationsoperation kann drastisch reduziert werden, inde
 \end{equation}
 Dabei ist zu beachten, dass natürlich $y[i=0]$ komplett berechnet werden muss. Um einen das Ergebnis verfälschenden Drift von $y[i]$ zu vermeiden, wird die Summe außerdem alle $i=100000$ Samples neu berechnet.
 
-Wenn der Anfang von $z_{1,k}$ gefunden und festgelegt wurde, stehen auch die Anfänge aller anderen Symbole des Frames fest, da sie mit dem festen und bekannten Abstand von $T_G+T_S$ direkt aufeinanderfolgen. Der Zweig "Kontrolle" springt daher nur noch vom Start eines Symbols $x[i]$ zum Nächsten $x[i+T_G+T_S]$ und berechnet an dieser Stelle einmalig die Korrelation $y[i+T_G+T_S]$. Liegt $y[i+T_G+T_S]$ über einem Schwellwert, wurde das Sample als Anfang des nächsten Symbols bestätigt und die Kontrollschleife iteriert zum nächsten Symbol. Falls an einem erwarteten Symbolanfang der Schwellwert der Korrelation unterschritten wird, wechselt das Programm in den Zweig "Suche Frame Start".
+Wenn der Anfang von $z_{1,k}$ gefunden und festgelegt wurde, stehen auch die Anfänge aller anderen Symbole des Frames fest, da sie mit dem festen und bekannten Abstand von $T_G+T_S$ direkt aufeinanderfolgen. Der Zweig \dq Kontrolle\dq springt daher nur noch vom Start eines Symbols $x[i]$ zum nächsten $x[i+T_G+T_S]$ und berechnet an dieser Stelle einmalig die Korrelation $y[i+T_G+T_S]$. Liegt $y[i+T_G+T_S]$ über einem Schwellwert, wird das Sample als Anfang des nächsten Symbols bestätigt und die Kontrollschleife iteriert zum nächsten Symbol. Falls an einem erwarteten Symbolanfang der Schwellwert der Korrelation unterschritten wird, wechselt das Programm in den Zweig "Suche Frame Start".
 
-Da die Symboldauer genau bekannt ist, mag eine Kontrolle von jedem einzelnen Symbol zunächst überflüssig erscheinen. Der Aufwand wird jedoch gerechtfertigt um Störeffekte wie einen Clockdrift rechtzeitig erkennen und korrigieren zu können bevor dieser zu einem Verlust der Synchronisation und damit zu Datenverlusten führen kann.
+Da die Symboldauer genau bekannt ist, mag eine Kontrolle von jedem einzelnen Symbol zunächst überflüssig erscheinen. Der Aufwand wird jedoch gerechtfertigt, um Störeffekte wie einen Clockdrift rechtzeitig erkennen und korrigieren zu können, bevor dieser zu einem Verlust der Synchronisation und damit zu Datenverlusten führen kann.
 Ein beispielhafter Clockdrift von 50 ppm kann im rauschfreien Fall zu einem maximalen Phasenfehler von
 \begin{equation}
 \begin{aligned}
@@ -222,7 +222,7 @@ f_{off}[i] = \frac{arg(y[i])}{T_S}
 \end{equation}
 Ein zusätzliches \ac{AWGN} ändert die Phase jedes einzelnen Samples. Wegen der Mittelwertfreiheit von \ac{AWGN} kann die Varianz des gemessenen Frequenzoffsets durch eine Mittelung reduziert werden.
 \todo{Rechnung zu Varianz bei Mittelung (Gleichverteilung mit unabh. ZVs als Ausgangspunk}
-Durch das Korrelationsintervall von $T_G = 504$ Samples wird solche eine Mittelung durchgeführt was die relativ kleine Varianz der Frequenzoffsetmessung in Abb.~\ref{plot:varianz_freq_offset} bestätigt.
+Durch das Korrelationsintervall von $T_G = 504$ Samples wird eine solche Mittelung durchgeführt, was die relativ kleine Varianz der Frequenzoffsetmessung in Abb.~\ref{plot:varianz_freq_offset} bestätigt.
 \todo{Wie korrigieren reinbringen}
 \begin{figure}
 \begin{center}
@@ -263,7 +263,7 @@ N \overset{!}{<} \left(\frac{df}{dt}\frac{T_G + T_S}{3 \sigma(SNR)}\right)^{-2/3
 \end{equation}
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Grobe Frequenz-Schätzung}
-Wegen $arg(y[i]) \in (-\pi,\pi] rad$ ist der gemessene Frequenzoffset aus Gl.~\ref{eq:fine_frequency_estimation} nur in $f_{off} \in (-500,500] Hz$ eindeutig. Dieser Eindeutigkeitsbereich entpricht genau der Breite eines OFDM Unterträgers von $1 kHz$. Nach der feinen Frequenzkorrektur liegen also die Unterträger wieder auf dem Frequenzraster und es tritt durch die Orthogonalität keine ICI auf. Jedoch kann das Signal um das ganze Vielfache des Unterträgerabstandes verschoben sein, wodurch Symbole im Empfänger durch eine falsche Zuweisung der FFT Bins fehlinterpretiert würden und die komplette Information des Frames verloren ginge.
+Wegen $arg(y[i]) \in (-\pi,\pi] rad$ ist der gemessene Frequenzoffset aus Gl.~\ref{eq:fine_frequency_estimation} nur in $f_{off} \in (-500,500] Hz$ eindeutig. Dieser Eindeutigkeitsbereich entpricht genau der Breite eines OFDM Unterträgers von $1 kHz$. Nach der feinen Frequenzkorrektur liegen also die Unterträger wieder auf dem Frequenzraster und es tritt durch die Orthogonalität keine ICI auf. Jedoch kann das Signal um das ganze Vielfache des Unterträgerabstandes verschoben sein. Dadurch würden Symbole im Empfänger durch eine falsche Zuweisung der FFT Bins fehlinterpretiert und die komplette Information des Frames ginge verloren.
 \todo{arctan bei Eindeutigkeit reinbringen?}
 \todo{grobe fe nach FFT reinbringen}
 Da sowohl die Erkenung als auch die Korrektur einer Unterträgerverschiebung im Frequenzbereich wesentlich einfacher und anschaulicher ist, wird die grobe Frequenz-Korrektur nach der FFT Operation (Abschn.~\ref{sec:FFT}) durchgeführt.
@@ -276,7 +276,7 @@ X[n] = \argmax_i \sum \limits_{n=i}^{i+K} |X[n]|^2 \ \ \text{mit} \ \ i \in [0,L
 
 \subsection{FFT}
 \label{sec:FFT}
-Die modulierten Symbole werden durch das OFDM System parallel auf den $K=1536$ Unterträgern moduliert und sind innerhalb eines Sendesymbols $T_S$ durch ihre Phase und Frequenz vollständig beschrieben \cite{nt1}. Um aus dem empfangenen Zeitsignal nach der Zeit- und Frequenzsynchronisation nun wieder die D-QPSK Symbole zu erhalten, wechselt man mittels einer \ac{DFT} wieder in den Frequenzbereich, was in Gl.~\ref{eq:ofdm_dft} gezeigt wurde. Wegen $L_{DFT} = \frac{2,048 M samples/s}{T_S} = 2048 = 2^{11}$ kann die \ac{DFT} durch eine \ac{FFT} der Länge 2048 effizient implementiert werden. Der \ac{FFT} Algorithmus ist ist in GNU Radio \cite{repo:gr-fft} bereits implementiert und kann verwendet werden.
+Die modulierten Symbole werden durch das OFDM System parallel auf den $K=1536$ Unterträgern moduliert und sind innerhalb eines Sendesymbols $T_S$ durch ihre Phase und Frequenz vollständig beschrieben \cite{nt1}. Um aus dem empfangenen Zeitsignal nach der Zeit- und Frequenzsynchronisation nun die D-QPSK Symbole zu erhalten, wechselt man mittels einer \ac{DFT} in den Frequenzbereich, was in Gl.~\ref{eq:ofdm_dft} gezeigt wurde. Wegen $L_{DFT} = \frac{2,048 M samples/s}{T_S} = 2048 = 2^{11}$ kann die \ac{DFT} durch eine \ac{FFT} der Länge 2048 effizient implementiert werden. Der \ac{FFT} Algorithmus ist in GNU Radio \cite{repo:gr-fft} bereits implementiert und wird verwendet.
 \todo{zitiere FFT aus SUS Buch}
 
 \todo{Unbedingt Unterschiedliche Symbole für Zeit und Samples einführen!!!}
@@ -286,16 +286,16 @@ Die im Sender vorgenommene Frequenzspreizung wird rückgängig gemacht, indem di
 
 \subsection{Demodulation}
 Die differentielle Demodulation erfolgt durch eine komplexe Multiplikation des D-QPSK Symbols mit dessen komplex konjugierten Vorgängersymbol.
-An dieser Stelle würde entsprechend der Umkehrung des Senders nun die QPSK Demodulation erfolgen, indem eine Bitentscheidung der komplexen Eingangswerte zum Beispiel nach dem \ac{ML}-Kriterium erfolgt. In dieser Implementierung wird aber hier noch keine sog. Harddecision durchgeführt, sondern die verrauschten QPSK Symbole werden in ihren Real- und Imaginärteil zerlegt und als Gleitkommawerte, sog. Softbits, weitertransportiert. Eine Bitentscheidung wird in der Faltungsdecodierung über den Viterbialgorithmus getroffen.
+An dieser Stelle würde entsprechend der Umkehrung des Senders nun die QPSK Demodulation erfolgen, indem eine Bitentscheidung der komplexen Eingangswerte zum Beispiel nach dem \ac{ML}-Kriterium erfolgt. In dieser Implementierung wird aber an dieser Stelle noch keine sog. Harddecision durchgeführt. Stattdessen werden die verrauschten QPSK Symbole in ihren Real- und Imaginärteil zerlegt und als Gleitkommawerte, sog. Softbits, weitertransportiert. Eine Bitentscheidung wird in der Faltungsdecodierung über den Viterbialgorithmus getroffen.
 
 \subsection{Kanaldecodierung}
-Die Kanaldecodierung durchläft die Encodierungskette in umgekehrter Reihenfolge und stellt so schrittweise den gesendeten Bitstream wieder her.
+Die Kanaldecodierung durchläuft die Encodierungskette in umgekehrter Reihenfolge und stellt so schrittweise den gesendeten Bitstream wieder her.
 
 \subsubsection{Zeitinterleaving}
-Das Zeitinterleaving hat im Sender die Bits nach festen Regeln mit einer Verzögerung versehen. Der Bitstream kann also wiederhergestellt werden, indem dieselbe Verzögerung angewendet wird um mit dem Schreiben auf das jeweilige Bit zu warten. Um ein komplettes Symbol schreiben zu können benötigt der Interleaverblock also neben dem aktuellen Symbol, auch alle 15 nachfolgenden Symbole, oder anderst gesagt benötigt der Block ein Gedächtnis von 15 Symbolen. Die in \ref{sec:time_interleaving_std} angesprochene Verzögerung äußert sich in diesem Fall darin, dass die ersten 15 produzierten Symbole des Blocks kein ausreichend großes Gedächtnis haben und die entstandenen Symbole daher Fehlerbehaftet sind. Wegen der Fehlerkorrekturfähgkeit des im Folgenden beschriebenen Faltungsdecoders ist es aber praktisch sogar möglich, die tatsächliche Verzögerung um einige Symbole zu reduzieren, da die letzten verzögerten Bits vom Decoder schon a priori bestimmt werden können.
+Das Zeitinterleaving hat im Sender die Bits nach festen Regeln mit einer Verzögerung versehen. Der Bitstream kann also wiederhergestellt werden, indem dieselbe Verzögerung angewendet wird, um mit dem Schreiben auf das jeweilige Bit zu warten. Damit ein komplettes Symbol geschrieben werden kann, benötigt der Interleaverblock also neben dem aktuellen Symbol auch alle 15 nachfolgenden Symbole. Der Block benötigt also ein Gedächtnis von 15 Symbolen. Die in \ref{sec:time_interleaving_std} angesprochene Verzögerung äußert sich in diesem Fall darin, dass die ersten 15 produzierten Symbole des Blocks kein ausreichend großes Gedächtnis haben und die entstandenen Symbole daher fehlerbehaftet sind. Wegen der Fehlerkorrekturfähgkeit des im Folgenden beschriebenen Faltungsdecoders ist es aber praktisch sogar möglich, die tatsächliche Verzögerung um einige Symbole zu reduzieren, da die letzten verzögerten Bits vom Decoder schon a priori bestimmt werden können.
 
 \subsubsection{Faltungsdecodierung und Viterbi-Algorithmus}
-Der Faltungsdecoder nutzt die im Encoder eingefügte Redundanz um aus der empfangenen Empfangsbitfolge die wahrscheinlichste Sendefolge zu bestimmen. Das \ac{MAP} Kriterium ist wegen der Gleichverteilung der Sendesymbole gleich dem \ac{ML} Kriterium. Um die Komplexität des Entscheiders von exponentieller Ordnung auf lineare Ordnung zu reduzieren wird der Viterbi-Algorithmus zur Entscheidungsfindung herangezogen \cite{nt1}. Eine effiziente Implementierung eines Softbit QPSK Viterbi Decodierers ist im GNU Radio Modul gr-trellis vorhanden.
+Der Faltungsdecoder nutzt die im Encoder eingefügte Redundanz, um aus der empfangenen Bitfolge die wahrscheinlichste Sendefolge zu bestimmen. Das \ac{MAP} Kriterium ist wegen der Gleichverteilung der Sendesymbole gleich dem \ac{ML} Kriterium. Um die Komplexität des Entscheiders von exponentieller Ordnung auf lineare Ordnung zu reduzieren wird der Viterbi-Algorithmus zur Entscheidungsfindung herangezogen \cite{nt1}. Eine effiziente Implementierung eines Softbit QPSK Viterbi Decodierers ist im GNU Radio Modul gr-trellis vorhanden.
 
 \subsubsection{Energieverwischung}
 Die angewendete Energieverwischung kann rückgängig gemacht werden, indem die selbe Operation wie im Empfänger angewendet wird. Die identischen Bits $y[i]$ der \ac{PRBS} löschen sich zu jedem Sample $i \in \mathbb{N}$ durch die Exklusiv-Oder Verküpfung gegenseitg aus, sodass wieder das Sendebit $x[i]$ entsteht.
@@ -308,5 +308,41 @@ Die Bits haben nun die Kanaldecodierungskette durchlaufen und entsprechen im bes
 Bevor die Informationen aus den FIBs verarbeitet werden, wird das CRC Wort geprüft. Dazu wird aus den Datenbits wie in \ref{sec:crc} das CRC Wort berechnet und dieses mit dem gesendeten CRC Wort verglichen. Stimmen die beiden überein, enthält der FIB mit hoher Wahrscheinlichkeit keine Bitfehler. Korrekt übertragene FIBs können dann im Folgenden gelesen und ausgewertet werden.
 
 \subsection{Audio Decoder}
-Die Audiodecoder haben die Aufgabe aus dem Bitstream wieder ein PCM Stream zu generieren, der dem ursprünglichen PCM Stream vor der Kompression möglichst nahe\footnote{Im Sinne einer subjektiven Wahrnehmung des menschlichen Gehörs.}
-Für die Implementation des MPEG-1/2 Audio Layer II Decodes für DAB wurde die Bibliothek kjmp2 genutzt. Wie schon bei den Encodern wurden auch die Decoder jeweils in einen GNU Radio Block implementiert. Der Decoder für DAB+ Audio Frames wurde in 3 separaten Klassen implementiert. Der vorgeschaltete Reed-Solomon Decoder wurde auf Basis der Bibliothek für Vorwärtsfehlerkorrektur libfec implementiert. Für den eigentlichen MPEG 4 HE-AACv2 wurde eine Minimal-Implementation des Standards ETSI TS 102 563 \todo{In Quellen tun} von dem Open-Source Projekt qt-dab genutzt.
+Die Audiodecoder haben die Aufgabe aus dem Bitstream wieder ein PCM Stream zu generieren, der dem ursprünglichen PCM Stream vor der Kompression möglichst nahe\footnote{Im Sinne einer subjektiven Wahrnehmung des menschlichen Gehörs.} kommt.
+\subsubsection{DAB}
+Für die Implementierung des MPEG-1/2 Audio Layer II Decoders für DAB wurde die Bibliothek \textit{kjmp2} \todo{cite properly} genutzt. Die Decoder werden jeweils in einen GNU Radio Block implementiert.\\
+\subsubsection{DAB+}
+Der Decoder für DAB+ Audio Frames wurde in 3 separate Klassen implementiert, die neben der eigentlichen MPEG 4 Decodierung zusätzlich die für den DAB+ Standard eingeführte Fehlerkorrektur realisieren. Abb.~\ref{fig:dab+chain} zeigt den Signalfluss im DAB+ Audio Decoder.\\
+Die erste Klasse beinhaltet den Firecode-Checker, der einen CRC durchführt um Bitfehler im Header des DAB+ Superframes zu identifizieren. In dieser Implementierung hat der Firecode-Checker zusätzlich die Funktion, den Stream auf die DAB+ Superframes zu synchronisieren. Die Synchronisation ist notwendig, da der physikalische DAB Kanal Logische Frames überträgt, mit der Neuerung zu DAB+ die Audioframes aber in Superframes organisiert sind, die aus jeweils 5 Logischen Frames bestehen. Vor der MPEG4 Decodierung müssen daher 5 Logische Frames zu einem Superframe gepackt werden, was bei einem fortlaufendem Stream nicht eindeutig definiert ist. Die Synchronisation wird in dieser Implementierung ohne technischen Mehraufwand realisiert, indem bei nicht-erfolgreichem Firecode-Check anstelle eines ganzen Superframes nur ein Logische Frame verworfen wird. Im nicht-synchronisierten Fall geht der Firecode-Checker somit alle Logische Frames nacheinander durch, bis er schließlich (im bitfehlerfreien Fall) nach maximal 4 verworfenen Logischen Frames den Anfang des nächsten Superframes durch einen erfolgreichen Firecode-Check identifiziert hat.\\
+
+\begin{figure}[htb]
+\begin{center}
+\begin{tikzpicture}[node distance = 1cm, auto]
+\tikzstyle{block} = [rectangle, rounded corners, draw, text width=6em, text centered, minimum height=1.3cm]
+\tikzstyle{Text} = [rectangle, rounded corners, text width=6em, text centered, minimum height=1.3cm]
+\tikzstyle{rect} = [rectangle, draw, text width=9em, text centered, minimum height=2em]
+\tikzstyle{input} = [rectangle, text width=2em, align=right, minimum height=3cm]
+
+\node [block, text width=1.8cm](fire){Firecode Checker};
+\node [Text, left=0.5cm of fire, text width=1.3cm, anchor=east](log){Logische Frames};
+\node [block, right=1.2cm of fire, text width=2.5cm](rs){Reed-Solomon Decoder};
+\node [block, right=1.2cm of rs, text width=2.8cm](mp4){MPEG 4 HE-AACv2 Decoder};
+\node [Text, right=0.5cm of mp4, text width=2.1cm](super){DAB+ Superframes};
+\node [Text, below=1cm of rs.south west, text width=3.5cm](n1){Logische Frames mit fehlgeschlagenem Firecode-Check};
+\node [Text, below=1cm of mp4.south west, text width=3.3cm](n2){Nicht korrigierbare Superframes};
+
+\path [line] (fire.10) -- (rs.170|-fire.10);
+\path [line] (rs.10) -- (mp4.170|-rs.10);
+\path [line] (mp4) -- (super);
+\draw [line] (fire.350) to [bend left=35] (n1);
+\draw [line] (rs.350) to [bend left=35] (n2);
+\draw [line] (log) -- (fire);
+
+\end{tikzpicture}
+\end{center}
+\caption{DAB+ Audio Decoder}
+\label{fig:dab+chain}
+\end{figure}
+
+Der nachgeschaltete Reed-Solomon Decoder wurde auf Basis der Bibliothek für Vorwärtsfehlerkorrektur libfec implementiert. Ein Superframe wird über die eingefügten Codewörter auf Blockbasis korrigiert. Nicht korrigierbare Blöcke werden verworfen.\\
+Alle Superframes, die den Firecode-Checker sowie den Reed-Solomon Decoder durchlaufen haben, sind mit hoher Sicherheit korrekt und können schließlich vom Audiodecoder verarbeitet werden. Für den eigentlichen MPEG 4 HE-AACv2 wurde eine Minimal-Implementation des Standards ETSI TS 102 563 \todo{In Quellen tun} des Open-Source Projekts qt-dab genutzt.

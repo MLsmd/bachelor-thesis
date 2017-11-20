@@ -1,25 +1,9 @@
 \chapter{Implementierung einer grafischen Transceiver Applikation}
-Ein in GNU Radio implementierte DAB/DAB+ Sender und Empfänger erfüllen funktionstechnisch alle geforderten Anforderungen. Jedoch ist die Benutzerfreundlichkeit sehr eingeschränkt. Beispielsweise muss die Speicheradresse eines sub-channels manuell aus dem Terminal abgelesen werden um sie im MSC Decoder anzugeben. Um die Benutzterfreundlichkeit zu erhöhen und den DAB/DAB+ Transceiver damit zu einer vollwertigen und ansprechenden Applikation werden zu lassen, wird eine Python Applikation mit grafischem Front-End implementiert.
-\subsection{Struktur}
-Abb.~\ref{fig:class_diagramm} zeigt das Klassendiagramm der Applikation.
+Ein als GNU Radio Flowgraph implementierter DAB/DAB+ Transceiver erfüllt funktionstechnisch alle notwendigen Anforderungen. Die Benutzerfreundlichkeit ist allerdings sehr eingeschränkt. Beispielsweise muss die Speicheradresse eines Kanals manuell aus der Konsole abgelesen werden, um sie im MSC Decoder anzugeben. Um die Benutzterfreundlichkeit zu erhöhen und den DAB/DAB+ Transceiver damit zu einer vollwertigen und ansprechenden Applikation werden zu lassen, wird eine Python Applikation mit grafischem Front-End implementiert.
+\section{Klassenstruktur der Applikation}
+Abb.~\ref{fig:class_diagramm} zeigt das Klassendiagramm der Applikation. Python Klassen sind durch abgerundete Ecken von den C++ Klassen unterscheidbar.
 
-\subsubsection{Python main}
-Die Python Klasse "DABstep" stellt das Zentrum der Applikation aus Nutzersicht dar. Sie enthält alle Methoden die den Nutzer mit der App interagieren lassen. Dazu gehören zum einen Setter Methoden die beispielsweise den DAB Empfänger starten oder die Lautstärke regeln und zum anderen Getter Methoden die hauptsächlich für die angezeigten Informationen wie zum Beispiel eine Programmliste zuständig sind.
-
-\subsubsection{Graphisches Frontend}
-Die graphischen Informationen zum Design der Applikation liegen in einer separaten Klasse, dem sog. Frontend. Es beinhaltet alle Tabs, Widgets, Beschriftungen, usw. und deren Anordnung im Anzeigefenster der Applikation. Für die Implementierung der \ac{GUI} wird die Python Bibliothek PyQt4 verwendet\footnote{Die aktuelle Nachfolgerversion PyQt5 verwendet Python3 was in GNU Radio noch nicht komplett unterstützt ist.} Ein Großteil des Inhaltes dieser Klasse wurde mit dem Programm QtDesigner4 erzeugt.
-
-\subsection{GNU Radio flowgraphs}
-Den funktionellen Kern der Applikation bilden die beiden GNU Radio flowgraphs für den Transmitter und den Receiver. Sie enthalten die Definition, Instanzierung und Verbindung der einzelnen C++ Funktionalblöcke und bilden einen vollwertigen Transmitter bzw. Receiver. Im groben Aufbau entsprechen sie den in den vorherigne Kapiteln vorgestellten GNU Radio flographs aus Abb.~\ref{fig:grc_receiver} bzw. Abb.~\ref{fig:transmitter}. Abhängig von den Argumenten der Klasse, werden die Flowgraphs aber individuell instanziert bzw. initialisiert. Zum Beispiel kann je nach Konfiguration des Empfängers eine Binärdatenquelle oder eine Hardwarequelle als IQ Datenquelle dienen. Im Empfänger können ganze Zweige hinzukommen, wenn mehrere Audiostreams parallel gesendet werden.
-Die Flowgraphs laufen in einem separaten Thread. Dies verhindert, dass die komplette Applikation eingefroren ist, wenn der Flowgraph zum Beispiel überlastet ist.
-
-\subsubsection{GNU Radio Blocks}
-Die grundlegendste Klasse bilden die C++ Funktionalblöcke. Dazu gehören die in Abschn.~\ref{sec:imp_des_transmitters} und~\ref{sec:impl_des_receivers} beschriebenen Blöcke des in diesem Projekt implementierten Moduls gr-dab, sowie einige grundlegenden Blöcke aus anderen GNU Radio Modulen. Manche Blöcke sind aus Gründen der Übersicht zu hierarchischen Python Blöcken zusammengefasst.
-\todo{beschreibe schwerpunkte der blöcke und vor allem ,dass in DABStep möglichst wenig verarbeitung/logik mehr passieren soll}
-
-
-\begin{figure}[h]
-\label{fig:class_diagramm}
+\begin{figure}[b!]
 \begin{center}
 \begin{tikzpicture}[node distance=1cm]
 \tikzstyle{class_python}=[
@@ -51,7 +35,7 @@ Die grundlegendste Klasse bilden die C++ Funktionalblöcke. Dazu gehören die in
     };
 \node (lookup tables) [class_python, rectangle split, rectangle split parts=2, right =1.0cm of dabstep.north east, anchor = north west]
     {
-        \textbf{\centerline{lookup tables}}
+        \textbf{\centerline{Umsetzungstabellen}}
     };
 \node (usrp_tx) [class_python, rectangle split, rectangle split parts=3, below left= 1cm and 1cm of dabstep.south]
     {
@@ -126,22 +110,43 @@ Die grundlegendste Klasse bilden die C++ Funktionalblöcke. Dazu gehören die in
 \end{tikzpicture}
 \end{center}
 \caption{Klassendiagramm der DAB/DAB+ Transceiver Applikation}
+\label{fig:class_diagramm}
 \end{figure}
 
-\subsection{Datenfluss}
-Ein Großteil des Datenflusses geschieht in den C++ Blöcken, die große Mengen an komplexen IQ Samples oder Bits mit hohen Raten verarbeiten müssen und diese über Ringbuffer an den jeweils nächsten Block weitergeben. Zusätzlich müssen aber auch Daten, wie zum Beispiel die MCI und SI, von den Datenverarbeitungsblöcken zur Benutzeroberfläche transportierte werden um dort in einer strukturierten und für Menschen gut lesbaren Art dargestellt zu werden. Bei diesem Datenstrom fallen geringe Datenmengen an und der Fokus liegt auf einer guten Strukturierung und Charakterisierung der Daten.
-Eine geeignete Datenstruktur muss daher folgenden Anforderungen erfüllen:
+\subsection{Python main}
+Die Python Klasse \dq DABstep\dq stellt das Zentrum der Applikation aus Nutzersicht dar. Sie enthält alle Methoden, die den Nutzer mit der App interagieren lassen. Dazu gehören zum einen sog. Setter Methoden, die den Transceiver bzw. dessen C++ Blöcke steuern, also beispielsweise den DAB Empfänger starten oder die Lautstärke regeln. Zum anderen existieren sog. Getter Methoden, die Informationen aus den verschiedenen Blöcken des Flowgraphs extrahieren und zur Verfügung stellen. Ein wichtiges Beispiel hierfür sind die in der Applikation angezeigten Service Informationen wie zum Beispiel eine Radiosenderliste. Zusätzlich existieren viele kleine Methoden, die für eine bessere Bedienbarkeit sorgen.
+
+\subsection{Graphisches Frontend}
+Die Informationen zum graphischen Design der Applikation liegen in einer separaten Klasse, dem sog. Frontend. Es beinhaltet alle Tabs, Widgets, Beschriftungen, etc. und deren Anordnung im Anzeigefenster der Applikation. Für die Implementierung der graphischen Benutzeroberfläche (GUI) wird die Python Bibliothek PyQt4 verwendet,\footnote{Die aktuelle Nachfolgeversion PyQt5 verwendet Python3, was in GNU Radio noch nicht komplett unterstützt ist.} Ein Großteil des Inhaltes dieser Klasse wurde mit dem Programm QtDesigner4 erzeugt.
+
+\subsection{Umsetzungstabellen}
+Eine dritte Python Klasse enthält alle Umsetzungstabellen (engl. lookup tables). Diese Umsetzungstabellen übersetzen die in Bits codierten Service Informationen wie zum Beispiel die Sprache oder das Land des DAB Ensembles in für Menschen lesbare Zeichenketten. Die Umsetzungstabellen sind in einem separaten Standarddokument der ETSI \cite{etsi:registered_tables} vorgegeben.
+
+\section{GNU Radio Flowgraphen}
+Den funktionellen Kern der Applikation bilden die beiden GNU Radio Flowgraphen für den Transmitter und den Receiver. Sie enthalten die Definition, Instanzierung und Verbindung der einzelnen C++ Funktionalblöcke und bilden einen vollwertigen Transmitter bzw. Receiver. Im groben Aufbau entsprechen sie den bereits in vorherigen Kapiteln vorgestellten GNU Radio Flowgraphen aus Abb.~\ref{fig:grc_receiver} bzw. Abb.~\ref{fig:transmitter}. Abhängig von den Argumenten der Klasse werden die Flowgraphen aber individuell initialisiert. Zum Beispiel kann, je nach Konfiguration des Empfängers, eine Binärdatei oder Hardware als IQ Datenquelle dienen. Im Empfänger können ganze Zweige hinzukommen, wenn mehrere Audiostreams parallel gesendet werden.\\
+Die Flowgraphs laufen in einem separaten Thread. Dies verhindert, dass die komplette Applikation eingefroren wird, wenn der Flowgraph zum Beispiel überlastet ist.
+
+\subsubsection{GNU Radio Blöcke}
+Die grundlegendste Klasse bilden die C++ Funktionalblöcke. Dazu gehören die in Abschn.~\ref{sec:imp_des_transmitters} und~\ref{sec:impl_des_receivers} beschriebenen Klassen des in diesem Projekt implementierten Moduls gr-dab, sowie einige grundlegende Blöcke aus anderen GNU Radio Modulen. Manche Gruppen von C++ Blöcken sind aus Gründen der Übersicht zu hierarchischen Python-Blöcken zusammengefasst.\\
+
+Durch die genau definierte Funktion eines jeden Blocks und der hohen Flexibilität der GNU Radio Flowgraphen ist es möglich nahezu die gesamte Datenverarbeitung und Entscheidungslogik innerhalb des Flowgraphen zu implementieren. Das hat den Vorteil, dass nur ein Minimum an Logik im Benutzerfrontend vorhanden sein muss.
+
+
+\section{Datenfluss}
+Ein Großteil des Datenflusses geschieht in den C++ Blöcken, die große Mengen an komplexen IQ Samples oder Bits mit hohen Raten verarbeiten müssen und diese über Ringbuffer an den jeweils nächsten Block übergeben. \\
+Zusätzlich müssen aber auch Daten, wie zum Beispiel die MCI und SI, von den Datenverarbeitungsblöcken zur Benutzeroberfläche transportiert werden, um sie dort in einer strukturierten und für den Menschen gut lesbaren Form darzustellen. Bei diesem Datenstrom fallen geringe Datenmengen an und der Fokus liegt auf einer guten Strukturierung und Charakterisierung der Daten.
+Eine geeignete Datenstruktur muss daher folgende Anforderungen erfüllen:
 \begin{itemize}
-\item Unterstützung verschiedener Datentypen (string für Sendernamen, integer für Adressierungen, boolean für Bitschalter)
-\item Flexible Struktur in:
+\item Unterstützung \textbf{verschiedener Datentypen} (Zeichenketten für Sendernamen, Integer für Adressierungen, Boolean für Bitschalter)
+\item \textbf{Flexible Struktur} in:
 \begin{itemize}
 \item Anzahl der Attribute (das Kanalinfo FIB enthält beispielsweise 5 Attribute, währende das Sendenamen FIB nur 2 Attribute beinhaltet)
 \item Anzahl der Elemente (a priori ist nicht bekannt, wie viele Sender im empfangenen Ensemble enthalten sind, bzw. wie viel zusätzliche SI ausgestrahlt wird)
 \end{itemize}
-\item Gute Lesbarkeit für Menschen
+\item \textbf{Gute Lesbarkeit} für Menschen
 \end{itemize}
-Das Format \ac{JSON} erfüllt diese Eigenschaften hinreichend.
-\subsubsection{JSON}
+Das Datenformat \ac{JSON} erfüllt diese Eigenschaften hinreichend.
+\subsection{JSON}
 Die grundlegenden Datenstrukturen des JSON Formats sind:
 \begin{equation}
 \begin{aligned}
@@ -155,43 +160,44 @@ Eine für die beschriebenen Anforderungen vorteilhafte Kombination von JSON Stru
 \label{eq:json_example}
 \begin{aligned}
 FIB = \biggl[
-& \; \biggl \{ \text{\dq} ID \text{\dq} :4, \text{\dq} address \text{\dq} : 54, \text{\dq} size \text{\dq} : 84, \text{\dq} protection \text{\dq} : 2 \biggl \} \\
-& \; \biggl\{\text{\dq}ID\text{\dq}:3,\text{\dq}address\text{\dq}:234,\text{\dq}size\text{\dq}:96,\text{\dq}protection\text{\dq}:3\biggl\} \\
-& \; \biggl\{\text{\dq}ID\text{\dq}:2,\text{\dq}address\text{\dq}:54,\text{\dq}size\text{\dq}:54,\text{\dq}protection\text{\dq}:1\biggl\} \biggl]
+& \; \biggl \{ \text{\dq} ID \text{\dq} :4, \text{\dq} address \text{\dq} : 234, \text{\dq} size \text{\dq} : 84, \text{\dq} protection \text{\dq} : 2 \biggl \} \\
+& \; \biggl\{\text{\dq}ID\text{\dq}:2,\text{\dq}address\text{\dq}:54,\text{\dq}size\text{\dq}:84,\text{\dq}protection\text{\dq}:3\biggl\} \\
+& \; \biggl\{\text{\dq}ID\text{\dq}:3,\text{\dq}address\text{\dq}:138,\text{\dq}size\text{\dq}:96,\text{\dq}protection\text{\dq}:1\biggl\} \biggl]
 \end{aligned}
 \end{equation}
-Das Array liefert die flexible Anzahl an Elementen und das Objekt bietet eine variable Anzahl an Attributen. Die Daten sind gut lesbar und werden genau in dieser Form als String in den jeweiligen Blöcken (eine Vielzahl davon in der FIC Senke) generiert. Diese können dann von der Receiver Klasse über eine get-Funktion abgefrage werden und an die Klasse DABstep weitergeleitet werden, wo sie an entsprechender Stelle angezeigt werden. Das Lesen der Daten in DABstep gestaltet sich besonders intuitiv, da ein JSON Array als Python Array und ein JSON Objekt als Python Dictionary interpretiert werden kann.
+Das Array liefert die flexible Anzahl an Elementen und das Objekt bietet eine variable Anzahl an Attributen. Die Daten sind gut lesbar und werden genau in dieser Form als Zeichenkette in den jeweiligen Blöcken (eine Vielzahl davon in der FIC Senke) generiert. Diese können dann von der Receiver Klasse über eine Getter Funktion abgefragt und an die Klasse DABstep weitergeleitet werden wo sie an entsprechender Stelle angezeigt werden. Das Lesen der Daten in DABstep gestaltet sich besonders intuitiv, da ein JSON Array als Python Array und ein JSON Objekt als Python Dictionary interpretiert werden kann. Die einzige Datenverarbeitung, die an dieser Stelle vom Benutzerfrontend durchgeführt werden muss, ist das Lesen, Sortieren und Anzeigen der JSON Objekte.
 
-\subsection{Graphischer Aufbau}
-Neben der Funktionalität steht bei der graphischen Applikation DABstep auch die Benutzerfreundlichkeit im Mittelpunkt. Die Applikation soll auch von Laien intuitiv bedienbar sein und übersichtlich bleiben. Das Programm ist in Empfänger und Sender aufgeteilt die jeweils über zwei Tabs erreichbar sind. Abb.~\ref{fig:GUI_receiver} zeigt die Empfangsseite.
-\begin{figure}[h]
+\section{Graphischer Aufbau}
+Neben der Funktionalität steht bei der graphischen Applikation \dq DABstep\dq vor allem auch die Benutzerfreundlichkeit im Mittelpunkt. Die Applikation soll von Laien intuitiv bedienbar sein und übersichtlich bleiben. Das Programm ist in Empfänger und Sender aufgeteilt, welche über zwei Tabs erreichbar sind. Abb.~\ref{fig:GUI_receiver} zeigt die Empfängerseite.
+\begin{figure}[htb]
 \centering
   \includegraphics[width=\textwidth]{figures/GUI_receiver.png}
-	\caption{DABstep im Empfangsmodus}
+	\caption{DABstep im Empfängermodus}
 	\label{fig:GUI_receiver}
 \end{figure}
 Die räumliche Aufteilung entspricht in etwa dem Ablauf einer Empfangssituation:
 \begin{enumerate}
-\item Initiale Einstellungen: Wahl der Quelle und des DAB Modus.
-\item Senderliste: Anzeige und Auswahlfeld der DAB Sender.
-\item Infos: Anzeige von zusätzlichen Informationen über das Empfangene DAB Ensemble.
-\item Audio: Kontrolle über die abgespielte Musik.
+\item \textbf{Initiale Einstellungen}: Wahl der Quelle, DAB Modus und Mittenfrequenz.
+\item \textbf{Senderliste}: Anzeige und Auswahlfeld der DAB Sender.
+\item \textbf{Informationen}: Anzeige von zusätzlichen Informationen über das empfangene DAB Ensemble und den ausgewählten Sender.
+\item \textbf{Audio}: Kontrolle über die abgespielte Musik, zum Beispiel Lautstärkeregelung oder Aufnahmefunktion.
 \end{enumerate}
-Während die Empfangsseite hauptsächlich Informationen anzeigt, liegt der Schwerpunkt bei der Senderseite auf dem Schreiben von Informationen für das zu Sendende DAB Ensemble. Um die Bedienungsfreundlichkeit zu bewahren wurde die Aufteilung im Sender von der funktionalen Aufteilung dem Empfänger nachemfunden. Abb.~\ref{fig:GUI_transmitter} zeigt die GUI im Sendemodus.
+\\
+Während die Empfängerseite hauptsächlich Informationen anzeigt, liegt der Schwerpunkt bei der Senderseite auf dem Schreiben von Informationen für das zu sendende DAB Ensemble. Um die Bedienungsfreundlichkeit zu bewahren, wurde die Aufteilung im Sender von der funktionalen Aufteilung dem Empfänger nachemfunden. Abb.~\ref{fig:GUI_transmitter} zeigt die GUI im Sendemodus.
+Die Wahl zwischen Hardware und Binärdatei ist auch im Sendemodus vorhanden und definiert in diesem Fall die Art der Senke. Die Informationen über die einzelnen Radiosender können über die Eingabeformulare individuell eingestellt werden. Es ist dabei auch möglich in einem Ensemble DAB und DAB+ Kanäle zu mischen. Als Audioquelle gibt es neben Audiodateien auch die Möglichkeit, die lokale Soundkarte mit einem Mikrofon zu nutzen.
+Im rechten oberen Bereich sind, wie im Empfänger, die Ensemble Informationen plaziert. Durch das Erhöhen der Anzahl der Kanäle wird die Spalte mit den Informationen zu den einzelnen Kanälen auf der linken Seite automatisch um eine Komponente für den neuen Kanal ergänzt. Die Audioeinstellungen befinden sich auch hier im rechten unteren Bereich der Oberfläche. Der Benutzer muss hier den Kanal, den er hören will, auswählen, da er logischerweise nicht alle Kanäle des DAB Ensembles gleichzeitig hören kann.
 
-\begin{figure}[h]
+\begin{figure}[htb]
 \centering
   \includegraphics[width=\textwidth]{figures/GUI_transmitter.png}
 	\caption{DABstep im Sendemodus}
 	\label{fig:GUI_transmitter}
 \end{figure}
 
-Durch erhöhen der Anzahl der Kanäle wird die linke Spalte automatisch um eine Komponente ergänzt.
-
 \subsubsection{Entwicklermodus}
-Ein zusätzliches Feature stellt der Entwickler-Modus dar, der in der Empfängerseite über das \dq + \dq Symbol in der oberen rechten Ecke erreichbar ist. Dieser erweitert die GUI um einige technische Anzeigen (siehe Abb.~\ref{fig}. 
+Ein zusätzliches Feature stellt der Entwickler-Modus dar, welcher in der Empfängerseite über das \dq +\dq  Symbol in der oberen rechten Ecke erreichbar ist. Dieser erweitert die GUI um einige technische Anzeigen (siehe Abb.~\ref{fig:GUI_dev_mode}). 
 
-\begin{figure}[h]
+\begin{figure}[htb]
 \centering
   \includegraphics[width=\textwidth]{figures/GUI_dev_mode.png}
 	\caption{DABstep im Entwicklermodus}

@@ -4,7 +4,15 @@
 @Comment Zur Verwendung von BibTeX siehe auch
 @Comment file:/tools/misc/teTeX/share/texmf/doc/bibtex/base/btxdoc.dvi
 
-
+@book{proakis,
+  title={Digital Communications},
+  author={Proakis, J.G.},
+  isbn={9780070517264},
+  lccn={94041620},
+  series={Electrical and Computer Engineering Series},
+  year={1995},
+  publisher={McGraw-Hill}
+}
 
 @ARTICLE{ofdm:idft, 
 author={S. Weinstein and P. Ebert}, 
@@ -123,7 +131,39 @@ title = "{Digital Audio Broadcasting (DAB): DAB audio coding (MPEG Layer II)}",
 number = {ETSI TS 103 466 V1.1.1},
 year={2016}
 }
+#Kanalmodelle##########################################
+@INPROCEEDINGS{kanalmodell:dab_ht_2, 
+author={S. Baumgartner and G. Hirtz and A. Apitzsch}, 
+booktitle={Eurocon 2013}, 
+title={Methods for simulation of the wireless propagation channel for DAB/DAB #x002B;/DMB-SDR-receivers}, 
+year={2013}, 
+volume={}, 
+number={}, 
+pages={138-146}, 
+keywords={Monte Carlo methods;delay lines;digital audio broadcasting;mobile radio;radio receivers;radiowave propagation;software radio;wireless channels;DAB;DMB SDR-receivers;Lp norm method;Monte Carlo simulation;average path delay;channel profiles;delay spread;digital audio broadcasting;discrete parameters;frequency correlation function;frequency selective wireless channels;multipath power delay profile;path gain;statistical procedure;tapped delay line channel model;transmission channel;wireless propagation channel;Adaptation models;Computational modeling;Correlation;Delays;Equations;Mathematical model;OFDM;DAB/DAB+/DMB;Software Defined Radio (SDR);deterministic channel modeling;mobile radio channels;tapped-delay line model}, 
+doi={10.1109/EUROCON.2013.6624978}, 
+ISSN={}, 
+month={July},}
 
+@INPROCEEDINGS{kanalmodell:dvb_paper, 
+author={L. Polak and T. Kratochvil}, 
+booktitle={2013 36th International Conference on Telecommunications and Signal Processing (TSP)}, 
+title={Exploring of the DVB-T/T2 performance in advanced mobile TV fading channels}, 
+year={2013}, 
+volume={}, 
+number={}, 
+pages={768-772}, 
+keywords={Doppler shift;channel coding;decoding;digital video broadcasting;error statistics;fading channels;mobile television;radio receivers;BER;Doppler shift;MER;Vehicular Urban and Motorway Rural;advanced mobile TV fading channel model;bit error ratio;car;carrier-to-noise ratio;channel decoding;fast moving receiver;mobile television broadcasting;mobile television channel model;modulation error ratio;portable digital television broadcasting;second generation terrestrial standard DVB-T-T2 performance;Bit error rate;Channel models;Decoding;Digital video broadcasting;Mobile TV;Mobile communication;Standards;BER;DVB-T;DVB-T2;Doppler shift;MER;advanced FEC;advanced mobile fading channels;channel coding}, 
+doi={10.1109/TSP.2013.6614042}, 
+ISSN={}, 
+month={July},}
+
+@techreport{etsi:dvb,
+author = {ETSI},
+title = "{Digital Video Broadcasting (DVB); Framing structure, channel coding and modulation for digital terrestrial television}",
+number = {ETSI EN 300 744 V1.6.1},
+year={2009}
+}
 %github#######################################################################################
 
 @misc{repo:gr-dab,
@@ -138,11 +178,26 @@ howpublished =  "\url{https://github.com/Opendigitalradio/ODR-AudioEnc}",
 note = {Zugriff 09.11.2017}
 }
 
+@misc{repo:fdk-aac,
+title = "{Opendigitalradio Repository, fdk-aac}",
+howpublished =  "\url{https://github.com/Opendigitalradio/fdk-aac}",
+note = {Zugriff 18.11.2017}
+}
+
 @misc{repo:gr-fft,
 title = "{GNU Radio Repository, Modul gr-fft}",
 howpublished =  "\url{https://github.com/gnuradio/gnuradio/tree/master/gr-fft}",
 note = {Zugriff 09.11.2017}
 }
+
+%webpages#############################################################################
+@misc{web:wattkopf_sender,
+title = "{Sender-Tabelle Baden-Württemberg (DAB)}",
+howpublished =  "\url{http://www.ukwtv.de/cms/deutschland-dab/baden-wuerttemberg-dab.html}",
+author = {UKW/TV-Arbeitskreis},
+note = {Zugriff 15.11.2017}
+}
+
 
 %ENDE########################################################################################################
 

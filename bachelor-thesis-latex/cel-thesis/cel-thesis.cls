@@ -183,10 +183,10 @@
 %grid style
 \pgfplotsset{
   grid style = {
-    dash pattern = on 0.05mm off 1mm,
+    dash pattern = on 0.1mm off 0.3mm,
     line cap = round,
     black,
-    opacity=0.5,
-    line width = 0.2pt
+    opacity=0.1,
+    line width = 0.1    pt
   }
 }

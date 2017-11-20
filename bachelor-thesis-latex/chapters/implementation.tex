@@ -2,7 +2,7 @@
 \section{GNU Radio}
 GNU Radio ist eine kostenlose und weitverbreitete Open-Source Software zur Programmierung und Ansteuerung von \ac{SDR}. Software Radio bezeichnet dabei ein Funksystem, welches die Signalverarbeitung anstatt durch Hardware (integrierte Schaltkreise) auf Softwareebene durchführt. Software hat den Vorteil, dass sie variabel und schnell austauschbar ist. Dadurch ist es möglich mit derselben Hardware viele verschiedene Funksysteme zu realisieren.\\
 GNU Radio verwendet das Konzept von funktionalen Blöcken, die verbunden werden und damit eine Signalverarbeitungskette, einen sog. Flowgraph, bilden. Die einzelnen Blöcke führen jeweils eine spezifische Signalverarbeitungsoperation möglichst recheneffizient durch, weshalb ein GNU Radio Block in den meisten Fällen eine C++ Klasse darstellt. Die Ablaufsteuerung, also die Instanzierung und Anordnung der Blöcke in einem Gesamtsystem, geschieht in der Skriptsprache Python. Dazu werden die verwendeten C++ Klassen mit dem Programmierwerkzeug \ac{SWIG} nach Python übersetzt.\\
-Neben der Möglichkeit, die GNU Radio Blöcke selbst zu entwerfen, gibt es schon eine umfangreiche Bibliothek an Signalverarbeitungsblöcken, die von grundlegenden Rechenoperationen bis hin zu komplexen Implementierungen wie ganzen Radarsystemen reichen. Die graphische Oberfläche \ac{GRC} ermöglicht es einen Flowgraph zu erstellen, ohne dabei Code schreiben zu müssen. Per Drag and Drop werden dazu die GNU Radio Blöcke angeordnet und mit Pfeilen verbunden. Der GRC ist ein nützliches Tool für schnelles Prototyping und für die Visualisierung eines Flowgraphs.\\
+Neben der Möglichkeit, die GNU Radio Blöcke selbst zu entwerfen, gibt es bereits eine umfangreiche Bibliothek an Signalverarbeitungsblöcken. Diese reichen von grundlegenden Rechenoperationen bis hin zu komplexen Implementierungen wie zum Beispiel ganzen Kommunikationssystemen. Die graphische Oberfläche \ac{GRC} ermöglicht es einen Flowgraph zu erstellen, ohne dazu Code schreiben zu müssen. Per Drag and Drop werden dazu die GNU Radio Blöcke angeordnet und mit Pfeilen verbunden. Der GRC ist ein nützliches Tool für schnelles Prototyping und für die Visualisierung eines Flowgraphs.\\
 
 \begin{figure}[htb]
     \centering
@@ -11,7 +11,7 @@ Neben der Möglichkeit, die GNU Radio Blöcke selbst zu entwerfen, gibt es schon
     \label{fig:gnu_radio_logo}
 \end{figure}
 
-Die in diesem Kapitel vorgestellte Realisierung eines DAB/DAB+ Transceivers wurde mit GNU Radio implementiert. Das dabei enstandene Out-Of-Tree Modul gr-dab enthält alle geschriebenen GNU Radio Blöcke und Flowgraphs und ist unter der \ac{GPL3} lizenziert und frei zugänglich auf der Plattform GitHub~\cite{repo:gr-dab} veröffentlicht. Die dabei verwendete Hardware ist unabhängig von der Implemtierung und kann von kostengünstigen DVB-T Dongles bishin zu gut verarbeiteten \acp{USRP} reichen.\\
+Die in diesem Kapitel vorgestellte Realisierung eines DAB/DAB+ Transceivers wurde mit GNU Radio implementiert. Das dabei enstandene Out-Of-Tree Modul gr-dab enthält alle geschriebenen GNU Radio Blöcke und Flowgraphs. Es ist unter der \ac{GPL3} lizenziert und frei zugänglich auf der Plattform GitHub~\cite{repo:gr-dab} veröffentlicht. Die dabei verwendete Hardware ist unabhängig von der Implemtierung und kann von kostengünstigen DVB-T Dongles bishin zu gut verarbeiteten \acp{USRP} reichen.\\
 In der Evaluation des Systems in Abschn.~\ref{sec:evaluation} wurden GNU Radio Flowgraphs zudem als Basis für Simulationen genutzt.
 
 \section{Vorgehen bei der Implementierung}
