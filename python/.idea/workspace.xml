@@ -15,10 +15,10 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="BER.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="BER.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/BER.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1041">
+            <state relative-caret-position="1095">
               <caret line="123" column="53" lean-forward="false" selection-start-line="123" selection-start-column="49" selection-end-line="123" selection-end-column="53" />
               <folding>
                 <element signature="e#866#884#0" expanded="true" />
@@ -40,7 +40,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Firecode_error_rate.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Firecode_error_rate.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Firecode_error_rate.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="175">
@@ -403,7 +403,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="24" width="1920" height="1056" extended-state="6" />
+    <frame x="0" y="24" width="1920" height="1056" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19062665" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -776,16 +776,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Reed_Solomon_fail_rate.py" />
-    <entry file="file://$PROJECT_DIR$/BER.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1041">
-          <caret line="123" column="53" lean-forward="false" selection-start-line="123" selection-start-column="49" selection-end-line="123" selection-end-column="53" />
-          <folding>
-            <element signature="e#866#884#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/FIC_error_rate.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="540">
@@ -802,6 +792,16 @@
         <state relative-caret-position="175">
           <caret line="40" column="76" lean-forward="false" selection-start-line="40" selection-start-column="76" selection-end-line="40" selection-end-column="76" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/BER.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1095">
+          <caret line="123" column="53" lean-forward="false" selection-start-line="123" selection-start-column="49" selection-end-line="123" selection-end-column="53" />
+          <folding>
+            <element signature="e#866#884#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

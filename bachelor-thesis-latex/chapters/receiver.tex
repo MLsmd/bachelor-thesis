@@ -17,13 +17,6 @@ R(t) = a(t,f) \cdot S(t-\tau_{off}) \cdot e^{j(2 \pi f_{off} t + \varphi_{off})}
 Das Signal wird um einen Zeitoffset $\tau_{off}$ verzögert und hat wegen Doppler-Verschiebungen und Ungenauigkeiten der Oszillatoren einen Frequenzoffset $f_{off}$. Ein konstanter Phasenoffset $\varphi_{off}$, der durch Reflektionen der Welle entsteht, wirkt sich in diesem Fall nicht auf das demodulierte QPSK Signal aus, da sich wegen der differentiellen Modulation eine konstante Phase bei der Differenzbildung heraushebt. Es ist also keine Kanalschätzung nötig. Die Amplitude des Signals wird durch frequenzselektives Fading über der Zeit und der Frequenz unterschiedlich stark gedämpft. Wegen der Schmalbandigkeit der einzelnen Unterträger bei OFDM kann der Kanal trotzdem in jedem Unterträger als flach angenommen werden, woraus $a(t,f)=a(t)$ folgt. Die Dämpfung des Signals ist für die Symbolentscheidung bei PSK zudem nicht ausschlaggebend. Letztendlich wird das Signal noch durch \ac{AWGN} überlagert.\\ 
 Um eine möglichst optimale Synchronisations zu erreichen, werden in der folgenden Signalverarbeitungskette relevanten Effekte schrittweise gemessen und korrigiert.
 
-\begin{figure}[htb]
-\centering
-  \includegraphics[width=0.9\textwidth]{figures/sync_hier_block.png}
-	\caption{Aufbau der kompletten Synchronisationskette im \ac{GRC}}
-	\label{fig:sync_overview}
-\end{figure}
-
 \subsection{Zeit Synchronisation}
 \label{sec:time_sync}
 Eine geeignete Zeitsynchonisation muss sowohl eine grobe Synchronisation des OFDM Frames, als auch eine feine Synchonisation der einzelnen OFDM Symbole sicherstellen. \\
@@ -35,6 +28,17 @@ E[i] = \sum \limits_{j=i}^{T_G}|x[j]|^2
 \end{equation}
 
 Nachdem der Anfang eines Frames detektiert wurde, muss im Folgenden der Beginn jedes OFDM Symbols $z_{l,k}$ ($l \in [1, 76]$) festgelegt werden. Diese feine Zeitsynchronisation erfordert keine sehr hohe Genauigkeit, da jedem Symbol ein \ac{CP} der Dauer $T_G = 246$ \textmu s vorgeschoben ist, dessen Inhalt dem Ende des eigentlichen Symbols entspricht. Dadurch ergibt sich ein Zeitbereich von  $T_D \in [0,T_G]$, in dem der Symbolanfang fehlerfrei gesetzt werden kann. Das gesetzte Symbolfenster kann also nicht in das vorhergehende oder nachfolgende Symbol hineinragen.
+
+\begin{figure}[htb]
+\centering
+  \includegraphics[width=0.9\textwidth]{figures/sync_hier_block.png}
+	\caption{Aufbau der kompletten Synchronisationskette im \ac{GRC}}
+	\label{fig:sync_overview}
+\end{figure}
+
+Um \ac{ISI} zu minimieren ist der theoretisch optimale Abtastzeitpunkt genau am Ende des CPs zu wählen. Eine komplette \ac{ISI} Unterdrückung ist wegen $T_G < \tau_{max}$ mit einer maximalen Echo Verzögerung von $\tau_{max} = 300$ \textmu s nicht möglich \cite{dab_buch}. Jedoch wird die \ac{ISI} zu einem Minimum reduziert, wenn ein maximal später Startpunkt gewählt wird, da die Interferenzzeit $\tau_{max} - T_D$, bei $\tau_{max} < T_G+T_S$, dadurch minimiert wird.\\
+
+Um den exakten Anfang eines Symbols zu bestimmen, wird die zyklische Wiederholung des Symbolanteils im \ac{CP} genutzt. Durch eine Korrelation des abgetasteten Empfangssignals $r[i]$ mit einer um $T_S$ verzögerten Version desselben Signals $r[i+T_S]$ über das Intervall $[i, i+T_G]$ kann der Anfang des \ac{CP} über einen Peak der Korrelation identifiziert werden.
 
 % cyclic prefix figure
 \begin{figure}[h]
@@ -77,10 +81,6 @@ Nachdem der Anfang eines Frames detektiert wurde, muss im Folgenden der Beginn j
 \caption{OFDM Symbol und Cyclic Prefix}
 \label{chart:cp}
 \end{figure}
-
-Um \ac{ISI} zu minimieren ist der theoretisch optimale Abtastzeitpunkt genau am Ende des CPs zu wählen. Eine komplette \ac{ISI} Unterdrückung ist wegen $T_G < \tau_{max}$ mit einer maximalen Echo Verzögerung von $\tau_{max} = 300$ \textmu s nicht möglich \cite{dab_buch}. Jedoch wird die \ac{ISI} zu einem Minimum reduziert, wenn ein maximal später Startpunkt gewählt wird, da die Interferenzzeit $\tau_{max} - T_D$, bei $\tau_{max} < T_G+T_S$, dadurch minimiert wird.\\
-
-Um den exakten Anfang eines Symbols zu bestimmen, wird die zyklische Wiederholung des Symbolanteils im \ac{CP} genutzt. Durch eine Korrelation des abgetasteten Empfangssignals $r[i]$ mit einer um $T_S$ verzögerten Version desselben Signals $r[i+T_S]$ über das Intervall $[i, i+T_G]$ kann der Anfang des \ac{CP} über einen Peak der Korrelation identifiziert werden.
 
 %einfache correlation
 \begin{equation}
@@ -333,5 +333,5 @@ Die Synchronisation wird in dieser Implementierung ohne technischen Mehraufwand 
 \label{fig:dab+chain}
 \end{figure}
 
-Der nachgeschaltete Reed-Solomon Decoder wurde auf Basis der Bibliothek für Vorwärtsfehlerkorrektur \textit{libfec} implementiert \cite{web:libfec}. Ein Superframe wird über die eingefügten Codewörter auf Blockbasis korrigiert. Nicht korrigierbare Blöcke werden verworfen.\\
+Der nachgeschaltete Reed-Solomon Decoder wurde auf Basis der Bibliothek für Vorwärtsfehlerkorrektur \textit{libfec} implementiert \cite{repo:kjmp}. Ein Superframe wird über die eingefügten Codewörter auf Blockbasis korrigiert. Nicht korrigierbare Blöcke werden verworfen.\\
 Alle Superframes, die den Firecode-Checker sowie den Reed-Solomon Decoder durchlaufen haben, sind mit hoher Sicherheit korrekt und können schließlich vom Audiodecoder verarbeitet werden. Für den eigentlichen MPEG 4 HE-AACv2 wurde eine Minimal-Implementation von \cite{etsi:mp4} des Open-Source Projekts \textit{qt-dab} genutzt \cite{repo:qt-dab}.

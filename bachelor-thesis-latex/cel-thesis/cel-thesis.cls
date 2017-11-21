@@ -185,7 +185,7 @@
   grid style = {
     dash pattern = on 0.1mm off 0.3mm,
     line cap = round,
-    black,
+    lightgray!50!black,
     opacity=0.1,
     line width = 0.1    pt
   }

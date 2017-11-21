@@ -1,8 +1,10 @@
 \chapter*{Abstract}
-This is my abstract.
-CEL thesis rules require it to be about 3-5 pages. \todo{This is a todo example}
-It is a summary of what you do in your thesis.
-Use around 5 pictures and outline whatever you did.
-And now a few lines of information.
+Das vorliegende Dokument gibt einen Einblick in den Entwicklungsprozess einer DAB/DAB+ Transceiver Applikation im Rahmen einer Bachelorarbeit.\\ Digital Audio Broadcasting (DAB) ist ein Übertragungsstandard zur Verbreitung von digitalem Hörfunk, der mittelfristig den UKW-Rundfunk ersetzten wird. Durch die digitale Übertragung können fortgeschrittene Modulationstechniken und Kanalcodierung sowie Audiokompression angewandt werden. Rauschfreie Audioübertragung, sowie neue Möglichkeiten der medialen Unterstützung machen das Serviceangebot für Nutzer attraktiver.\\
+Die theoretischen Grundzüge des DAB/DAB+ Übertragungsstandards werden erläutert, wobei sich die Arbeit an Leser richtet, die mit den Grundlagen der Nachrichtentechnik und Signalverarbeitung vertraut sind.\\
 
+Die praktischen Realisierungsschritte des DAB/DAB+ Transceivers werden aufgezeigt, wobei der Fokus bei der Betrachtung auf der Softwareseite liegt. Die Synchronisation des Empfängers arbeitet mit einer einfachen und sehr effektiven Kreuzkorrelation, die sowohl für die Zeit- als auch für die Frequenzsynchronisation eingesetzt wird und die Empfängerstruktur sehr einfach hält. Interessante Systemdesignfragen werden ausführlich diskutiert.\\
 
+Es wird gezeigt, dass ein nahezu vollständig auf Software basierendes DAB/DAB+ Übertragungssystem echtzeit-lauffähig ist und vergleichbare Resultate in der Performanz wie kommerzielle DAB Geräte liefert. Dabei wurde der Empfang mit verschiedenen Hardwarekonfigurationen, von hochwertigen Universal Software Radio Peripherals (USRPs) bis hin zu kostengünsigen DVB-T Dongles, erfolgreich getestet.\\
+
+Zur Evaluation des Systems wird ein AWGN Kanal und verschiedene Fadingmodelle simuliert, die typsiche Übertragungsszenarien von DAB darstellen. Die Bitfehlerraten erweisen sich als robust gegen lang verzögerte Mehrwege und zeigen eine starke Abhängigkeit der Performanz vom Doppler-Spread.\\
+Für die Untersuchung der subjektiven Empfangsqualität werden Paketfehlerraten verschiedener Kanäle simuliert. Die Ergebnisse zeigen ein robustes Verhalten dank effektiver Kanalcodierung.
