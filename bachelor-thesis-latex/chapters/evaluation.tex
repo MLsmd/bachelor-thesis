@@ -51,8 +51,10 @@ Diese Umrechnung erlaubt es nun die Bitfehlerrate des DAB Systems mit der theore
 \begin{center}
 \begin{tikzpicture}
 \begin{axis}[
-restrict x to domain=0:15,
 ymode=log,
+ymin=0.0000002,ymax=1.0,
+xmin=0.0,xmax=15,
+enlarge x limits=false,
 xlabel={$E_b/N_0$},
 ylabel={BER},
 grid=major,
@@ -75,7 +77,7 @@ Ein Implementationsverlust ist lediglich unter ca. $3\, dB$ zu erkennen, bei dem
 \subsection{Paketfehlerrate}
 In einem zweiten Schritt wird nun die Paketfehlerrate (PER) untersucht. Die PER Simulation soll dabei so weit wie möglich einer Ende zu Ende Übertragung entsprechen, da dieser Fall der subjektiv empfundenen Übertragungsqualität am nächsten kommt. Deshalb wird bei der Simulation der PER die komplette Kanalcodierungskette in die Simulationsumgebung integriert.\\
 \subsubsection{Fast Information Channel (FIC)}
-Im FIC wird nach der Kanalcodierung ein CRC über jedes FIB berechnet, dessen Ergebnis direkt für die PER Berechnung verwendet werden kann. Da der CRC jeweils über das komplette FIB berechnet wird, kann man bei erfolgreichem CRC von einem fehlerfreien FIB ausgehen. Die PER entspricht also direkt der FIB Fehlerrate und ist aussagekräftig für die effektive Übertragungsfehlerrate des FIC. Abb.~\ref{plot:awgn_per} zeigt die PER des FIC über dem SNR.\\
+Im FIC wird nach der Kanalcodierung ein CRC über jedes FIB berechnet, dessen Ergebnis direkt für die PER Berechnung verwendet werden kann. Da der CRC jeweils über das komplette FIB berechnet wird, kann man bei erfolgreichem CRC von einem fehlerfreien FIB ausgehen. Die PER entspricht also direkt der FIB Fehlerrate und ist aussagekräftig für die effektive Übertragungsfehlerrate des FIC. Abb.~\ref{plot:awgn_per_fic} zeigt die PER des FIC über dem SNR.\\
 
 % PER bei AWGN
 \begin{figure}[htb]
@@ -88,22 +90,22 @@ Im FIC wird nach der Kanalcodierung ein CRC über jedes FIB berechnet, dessen Er
         ymode=log,
         xlabel={$E_b/N_0$},
         ylabel={PER},
-        ymin=0.00004,ymax=2.0,
-        xmin=0.0,xmax=9.0,
+        ymin=0.00004,ymax=1.0,
+        xmin=0.0,xmax=8.5,
         enlarge x limits=false,
         grid=major,
         width=7.8cm,
         legend entries={FIC ($R=1/3$), MSC A3 ($R=1/2$)},
-        legend style={at={(0.05,0.05)},anchor=south west},
+        legend style={at={(0.05,0.05)},anchor=south west, font=\small},
         legend cell align={left},
         ]
-        \addplot [black, mark=diamond*]table {simulation/AWGN/PER/171108_AWGN_PER_FIC.dat};
-        \addplot [magenta, mark=diamond*]table {simulation/AWGN/PER/171117_AWGN_MSC_A3_norm.dat};
+        \addplot [black, mark=diamond*]table {simulation/AWGN/PER/171108_AWGN_PER_FIC_ebno.dat};
+        \addplot [magenta, mark=diamond*]table {simulation/AWGN/PER/171117_AWGN_MSC_A3_norm_ebn0.dat};
         %\addplot [orange, mark=diamond*]table {chapters/simulation/AWGN/PER/171022_1-throughput_rate.dat};
         \end{axis}
         \end{tikzpicture}
         \caption{PER bei AWGN}
-        \label{plot:awgn_per}
+        \label{plot:awgn_per_fic}
     \end{minipage}% <- sonst wird hier ein Leerzeichen eingefügt
         \hfill
         \begin{minipage}[t]{0.48\textwidth}
@@ -113,23 +115,23 @@ Im FIC wird nach der Kanalcodierung ein CRC über jedes FIB berechnet, dessen Er
             \begin{axis}[
             ymode=log,
             xlabel={$E_b/N_0$},
-            ymin=0.00004,ymax=2.0,
-            xmin=0.0,xmax=9.0,
+            ymin=0.00004,ymax=1.0,
+            xmin=0.0,xmax=8.5,
             enlarge x limits=false,
             grid=major,
             width=7.8cm,
             ylabel near ticks, yticklabel pos=right,
-            legend entries={MSC A1, MSC A2, MSC A3},
-            legend style={at={(0.05,0.05)},anchor=south west},
+            legend entries={MSC A1 ($R=1/4$), MSC A2 ($R=3/8$), MSC A3 ($R=1/2$)},
+            legend style={at={(0.05,0.05)},anchor=south west, font=\tiny},
             legend cell align={left},
             ]
-            \addplot [blue, mark=diamond*]table {data/171106_AWGN_Firecode_A1.dat};
-            \addplot [green, mark=diamond*]table {simulation/AWGN/PER/171120_AWGN_MSC_A2.dat};
-            \addplot [magenta, mark=diamond*]table {data/171106_AWGN_Firecode_A3.dat};
+            \addplot [blue, mark=diamond*]table {simulation/AWGN/PER/171106_AWGN_Firecode_A1_ebn0.dat};
+            \addplot [green, mark=diamond*]table {simulation/AWGN/PER/171120_AWGN_MSC_A2_ebn0.dat};
+            \addplot [magenta, mark=diamond*]table {simulation/AWGN/PER/171106_AWGN_Firecode_A3_ebn0.dat};
             \end{axis}
             \end{tikzpicture}
             \caption{PER bei AWGN}
-            \label{plot:awgn_per}
+            \label{plot:awgn_per_msc}
 
 \end{minipage}
 \end{figure}
@@ -155,7 +157,9 @@ Die Normierung der Firecode-PER auf die Länge der FIBs ist sinnvoll, um die bei
 \Leftrightarrow\; & &&P_{e, Superframe} &&= P_{e,Firecode} + P_{e, Reed-Solomon} - P_{e,Firecode}\cdot P_{e, Reed-Solomon}
 \label{eq:per_superframe}
 \end{alignat}
-Dabei entspricht $P_{e,Firecode}$ der nicht normierten Ausfallwahrscheinlichkeit $P_{e,2}$ aus Gl. \ref{eq:per}. $P_{e,Reed-Solomon}$ wird über die Ausfallrate des Reed-Solomon Decoders bei vorgeschaltenem Firecode-Checker geschätzt.\todo{verweise auf Kurven}
+Dabei entspricht $P_{e,Firecode}$ der nicht normierten Ausfallwahrscheinlichkeit $P_{e,2}$ aus Gl. \ref{eq:per}. $P_{e,Reed-Solomon}$ wird über die Ausfallrate des Reed-Solomon Decoders bei vorgeschaltenem Firecode-Checker geschätzt. Die resultierende PER des MSC ist für das oft verwendete Protection Level A3 in Abb.~\ref{plot:awgn_per_fic} dargestellt. Die PER Kurve ist um ca. 2dB schlechter als die Kurve des FIC. Der Verlust kann mit der höheren Coderate von $R=1/2$ begründet werden.\\
+
+Ein Vergleich der verschiedenen Protection Levels des MSC ist in Abb.~\ref{plot:awgn_per_msc} zu sehen. Die PERs sind in diesem Diagramm nicht auf eine andere Länge normiert, weshalb die Kurve für das Protection Level A3 in den Abbildungen \ref{plot:awgn_per_fic} und \ref{plot:awgn_per_msc} (jeweils in der Farbe Magenta dargestellt) unterschiedliche Verläufe annimmt. Der Vergleich zeigt, dass die Wahl des Protection Levels deutlichen Einfluss auf die resultierenden PERs nimmt. Die besten Ergebnisse liefert der Protection Mode A1, der sich geringere PERs durch eine sehr kleine Coderate von $R=1/4$ erkauft.
 
 \section{Realistische Kanalmodelle}
 Der im vorherigen Kapitel diskutierte AWGN Kanal ist ein stark vereinfaches Kanalmodell das viele Effekte, die bei einer realen Übertragung auftreten, vernachlässigt. Eine vollständig realistische Übertragungssituation kann in einer Simulation niemals nachgestellt werden, es können aber die wichtigsten Effekte in das Kanalmodell integriert werden um der realisitschen Übertragung so nah wie möglich zu kommen. Diese Effekte sind bei einer Rundfunkübertragung:
@@ -299,6 +303,9 @@ Die Paketfehlerrate im Rayleigh-Fading Kanal mit realistischem PDP bildet schlie
 ymode=log,
 xlabel={$E_b/N_0$},
 ylabel={PER},
+ymin=0.0001,ymax=1.0,
+xmin=5.0,xmax=35.0,
+enlarge x limits=false,
 grid=major,
 legend entries={$f_{D,max}=5$Hz, $f_{D,max}=10$Hz, $f_{D,max}=20$Hz, $f_{D,max}=50$Hz},
         legend style={at={(0.05,0.05)},anchor=south west, font=\tiny},
@@ -315,4 +322,4 @@ legend entries={$f_{D,max}=5$Hz, $f_{D,max}=10$Hz, $f_{D,max}=20$Hz, $f_{D,max}=
 \label{plot:doppler_per}
 \end{figure}
 
-Die PER Kurven für maximale Dopplerverschiebungen von 5-20Hz weisen deutlich bessere Werte als die entsprechenden BER Kurven auf und sind sehr zufriedenstellend. Die Kanalcodierung trägt hier einen enormen Teil zur Empfangsqualität bei. Lediglich die PER mit einer maximalen Dopplerverschiebung von 50Hz verbessert sich durch die Kanalcodierung nicht signifikant und läuft in einen Error-Floor mit einer PER von $3 \cdot 10^{-2}$. Es treten zu viele Bitfehler auf, wodurch die Korrekturwahrscheinlichkeit des Faltungscodes sehr gering ist. Die Dopplerverschiebung von 50Hz entspricht einer Geschwindigkeit von 270km/h. Der Wert wurde bewusst sehr hoch angesetzt um die Grenzen des Systems zu testen. Eine ausreichend gute, subjektive Übertragungsqualität ist bei den resultierenden PERs nicht mehr möglich.
+Die PER Kurven für maximale Dopplerverschiebungen von 5-20Hz weisen deutlich bessere Werte als die entsprechenden BER Kurven auf und sind sehr zufriedenstellend. Die Kanalcodierung trägt hier einen enormen Teil durch die Fehlerkorrektur bei. Lediglich die PER mit einer maximalen Dopplerverschiebung von 50Hz verbessert sich durch die Kanalcodierung nicht signifikant und läuft in einen Error-Floor mit einer PER von $3 \cdot 10^{-2}$. Es treten zu viele Bitfehler auf, wodurch die Korrekturwahrscheinlichkeit des Faltungscodes sehr gering ist. Die Dopplerverschiebung von 50Hz entspricht einer Geschwindigkeit von 270km/h. Der Wert wurde bewusst sehr hoch angesetzt um die Grenzen des Systems zu testen.

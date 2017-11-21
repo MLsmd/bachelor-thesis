@@ -116,7 +116,7 @@ Abb.~\ref{fig:class_diagramm} zeigt das Klassendiagramm der Applikation. Python 
 \subsection{Python main}
 Die Python Klasse \dq DABstep\dq stellt das Zentrum der Applikation aus Nutzersicht dar. Sie enthält alle Methoden, die den Nutzer mit der App interagieren lassen. Dazu gehören zum einen sog. Setter Methoden, die den Transceiver bzw. dessen C++ Blöcke steuern, also beispielsweise den DAB Empfänger starten oder die Lautstärke regeln. Zum anderen existieren sog. Getter Methoden, die Informationen aus den verschiedenen Blöcken des Flowgraphs extrahieren und zur Verfügung stellen. Ein wichtiges Beispiel hierfür sind die in der Applikation angezeigten Service Informationen wie zum Beispiel eine Radiosenderliste. Zusätzlich existieren viele kleine Methoden, die für eine bessere Bedienbarkeit sorgen.
 
-\subsection{Graphisches Frontend}
+\subsection{Grafisches Frontend}
 Die Informationen zum graphischen Design der Applikation liegen in einer separaten Klasse, dem sog. Frontend. Es beinhaltet alle Tabs, Widgets, Beschriftungen, etc. und deren Anordnung im Anzeigefenster der Applikation. Für die Implementierung der graphischen Benutzeroberfläche (GUI) wird die Python Bibliothek PyQt4 verwendet,\footnote{Die aktuelle Nachfolgeversion PyQt5 verwendet Python3, was in GNU Radio noch nicht komplett unterstützt ist.} Ein Großteil des Inhaltes dieser Klasse wurde mit dem Programm QtDesigner4 erzeugt.
 
 \subsection{Umsetzungstabellen}

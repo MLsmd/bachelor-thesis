@@ -34,11 +34,11 @@
 \newcommand{\thesisCC}[1]{\def \theThesisCC{#1}}
 \newcommand{\thesisPythonWatermark}[1]{\def \theThesisPythonWatermark{#1}}
 % Defaults
-\thesisTitle{Random Thesis Title}
-\thesisType{Master Thesis Type}
+\thesisTitle{Implementierung und Analyse einer DAB/DAB+ Transceiver Applikation}
+\thesisType{Bachelorarbeit}
 \thesisAuthor{Moritz Luca Schmid}
 \thesisAdvisor{Dr.-Ing. Holger J\"akel}
-\thesisHeadOfInstitute{Univ.-Prof. i.R. Dr.rer.nat. Friedrich K. Jondral}
+\thesisHeadOfInstitute{}
 \thesisSupervisor{Super-Assi Deluxe M.Sc.}
 \thesisStartDate{dd.mm.yyyy}
 \thesisEndDate{dd.mm.yyyy}
