@@ -20,10 +20,10 @@ Um eine möglichst optimale Synchronisations zu erreichen, werden in der folgend
 \subsection{Zeit Synchronisation}
 \label{sec:time_sync}
 Eine geeignete Zeitsynchonisation muss sowohl eine grobe Synchronisation des OFDM Frames, als auch eine feine Synchonisation der einzelnen OFDM Symbole sicherstellen. \\
-Der Beginn jedes Frames $ k $ wird durch das Nullsymbol $z_{0,k}$ markiert. Wegen $S(t) = 0$ für $t \in [0, T_{NULL}]$ stellt es eine zuverlässige Möglichkeit dar, den Anfang von Frames über eine Energiemessung zu detektieren. Die Energiemessung lässt sich über eine Autokorrelation des Signals realisieren.
+Der Beginn jedes Frames $ k $ wird durch das Nullsymbol $z_{0,k}$ markiert. Wegen $S(t) = 0$ für $t \in [0, T_{\text{NULL}}]$ stellt es eine zuverlässige Möglichkeit dar, den Anfang von Frames über eine Energiemessung zu detektieren. Die Energiemessung lässt sich über eine Autokorrelation des Signals realisieren.
 
 \begin{equation}
-E[i] = \sum \limits_{j=i}^{T_G}|x[j]|^2
+E[i] = \sum \limits_{j=i}^{T_G f_s + i - 1}|x[j]|^2
 \label{eq:energy}
 \end{equation}
 
@@ -36,9 +36,9 @@ Nachdem der Anfang eines Frames detektiert wurde, muss im Folgenden der Beginn j
 	\label{fig:sync_overview}
 \end{figure}
 
-Um \ac{ISI} zu minimieren ist der theoretisch optimale Abtastzeitpunkt genau am Ende des CPs zu wählen. Eine komplette \ac{ISI} Unterdrückung ist wegen $T_G < \tau_{max}$ mit einer maximalen Echo Verzögerung von $\tau_{max} = 300$ \textmu s nicht möglich \cite{dab_buch}. Jedoch wird die \ac{ISI} zu einem Minimum reduziert, wenn ein maximal später Startpunkt gewählt wird, da die Interferenzzeit $\tau_{max} - T_D$, bei $\tau_{max} < T_G+T_S$, dadurch minimiert wird.\\
+Um \ac{ISI} zu minimieren ist der theoretisch optimale Abtastzeitpunkt genau am Ende des CPs zu wählen. Eine komplette \ac{ISI} Unterdrückung ist wegen $T_G < \tau_{\text{max}}$ mit einer maximalen Echo Verzögerung von $\tau_{\text{max}} = 300$ \textmu s nicht möglich \cite{dab_buch}. Jedoch wird die \ac{ISI} zu einem Minimum reduziert, wenn ein maximal später Startpunkt gewählt wird, da die Interferenzzeit $\tau_{\text{max}} - T_D$, bei $\tau_{\text{max}} < T_G+T_S$, dadurch minimiert wird.\\
 
-Um den exakten Anfang eines Symbols zu bestimmen, wird die zyklische Wiederholung des Symbolanteils im \ac{CP} genutzt. Durch eine Korrelation des abgetasteten Empfangssignals $r[i]$ mit einer um $T_S$ verzögerten Version desselben Signals $r[i+T_S]$ über das Intervall $[i, i+T_G]$ kann der Anfang des \ac{CP} über einen Peak der Korrelation identifiziert werden.
+Um den exakten Anfang eines Symbols zu bestimmen, wird die zyklische Wiederholung des Symbolanteils im \ac{CP} genutzt. Durch eine Korrelation des abgetasteten Empfangssignals $r[i]$ mit einer um $T_S$ verzögerten Version desselben Signals $r[i+T_S f_s]$ über das Intervall $[i, i+T_G f_s]$ kann der Anfang des \ac{CP} über einen Peak der Korrelation identifiziert werden.
 
 % cyclic prefix figure
 \begin{figure}[h]
@@ -84,35 +84,33 @@ Um den exakten Anfang eines Symbols zu bestimmen, wird die zyklische Wiederholun
 
 %einfache correlation
 \begin{equation}
-y[i] = \sum \limits_{j=i}^{T_G}r[j] \conjugatet{r[j+T_S]}, \ \ y[i] \in \mathbb{C}
+y[i] = \sum \limits_{j=i}^{T_G f_s + i - 1}r[j] r^*[j+T_S], \ \ y[i] \in \mathbb{C}
 \label{eq:corr_einfach}
 \end{equation}
 
-Unter Berücksichtigung von AWGN ist r[i]=x[i]+n[i] mit $n[i] \sim \mathcal{N}(\mu,\,\sigma^{2})$ resultiert für die Korrelation
+Unter Berücksichtigung von AWGN ist $r$[i]=$x$[i]+$n$[i] mit $n[i] \sim \mathcal{N}(\mu,\,\sigma^{2})$ resultiert für die Korrelation
 
-\begin{equation}
-    \begin{aligned}
-y[i] &= \sum \limits_{j=i}^{T_G}(r[j]+n[j]) \conjugatet{(r[j+T_S]+n[j])} \\
-&= \sum \limits_{j=i}^{T_G}x[j] \conjugatet{r[j+T_S]} + \sum \limits_{j=i}^{T_G}r[j] \conjugatet{n[j+T_S]} + \sum \limits_{j=i}^{T_G}n[j] \conjugatet{x[j+T_S]} + \sum \limits_{j=i}^{T_G}n[j] \conjugatet{n[j+T_S]} \\
-&= P T_G + 2(P \sigma^2) + \sigma^4 \approx P T_G + 2(P \sigma^2)
-    \end{aligned}
-\end{equation}
+    \begin{alignat}{2}
+y[i] &= &&\sum \limits_{j=i}^{T_G f_s + i - 1}(r[j]+n[j]) (r[j+T_S]+n[j])^* \\
+&= &&\sum \limits_{j=i}^{T_G f_s + i - 1}x[j] r^*[j+T_S] + \sum \limits_{j=i}^{T_G f_s + i - 1}r[j] n^*[j+T_S] \\& &&+ \sum \limits_{j=i}^{T_G f_s + i - 1}n[j] x^*[j+T_S] + \sum \limits_{j=i}^{T_G f_s + i - 1}n[j] n^*[j+T_S] \\
+&= &&\, P T_G + 2(P \sigma^2) + \sigma^4 \approx P T_G + 2(P \sigma^2)
+    \end{alignat}
 
 und damit ein SNR des Korrelationssignals von
 \begin{equation}
-SNR = \frac{P_s}{P_n} = \frac{P T_G}{2 P \sigma^2} = \frac{T_G}{2 \sigma^2}
+\text{SNR} = \frac{P_s}{P_n} = \frac{P T_G f_s}{2 P \sigma^2} = \frac{T_G f_s}{2 \sigma^2}
 \end{equation}
 
-Durch eine Mittelung über $T_G = 504$ Samples ist das SNR somit ausreichend groß um eine entprechend genaue Peakdetektion durchführen zu können.
+Durch eine Mittelung über $T_G f_s = 504$ Samples ist das SNR somit ausreichend groß um eine entprechend genaue Peakdetektion durchführen zu können.
 
 Die Korrelation ist dabei auf die Energieanteile des Cyclic Prefixes und dessen Quelle nach $T_S$ normiert, sodass das Ergebnis unabhängig von der Empfangsleisung bleibt, die durch Empfangsqualität und verwendeter Hardware stark variieren kann.
 
 \begin{equation}
-    y_{norm}[i] = \frac{\sum \limits_{j=i}^{T_G}r[j] \conjugatet{r[j+T_S]}}{\sqrt{\sum \limits_{j=i}^{T_G}|r[j]|^2 \sum \limits_{j=i}^{T_G}|r[j+T_S]|^2}} = \frac{\sum \limits_{j=i}^{T_G}r[j]     \conjugatet{r[j+T_S]}}{\sqrt{E[i]E[i+T_S]}}
+    y_{\text{norm}}[i] = \frac{\sum \limits_{j=i}^{T_G f_s + i - 1}r[j] r^*[j+T_S]}{\sqrt{\sum \limits_{j=i}^{T_G f_s + i - 1}|r[j]|^2 \sum \limits_{j=i}^{T_G f_s + i - 1}|r[j+T_S]|^2}} = \frac{\sum \limits_{j=i}^{T_G f_s + i - 1}r[j] r^*[j+T_S]}{\sqrt{E[i]E[i+T_S]}}
     \label{eq:norm_corr}
 \end{equation}
 
-In Abbildung~\ref{fig:corr} ist die normierte Korrelation aus Gl.~\ref{eq:norm_corr} auf das Empfangssignal berechnet worden. Im Bereich von 2,8 bis 3,0 ms ist im Empfangssignal das Nullsymbol zu erkennen. Ein Peak der Korrelation befindet sich zum Beispiel genau bei 3ms, was dem Ende des Nullsymbols bzw. dem Anfang des Phasenreferenzsymbols entspricht. Es ist zu erkennen, dass die Flanken der Korrelation linear ansteigen. Die Breite einer Flanke entspricht $T_G$, also gerade dem Entscheidungsbereich für $T_D$. Durch die Linearität der Flanke und der Normierung, kann der relative Abtastzeitpunkt innerhalb des CPs über einen Schwellwert eingestellt werden. Der tatsächliche Abtastzeitpunkt wird anschließend mit einer Verzögerung von $T_G$ gesetzt. In der Implementierung von Abbildung~\ref{fig:corr} wurde ein Schwellwert von $0,85$ eingestellt, der sich als guter Kompromiss zwischen \ac{ISI} Unterdrückung und einem Sicherheitsabstand zu $T_D > T_G$ herausgestellt hat. Man beachte, dass bei $T_D > T_G$, Samples vom nachfolgenden Symbol im gesetzen Symbolfenster lägen, was zum Empfang von falscher Information führen würde. Dieser Fall entspricht einer fehlerhaften Zeitsynchronisation.
+In Abbildung~\ref{fig:corr} ist die normierte Korrelation aus Gl.~\ref{eq:norm_corr} auf das Empfangssignal berechnet worden. Im Bereich von 1,8 bis 3,0 ms ist im Empfangssignal das Nullsymbol zu erkennen. Ein Peak der Korrelation befindet sich zum Beispiel genau bei 3 ms, was dem Ende des Nullsymbols bzw. dem Anfang des Phasenreferenzsymbols entspricht. Es ist zu erkennen, dass die Flanken der Korrelation linear ansteigen. Die Breite einer Flanke entspricht $T_G$, also gerade dem Entscheidungsbereich für $T_D$. Durch die Linearität der Flanke und der Normierung, kann der relative Abtastzeitpunkt innerhalb des CPs über einen Schwellwert eingestellt werden. Der tatsächliche Abtastzeitpunkt wird anschließend mit einer Verzögerung von $T_G$ gesetzt. In der Implementierung von Abbildung~\ref{fig:corr} wurde ein Schwellwert von $0,85$ eingestellt, der sich als guter Kompromiss zwischen \ac{ISI} Unterdrückung und einem Sicherheitsabstand zu $T_D > T_G$ herausgestellt hat. Man beachte, dass bei $T_D f_s > T_G f_s$ Samples vom nachfolgenden Symbol im gesetzten Symbolfenster lägen, was zum Empfang von falscher Information führen würde. Dieser Fall entspricht einer fehlerhaften Zeitsynchronisation.
 
 \begin{figure}[h]
 \centering
@@ -132,6 +130,8 @@ Um eine mehrfache Berechnung von Gleichung~\ref{eq:energy} für die Energiemessu
     text width=4.5em, text badly centered, node distance=3cm, inner sep=0pt]
 \tikzstyle{start} = [rectangle, draw, fill=cyan!30, 
     text width=5em, text centered, rounded corners, minimum height=4em]
+\tikzstyle{class} = [rectangle, draw, dashed, 
+    text width=5em, text centered, rounded corners, minimum height=4em]
 \tikzstyle{output} = [trapezium, draw, fill=cyan!30, 
     text width=4em, text centered, minimum height=4em, trapezium right angle=110, trapezium left angle=70]
 \tikzstyle{block} = [rectangle, draw, fill=cyan!30, 
@@ -147,15 +147,21 @@ Um eine mehrfache Berechnung von Gleichung~\ref{eq:energy} für die Energiemessu
     \node [block, below of=peak, node distance=2.5cm] (energy) {Energie- messung};
     \node [decision, below of=energy] (first) {Symbol $z_{1,k}$?};
     \node [output, below of=first, node distance=3cm] (tag) {Start des Frames in $T_G$};
-    \node [block, right of=null, node distance=4.5cm] (skip) {überspringe $T_S$};
+    \node [block, right of=null, node distance=4.8cm] (skip) {überspringe $T_S$};
     \node [block, below of=skip, node distance=3cm] (corr2) {einmalige Korrelation};
     \node [decision, below of=corr2] (peak?2) {Peak?};
     \node [above of=null, node distance=2cm] (backtonull){};
     \node [output, below of=peak?2, node distance=3cm] (lost track){nicht mehr in Sync};
     
+    % klassifikation
+    \node[class, minimum height=17.8cm , text width=5.5cm](search) at (0,-10.2) {};
+    \node[below =0cm of search](search_text){Suche Frame Start};
+    \node[class, minimum height=13.5cm , text width=3.7cm, right=0.3cm of search.north east, anchor=north west](control) {};
+    \node[below =0cm of control](control_text){Kontrolle};
+    
     \path [line] (init) -- (null);
     \path [line] (null) -- node {ja} (corr);
-    \path [line] (null) -- node {nein} (skip);
+    \path [line, pos = 0.25] (null) -- node {nein} (skip);
     \path [line] (corr) -- (peak);
     \path [line] (peak) -- node {ja} (energy);
     \path [line] (energy) -- (first);
@@ -165,9 +171,9 @@ Um eine mehrfache Berechnung von Gleichung~\ref{eq:energy} für die Energiemessu
     \path [line] (skip) -- (corr2);
     \path [line] (corr2) -- (peak?2);
     \path [line] (peak?2.south) -- node {nein} (lost track);
-    \path [line] (peak?2.east) -- node{ja}++(1cm,0) -- ++(0,8cm) -- ++(-6.5,0);
+    \path [line] (peak?2.east) -- node{ja}++(1cm,0) -- ++(0,8cm) -- ++(-6.8,0);
     \path [line] (tag) -- node{}++(0,-1cm) -- node {} ++(-2.5cm,0) -- node{}++(0,17.5cm) -- ++(2.5cm,0);
-    \path [line] (lost track.south) -- ++(0,-1cm) -- ++(-2,0);
+    \path [line] (lost track.south) -- ++(0,-1cm) -- ++(-2.3,0);
 \end{tikzpicture}
 \end{center}
 \caption{Programmablaufplan der Zeitsynchronisation}
@@ -182,22 +188,22 @@ Abbildung~\ref{chart:zeitsync} zeigt den Programmablaufplan der Zeitsynchronisat
 \end{itemize}
 Alle diese Situationen haben gemeinsam, dass im Folgenden nach dem Peak des Symbols $z_{1,k}$ (erstes Symobl nach dem Nullsymbol) gesucht wird. Dafür wird iterativ an jedem Sample des Zeitsignals $x[i]$ eine Korrelation $y[i]$ nach Gl.~\ref{eq:norm_corr} durchgeführt. Es können Korrelationspeaks, analog zu Abb.~\ref{fig:corr},  detektiert werden, die jeweils dem Start eines Symbols entsprechen. Durch die Energiemessung kann das Symbol $z_{1,k}$ von den restlichen Symbolen $z_{l,k},$ mit  $l \in [2,76]$ unterschieden werden.
 
-Die Komplexität der Korrelationsoperation kann drastisch reduziert werden, indem die Summe, die laut Gl.~\ref{eq:corr_einfach} in jedem Schritt $T_G = 504$ Additionen durchführt, durch eine gleitende Summe ersetzt wird.
+Die Komplexität der Korrelationsoperation kann drastisch reduziert werden, indem die Summe, die laut Gl.~\ref{eq:corr_einfach} in jedem Schritt $T_G f_s = 504$ Additionen durchführt, durch eine gleitende Summe ersetzt wird.
 %gleitende Summe
 \begin{equation}
-    y[i+1] = y[i] - r[i] \conjugatet{r[i+T_S]} + r[i+T_G] \conjugatet{r[i+T_G+T_S]}
+    y[i+1] = y[i] - r[i] r^*[i+T_S f_s] + r[i+T_G f_s] r^*\left[i+(T_G+T_S) f_s]\right
     \label{eq:moving_sum}
 \end{equation}
 Dabei ist zu beachten, dass $y[i=0]$ komplett berechnet werden muss. Die diskrete Darstellung von Gleitkommawerten im Rechner führt zu Rundungsfehlern. Aus diesem Grund wird die Summe alle $i=100000$ Samples neu berechnet, um einen Drift von $y[i]$ zu vermeiden.\\
 
-Mit dem Anfang von $z_{1,k}$ stehen auch die Anfänge aller anderen Symbole des Frames fest, da sie mit dem festen und bekannten Abstand von $T_G+T_S$ direkt aufeinander folgen. Der Zweig \glqq Kontrolle\grqq{} springt daher nur noch vom Start eines Symbols $x[i]$ zum nächsten $x[i+T_G+T_S]$ und berechnet an dieser Stelle einmalig die Korrelation $y[i+T_G+T_S]$. Liegt $y[i+T_G+T_S]$ über einem Schwellwert, wird das Sample als Anfang des nächsten Symbols bestätigt und die Kontrollschleife iteriert zum nächsten Symbol. Falls an einem erwarteten Symbolanfang der Schwellwert der Korrelation unterschritten wird, wechselt das Programm in den Zweig \glqq Suche Frame Start\grqq{}.\\
+Mit dem Anfang von $z_{1,k}$ stehen auch die Anfänge aller anderen Symbole des Frames fest, da sie mit der festen und bekannten Verzögerung von $T_G+T_S$ direkt aufeinander folgen. Der Zweig \glqq Kontrolle\grqq{} springt daher nur noch vom Start eines Symbols $x[i]$ zum nächsten $x[i+(T_G+T_S)f_s]$ und berechnet an dieser Stelle einmalig die Korrelation $y[i+(T_G+T_S)f_s]$. Liegt $y[i+(T_G+T_S)f_s]$ über einem Schwellwert, wird das Sample als Anfang des nächsten Symbols bestätigt und die Kontrollschleife iteriert zum nächsten Symbol. Falls an einem erwarteten Symbolanfang der Schwellwert der Korrelation unterschritten wird, wechselt das Programm in den Zweig \glqq Suche Frame Start\grqq{}.\\
 
-Weil die Symboldauer genau bekannt ist, mag eine Kontrolle von jedem einzelnen Symbol zunächst überflüssig erscheinen. Der Aufwand wird jedoch gerechtfertigt, um Störeffekte wie einen Clockdrift rechtzeitig erkennen und korrigieren zu können. Ein Clockdrift kann zu einem Verlust der Synchronisation und damit zu Übertragungsfehlern führen.
-Ein beispielhafter Clockdrift von 50 ppm kann im rauschfreien Fall zu einem maximalen Phasenfehler von
+Weil die Symboldauer genau bekannt ist, mag eine Kontrolle von jedem einzelnen Symbol zunächst überflüssig erscheinen. Der Aufwand ist jedoch gerechtfertigt, um Störeffekte wie einen Clockdrift rechtzeitig erkennen und korrigieren zu können. Ein Clockdrift kann zu einem Verlust der Synchronisation und damit zu Übertragungsfehlern führen.
+Ein beispielhafter Clockdrift von 50 ppm kann im rauschfreien Fall auf dem äußersten belegten Unterträger zu einem maximalen Phasenfehler von
 \begin{equation}
 \begin{aligned}
     \Delta\varphi_{max} = 2 \pi f_{max} \Delta t &= 2 \pi \frac{B}{2}\, \texttt{Clockdrift}\, (T_G+T_S) \\
-    &=  2 \pi \frac{1536 Hz}{2}\, 50 \text{ppm}\, 1246 \text{\textmu s} \\
+    &=  2 \pi \frac{1536 Hz}{2}\, 50\, \text{ppm}\; 1246\, \text{\textmu s} \\
     &= 0,3\, \text{rad} = \ang{17,2}
     \end{aligned}
     \label{eq:clockdrift}
@@ -212,11 +218,11 @@ Die Messung und Korrektur eines Frequenzoffsets $f_{off}$ ist der nächste Schri
 \subsubsection{Feine Frequenz-Schätzung}
 Für die Messung des Frequenzoffsets kann wieder auf die Korrelaton aus Gl.~\ref{eq:corr_einfach} zurückgegriffen werden. Ein Frequenzoffset lässt sich hier als konstante Änderung der Phase über der Zeit messen, da die Phase von \ac{CP} und dessen Wiederholung nach $T_S$ gleich sind, wenn kein Frequenzoffset vorliegt. 
 \begin{equation}
-f_{off}[i] = \frac{arg(y[i])}{T_S}
+f_{\text{off}}[i] = \frac{\text{arg}(y[i])}{T_S}
 \label{eq:fine_frequency_estimation}
 \end{equation}
 Ein zusätzliches \ac{AWGN} ändert die Phase jedes einzelnen Samples. Wegen der Mittelwertfreiheit von \ac{AWGN} kann die Varianz des gemessenen Frequenzoffsets durch eine Mittelung reduziert werden.
-Durch das Korrelationsintervall von $T_G = 504$ Samples wird eine solche Mittelung durchgeführt, was die relativ kleine Varianz der Frequenzoffsetmessung in Abb.~\ref{plot:varianz_freq_offset} bestätigt.
+Durch das Korrelationsintervall von $T_G f_s = 504$ Samples wird eine solche Mittelung durchgeführt, was die relativ kleine Varianz der Frequenzoffsetmessung in Abb.~\ref{plot:varianz_freq_offset} bestätigt.
 \begin{figure}[htb]
 \begin{center}
 \begin{tikzpicture}
@@ -242,7 +248,7 @@ f_M \overset{!}{<} \frac{3\sigma(\text{SNR})}{\sqrt{N}}
 \end{equation}
 Mit $a=50$ m/s$^2$ und einer Trägerfrequenz von $f_T = 200$ MHz ist
 \begin{equation}
-\frac{df}{dt} = f_T \frac{a}{c} = 33,3 \text{Hz/s}
+\frac{df}{dt} = f_T \frac{a}{c} = 33,3\, \text{Hz/s}
 \end{equation}
 und damit
 \begin{equation}
@@ -262,7 +268,7 @@ Wegen arg$(y[i]) \in (-\pi,\pi]$ rad ist der gemessene Frequenzoffset aus Gl.~\r
 Da sowohl die Erkennung, als auch die Korrektur einer Unterträgerverschiebung im Frequenzbereich wesentlich einfacher ist, wird die grobe Frequenz-Korrektur nach der FFT Operation (Abschn.~\ref{sec:FFT}) durchgeführt.
 Von den 2048 Unterträgern, welche aus der FFT resultieren, sind jeweils die ersten $K = \frac{1536}{2}$ rechts und links des zentralen DC-Trägers belegt. Die restlichen unbelegten Träger enthalten am Empfänger bei vernachlässigter \ac{ICI} lediglich \ac{AWGN}. Durch eine Korrelation des FFT Vektors mit dem Vektor der bekannten Trägerbelegung $[1,1,...,1,0,1,...,1,1]$ der Länge $1536+1$ kann der Trägeroffset n und der erste belegte Unterträger $X[n]$ ermittelt werden.
 \begin{equation}
-n = \argmax_i \sum \limits_{j=i}^{i+K} |X[j]|^2 \ \ \text{mit} \ \ i \in [0,L_{FFT}-K)
+n = \argmax_i \sum \limits_{j=i}^{i+K-1} |X[j]|^2 \ \ \text{mit} \ \ i \in [0,L_{FFT}-K)
 \end{equation}
 
 \subsection{FFT}
@@ -280,13 +286,13 @@ An dieser Stelle würde entsprechend der Umkehrung des Senders nun die QPSK Demo
 Die Kanaldecodierung durchläuft die Encodierungskette in umgekehrter Reihenfolge und stellt so schrittweise den gesendeten Bitstream wieder her.
 
 \subsubsection{Zeitinterleaving}
-Das Zeitinterleaving hat im Sender die Bits nach festen Regeln mit einer Verzögerung versehen. Der Bitstream kann also wiederhergestellt werden, indem dieselbe Verzögerung angewendet wird, um mit dem Schreiben auf das jeweilige Bit zu warten. Damit ein komplettes Symbol geschrieben werden kann, benötigt der Interleaverblock also neben dem aktuellen Symbol auch alle 15 nachfolgenden Symbole. Der Block benötigt also ein Gedächtnis von 15 Symbolen. Die in \ref{sec:time_interleaving_std} angesprochene Verzögerung äußert sich in diesem Fall darin, dass die ersten 15 produzierten Symbole des Blocks kein ausreichend großes Gedächtnis haben und die entstandenen Symbole daher fehlerbehaftet sind. Wegen der Fehlerkorrekturfähigkeit des im folgenden Abschnitts beschriebenen Faltungsdecoders ist es aber praktisch sogar möglich, die tatsächliche Verzögerung um einige Symbole zu reduzieren, da die letzten verzögerten Bits vom Decoder schon a priori bestimmt werden können.
+Das Zeitinterleaving hat im Sender die Bits nach festen Regeln mit einer Verzögerung versehen. Der Bitstream kann also wiederhergestellt werden, indem dieselbe Verzögerung angewendet wird, um mit dem Schreiben auf das jeweilige Bit zu warten. Damit ein komplettes Symbol geschrieben werden kann, benötigt der Interleaverblock neben dem aktuellen Symbol auch alle 15 nachfolgenden Symbole. Der Block benötigt also ein Gedächtnis von 15 Symbolen. Die in \ref{sec:time_interleaving_std} angesprochene Verzögerung äußert sich in diesem Fall darin, dass die ersten 15 produzierten Symbole des Blocks kein ausreichend großes Gedächtnis haben und die entstandenen Symbole daher fehlerbehaftet sind. Wegen der Fehlerkorrekturfähigkeit des im folgenden Abschnitts beschriebenen Faltungsdecoders ist es aber praktisch sogar möglich, die tatsächliche Verzögerung um einige Symbole zu reduzieren, da die letzten verzögerten Bits vom Decoder schon a priori bestimmt werden können.
 
 \subsubsection{Faltungsdecodierung und Viterbi-Algorithmus}
 Der Faltungsdecoder nutzt die im Encoder eingefügte Redundanz, um aus der empfangenen Bitfolge die wahrscheinlichste Sendefolge zu bestimmen. Das \ac{MAP} Kriterium ist wegen der Gleichverteilung der Sendesymbole gleich dem \ac{ML} Kriterium. Um die Komplexität des Entscheiders von exponentieller Ordnung auf lineare Ordnung zu reduzieren, wird der Viterbi-Algorithmus zur Entscheidungsfindung herangezogen \cite{nt1}. Eine effiziente Implementierung eines Softbit QPSK Viterbi Decodierers ist im GNU Radio Modul \textit{gr-trellis} vorhanden \cite{repo:gr-trellis}.
 
-\subsubsection{Energieverwischung}
-Die angewendete Energieverwischung kann rückgängig gemacht werden, indem die selbe Operation wie im Empfänger angewendet wird. Die identischen Bits $y[i]$ der \ac{PRBS} löschen sich zu jedem Sample $i \in \mathbb{N}$ durch die Exklusiv-Oder Verküpfung gegenseitg aus, sodass wieder das Sendebit $x[i]$ entsteht.
+\subsubsection{Scrambling}
+Die angewendete Energieverwischung kann rückgängig gemacht werden, indem die selbe Operation wie im Empfänger angewendet wird. Die identischen Bits $y[i]$ der \ac{PRBS} löschen sich zu jedem Sample $i \in \mathbb{N}$ durch die Exklusiv-Oder Verküpfung gegenseitig aus, sodass wieder das Sendebit $x[i]$ entsteht.
 \begin{equation}
     x[i] \oplus y[i] \oplus y[i] = x[i], \; \; \; x[i],y[i] \in \{0,1\}
 \end{equation}

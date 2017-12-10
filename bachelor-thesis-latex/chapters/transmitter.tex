@@ -40,7 +40,7 @@ Da eine Namensbeschriftung mit 16 Buchstaben ein FIB schon nahezu füllt, werden
 
 \subsection{FIC Encoder}
 \label{sec:fic_encoder}
-Der FIC Encoder ist in einem hierarchischen Block implementiert, dessen beinhaltete C++ Blöcke in Abb.~\ref{fig:fic_encoder} dargestellt sind. Er fasst die gesamte Kanalcodierungskette aus Kap.~\ref{sec:FIC} zusammen. Während für die CRC Berechnung und die Faltungscodierung eine jeweilige Klasse implementiert wurde, besteht die Energieverwischung, wie in Gl.~\ref{eq:energy_dispersal} beschrieben, lediglich aus einer XOR Verknüpfung des Bitstreams mit der PRBS Folge, was mit vorhanden GNU Radio Blöcken realisierbar ist.
+Der FIC Encoder ist in einem hierarchischen Block implementiert, der in Abb.~\ref{fig:fic_encoder} dargestellt ist. Er fasst die gesamte Kanalcodierungskette aus Kap.~\ref{sec:FIC} zusammen. Während für die CRC Berechnung und die Faltungscodierung eine jeweilige Klasse implementiert wurde, besteht der Scrambler, wie in Gl.~\ref{eq:energy_dispersal} beschrieben, lediglich aus einer XOR Verknüpfung des Bitstreams mit der PRBS Folge, was mit vorhanden GNU Radio Blöcken realisierbar ist.
 
 \begin{figure}[ht]
 \centering
@@ -56,7 +56,7 @@ Die Eingangsdaten der Audioencoder sind 16 bit \ac{PCM} Samples. Um Audio für d
 Der MPEG 2 Encoder Block verwendet einen Patch der frei verfügbare MPEG2 Encoder Bibliothek \textit{TooLAME}. Der Patch stammt vom \textit{ODR mmbTools} Projekt \cite{repo:odr_audioenc} und ist speziell auf DAB Audio Encoding angepasst. Der Code wurde in einen GNU Radio Block integriert um ihn in einen Flowgraph einbauen zu können. Die Funktionalität des Encoder Blocks kann mit einem Loopback-Test verifiziert werden, indem der encodierte Stream mit einem Audio-Player erfolgreich und fehlerfrei decodiert und abgespielt wird.
 
 \subsubsection{MPEG 4 HE-AACv2 (DAB$+$)}
-Der MPEG 4 Encoder basiert auf einem Patch der \textit{FDK-AAC Codec Bibliothek für Android der Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.} \cite{repo:fdk-aac}. Die Bibliothek untersützt eine Reihe von AOTs (Audio Optimization Tools) welche die Audiokompression nach unterschiedlichen Paramtern optimieren. Es stehen die folgenden AOTs zur Verfügung:
+Der MPEG 4 Encoder basiert auf einem Patch der \textit{FDK-AAC Codec Bibliothek für Android der Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.} \cite{repo:fdk-aac}. Die Bibliothek unterstützt eine Reihe von AOTs (Audio Optimization Tools) welche die Audiokompression nach unterschiedlichen Paramtern optimieren. Es stehen die folgenden AOTs zur Verfügung:
 \begin{itemize}
 \item AAC-LC: Geringe Komplexität ($1,5$ bits/Sample) für minimales Codierungsdelay
 \item HE-AAC Dualband SBR: Hohe Effizienz ($0,625$ bits/Sample) durch Spektralbandreplikation.
@@ -67,7 +67,7 @@ Um den MPEG 4 Encoder Block nicht zu sehr auf DAB+ zu spezialisieren, wurde der 
 
 \subsection{MSC Encoder}
 Der MSC Encoder entpricht von Aufbau und Struktur dem FIC Encoder Block aus Kapitel \ref{sec:fic_encoder}, wobei er keinen CRC Block besitzt und um eine zusätzliche Klasse für das Zeitinterleaving ergänzt ist.\\
-Die durch das Zeit-Interleaving eingeführte Verzögerung um bis zu 15 Logische Frames (siehe Abschn.~\ref{sec:time_interleaving_std}) stellt die Implementierung des Zeit-Interleaving Blocks vor Herausforderungen. Zum einen benötigt der Block ein Gedächtnis von 15 Logischen Frames. Ein dynamisches Speichern dieser Frames in Objekte der Klasse kostet viel Rechenleistung und ist daher unbedingt zu vermeiden um das System echtzeitfähig zu halten. Anstelle dessen, werden die jeweils letzten 15 Frames nach deren eigentlichen Verarbeitung nicht aus dem Eingangsbuffer entfernt, sondern der Pointer des Eingangsbuffers wird um 15 Frames verschoben. Der Eingangsbuffer ist damit zu jeder Zeit um 15 Frames größer, es müssen aber keine zusätzlichen Kopieroperationen durchgeführt werden.\\
+Die durch das Zeit-Interleaving eingeführte Verzögerung um bis zu 15 Logische Frames (siehe Abschn.~\ref{sec:time_interleaving_std}) stellt die Implementierung des Zeit-Interleaving Blocks vor Herausforderungen. Zum einen benötigt der Block ein Gedächtnis von 15 Frames. Ein dynamisches Speichern dieser Frames in Objekte der Klasse kostet viel Rechenleistung und ist daher unbedingt zu vermeiden um das System echtzeitfähig zu halten. Anstelle dessen werden die jeweils letzten 15 Frames nach deren eigentlichen Verarbeitung nicht aus dem Eingangsbuffer entfernt, sondern der Pointer des Eingangsbuffers wird um 15 Frames verschoben. Der Eingangsbuffer ist damit zu jeder Zeit um 15 Frames größer, es müssen aber keine zusätzlichen Kopieroperationen durchgeführt werden.\\
 Zum anderen stellt der Beginn des Streams ein Problem für den Algorithmus dar. An dieser Stelle liegt dem Zeit-Iterleaver noch keine Historie vor, sodass er keine Möglichkeit hat, mit dem Interleaving zu beginnen. Aus diesem Grund wird die Historie des Blocks initial mit 15 Frames gefüllt, die Nullen enthalten.
 
 \subsection{Multiplexer}
@@ -77,7 +77,7 @@ Der Multiplexer Block hat prinzipiell die Aufgabe eines Parallel-Seriell Wandler
 Der OFDM Modulator Block ist ein hierarchischer Block mit vielen Unterklassen. Jede Klasse führt dabei einen der in \ref{sec:ofdm_mod} beschriebenen Schritte zur Modulation durch.
 
 \subsubsection{QPSK Mapping}
-Der QPSK Mapper bildet 1 Byte auf 4 komplexe QPSK Symbole ab. Da wie in \ref{sec:qpsk} beschrieben zuerst die Realteile und anschließend die Imaginärteile eines kompletten OFDM Symbols übertragen werden, kann der QPSK Mapper nicht Byte für Byte arbeiten, also jedes Byte direkt auf 4 QPSK Symbole abbilden. Deshalb arbeitet der Mapper auf Vektorbasis der Länge $1536/4$ bits am Eingang, bzw. $1536$ bits am Ausgang. Dies umfasst genau die Länge eines OFDM Symbols.
+Der QPSK Mapper bildet 1 Byte auf 4 komplexe QPSK Symbole ab. Da wie in \ref{sec:qpsk} beschrieben zuerst die Realteile und anschließend die Imaginärteile eines kompletten OFDM Symbols übertragen werden, kann der QPSK Mapper nicht Byte für Byte arbeiten, also jedes Byte direkt auf 4 QPSK Symbole abbilden. Deshalb arbeitet der Mapper auf Vektorbasis der Länge $1536/4$ Bytes am Eingang, bzw. $1536$ komplexen Symbolen am Ausgang. Dies umfasst genau die Länge eines OFDM Symbols.
 
 \subsubsection{Einfügen des Phasenreferenzsymbols}
 Das Phasenreferenzsymbol wird schon als ein um $\pi/4$ gedrehtes QPSK Symbol generiert. Daher wird es erst nach der QPSK Modulation der Datensymbole an das Sendeframe angehängt. Das Phasenreferenzsymbol ist bei jedem Sendeframe gleich und kann deshalb im Konstruktor einmalig generiert werden um bei Laufzeit nur noch in den Buffer kopiert zu werden.
@@ -85,7 +85,7 @@ Das Phasenreferenzsymbol wird schon als ein um $\pi/4$ gedrehtes QPSK Symbol gen
 \subsubsection{Differentielle Modulation}
 Die Differentielle Modulation stellt eine komplexe Multiplikation jedes Symbols mit dessen Vorgänger dar (siehe~\ref{sec:diff_mod}). Auch hier wird auf Vektorbasis gearbeitet.
 
-\subsubsection{Frequenzspreizung}
+\subsubsection{Frequenz-Interleaving}
 Vor der OFDM Modulation müssen die 1536 D-QPSK Symbole auf die IFFT Länge von 2048 gebracht werden. Dazu werden symmetrisch am Anfang und Ende des Vektors jeweils 256 Nullelemente eingefügt.\\
 Das anschließende Vertauschen der OFDM Unterträger folgt der Regel
 \begin{equation}
@@ -100,10 +100,10 @@ wobei $\Pi(i)$ die Permutation ist, die sich aus deren Vorgänger $\Pi(i-1)$ erg
 Die OFDM Operation kann nach~\ref{sec:ofdm} als \ac{IDFT} durchgeführt werden. Wegen $2048 = 2^{11}$ kann die IDFT als eine deutlich schnellere IFFT realisert werden. Eine IFFT Implementierung ist in dem GNU Radio Modul \glqq gr-fft\grqq{} vorhanden \cite{repo:gr-fft} und wird verwendet.
 
 \subsubsection{Einfügen des Cyclic Prefixes}
-Nach der IFFT liegt das Sendesignal nun im Zeitbereich vor. Das Einfügen des Cyclic Prefixes (CPs) entspricht dem Kopieren vom Ende jedes Symbols an den Anfang. Da CPs eine breite Anwendung in der Nachrichtentechnik haben, existiert in GNU Radio schon ein Block mit dieser Funktionalität, der nur noch mit der passenden Symbollänge $T_S = 2048$ Samples und der Länge des Cyclic Prefixes $T_G = 504$ Samples initialisiert wird.
+Nach der IFFT liegt das Sendesignal nun im Zeitbereich vor. Das Einfügen des Cyclic Prefixes (CPs) entspricht dem Kopieren vom Ende jedes Symbols an den Anfang. Da CPs eine breite Anwendung in der Nachrichtentechnik haben, existiert in GNU Radio schon ein Block mit dieser Funktionalität, der nur noch mit der passenden Symbollänge $T_S f_s = 2048$ Samples und der Länge des Cyclic Prefixes $T_G f_s = 504$ Samples initialisiert wird.
 
 \subsubsection{Einfügen des Nullsymbols}
-Als letzter Schritt in der Sendekette erfolgt das Einfügen des Nullsymbols. Dabei werden $T_{NULL}=2656$ Samples mit dem Wert $0+0j$ zwischen zwei Sendeframes geschrieben.
+Als letzter Schritt in der Sendekette erfolgt das Einfügen des Nullsymbols. Dabei werden $T_{\text{NULL}} f_s =2656$ Samples mit dem Wert $0+0j$ zwischen zwei Sendeframes geschrieben.
 
 \subsubsection{}
 Das Basisbandsignal ist nun bereit um hochgemischt und anschließend gesendet zu werden. Beide Schritte sind in dem GNU Radio Block \textit{USRP Sink} vereint, der die Schnittstelle zwischen Software und Hardware bildet. Alternativ lässt sich das Basisbandsignal natürlich auch als I/Q Daten in einer Binärdatei speichern.

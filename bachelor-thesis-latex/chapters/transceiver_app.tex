@@ -1,5 +1,5 @@
 \chapter{Implementierung einer grafischen Transceiver Applikation}
-Ein als GNU Radio Flowgraph implementierter DAB/DAB+ Transceiver erfüllt funktionstechnisch alle notwendigen Anforderungen. Die Benutzerfreundlichkeit ist allerdings sehr eingeschränkt. Beispielsweise muss die Speicheradresse eines Kanals manuell aus der Konsole abgelesen werden, um sie im MSC Decoder anzugeben. Um die Benutzterfreundlichkeit zu erhöhen und den DAB/DAB+ Transceiver damit zu einer vollwertigen und ansprechenden Applikation werden zu lassen, wird eine Python Applikation mit grafischem Front-End implementiert, die mit den Namen \glqq \textit{DABstep}\grqq{} trägt.
+Ein als GNU Radio Flowgraph implementierter DAB/DAB+ Transceiver erfüllt funktionstechnisch alle notwendigen Anforderungen. Die Benutzerfreundlichkeit ist allerdings sehr eingeschränkt. Beispielsweise muss die Speicheradresse eines Kanals manuell aus der Konsole abgelesen werden, um sie im MSC Decoder anzugeben. Um die Benutzterfreundlichkeit zu erhöhen und den DAB/DAB+ Transceiver damit zu einer vollwertigen und ansprechenden Applikation werden zu lassen, wird eine Python Applikation mit grafischem Front-End implementiert, die den Namen \textit{DABstep} trägt.
 \section{Klassenstruktur der Applikation}
 Abb.~\ref{fig:class_diagramm} zeigt das Klassendiagramm der Applikation. Python Klassen sind durch abgerundete Ecken von den C++ Klassen unterscheidbar.
 
@@ -120,23 +120,23 @@ tabellen
 Die Python Klasse \glqq \textit{DABstep}\grqq{} stellt das Zentrum der Applikation aus Nutzersicht dar. Sie enthält alle Methoden, die den Nutzer mit der App interagieren lassen. Dazu gehören zum einen sog. Setter Methoden, die den Transceiver bzw. dessen C++ Blöcke steuern, also beispielsweise den DAB Empfänger starten oder die Lautstärke regeln. Zum anderen existieren sog. Getter Methoden, die Informationen aus den verschiedenen Blöcken des Flowgraphs extrahieren und zur Verfügung stellen. Ein wichtiges Beispiel hierfür sind die in der Applikation angezeigten Service Informationen, wie zum Beispiel eine Radiosenderliste. Zusätzlich existieren viele kleine Methoden, die für eine bessere Bedienbarkeit sorgen.
 
 \subsection{Grafisches Frontend}
-Die Informationen zum graphischen Design der Applikation liegen in einer separaten Klasse, dem sog. Frontend. Es beinhaltet alle Tabs, Steuerelemente (engl. Widgets), Beschriftungen, etc. und deren Anordnung im Anzeigefenster der Applikation. Für die Implementierung der graphischen Benutzeroberfläche (GUI) wird die Python Bibliothek PyQt4\footnote{Die aktuelle Nachfolgeversion PyQt5 verwendet Python3, was in GNU Radio noch nicht komplett unterstützt ist.} verwendet. Ein Großteil des Inhaltes dieser Klasse wurde mit dem Programm QtDesigner4 erzeugt.
+Die Informationen zum grafischen Design der Applikation liegen in einer separaten Klasse, dem sog. Frontend. Es beinhaltet alle Tabs, Widgets, Beschriftungen, etc. und deren Anordnung im Anzeigefenster der Applikation. Für die Implementierung der grafischen Benutzeroberfläche (GUI) wird die Python Bibliothek PyQt4\footnote{Die aktuelle Nachfolgeversion PyQt5 verwendet Python3, was in GNU Radio noch nicht komplett unterstützt ist.} verwendet. Ein Großteil des Inhaltes dieser Klasse wurde mit dem Programm QtDesigner4 erzeugt.
 
 \subsection{Umsetzungstabellen}
 Eine dritte Python Klasse enthält alle Umsetzungstabellen (engl. lookup tables). Diese Umsetzungstabellen übersetzen die in Bits codierten Service Informationen wie zum Beispiel die Sprache oder das Land des DAB Ensembles in für Menschen lesbare Zeichenketten. Die Umsetzungstabellen sind in einem separaten Standarddokument der ETSI \cite{etsi:registered_tables} definiert.
 
-\section{GNU Radio Flowgraphen}
-Die funktionellen Kerne der Applikation sind die beiden GNU Radio Flowgraphen für den Transmitter und den Receiver. Sie enthalten die Definition, Instanzierung und Verbindung der einzelnen C++ Funktionalblöcke und bilden einen vollwertigen Transmitter bzw. Receiver. Im groben Aufbau entsprechen sie den bereits in vorherigen Kapiteln vorgestellten GNU Radio Flowgraphen aus Abb.~\ref{fig:grc_receiver} bzw. Abb.~\ref{fig:transmitter}. Abhängig von den Argumenten der Klasse werden die Flowgraphen aber individuell initialisiert. Zum Beispiel kann, je nach Konfiguration des Empfängers, eine Binärdatei oder Hardware als IQ Datenquelle dienen. Im Empfänger können ganze Zweige hinzukommen, wenn mehrere Audiostreams parallel gesendet werden.\\
-Die Flowgraphen laufen in einem separaten Thread. Dies verhindert, dass die komplette Applikation eingefroren wird, wenn der Flowgraph zum Beispiel überlastet ist.
+\section{GNU Radio Flowgraphs}
+Die funktionellen Kerne der Applikation sind die beiden GNU Radio Flowgraphs für den Transmitter und den Receiver. Sie enthalten die Definition, Instanziierung und Verbindung der einzelnen C++ Funktionalblöcke und bilden einen vollwertigen Transmitter bzw. Receiver. Im groben Aufbau entsprechen sie den bereits in vorherigen Kapiteln vorgestellten GNU Radio Flowgraphs aus Abb.~\ref{fig:grc_receiver} bzw. Abb.~\ref{fig:transmitter}. Abhängig von den Argumenten der Klasse werden die Flowgraphs aber individuell initialisiert. Zum Beispiel kann, je nach Konfiguration des Empfängers, eine Binärdatei oder Hardware als IQ Datenquelle dienen. Im Empfänger können ganze Zweige hinzukommen, wenn mehrere Audiostreams parallel gesendet werden.\\
+Die Flowgraphs laufen in einem separaten Thread. Dies verhindert, dass die komplette Applikation eingefroren wird, wenn der Flowgraph zum Beispiel überlastet ist.
 
 \subsubsection{GNU Radio Blöcke}
-Die grundlegendste Klasse bilden die C++ Funktionalblöcke. Dazu gehören die in Abschn.~\ref{sec:imp_des_transmitters} und~\ref{sec:impl_des_receivers} beschriebenen Klassen des in diesem Projekt implementierten Moduls gr-dab, sowie einige grundlegende Blöcke aus anderen GNU Radio Modulen. Manche Gruppen von C++ Blöcken sind aus Gründen der Übersicht zu hierarchischen Python-Blöcken zusammengefasst.\\
+Die grundlegendste Klasse bilden die C++ Funktionalblöcke. Dazu gehören die in Abschn.~\ref{sec:imp_des_transmitters} und~\ref{sec:impl_des_receivers} beschriebenen Klassen des in diesem Projekt implementierten Moduls gr-dab, sowie einige grundlegende Blöcke aus anderen GNU Radio Modulen. Manche Gruppen von C++ Blöcken sind aus Gründen der Übersichtlichkeit zu hierarchischen Python-Blöcken zusammengefasst.\\
 
-Durch die genau definierte Funktion eines jeden Blocks und der hohen Flexibilität der GNU Radio Flowgraphen ist es möglich, nahezu die gesamte Datenverarbeitung und Entscheidungslogik innerhalb der Flowgraphen zu implementieren. Das hat den Vorteil, dass nur ein Minimum an Logik im Benutzerfrontend vorhanden sein muss.
+Durch die genau definierte Funktion eines jeden Blocks und der hohen Flexibilität der GNU Radio Flowgraphs ist es möglich, nahezu die gesamte Datenverarbeitung und Entscheidungslogik innerhalb der Flowgraphs zu implementieren. Das hat den Vorteil, dass nur ein Minimum an Logik im Benutzerfrontend vorhanden sein muss.
 
 
 \section{Datenfluss}
-Ein Großteil des Datenflusses geschieht in den C++ Blöcken, die große Mengen an komplexen IQ Samples oder Bits mit hohen Raten verarbeiten müssen und diese über Ringbuffer an den jeweils nächsten Block übergeben. \\
+Ein Großteil des Datenflusses geschieht zwischen den C++ Blöcken, die große Mengen an komplexen IQ Samples oder Bits mit hohen Raten verarbeiten müssen und diese über Ringbuffer an den jeweils nächsten Block übergeben. \\
 Zusätzlich müssen aber auch Daten, wie zum Beispiel die MCI und SI, von den Datenverarbeitungsblöcken zur Benutzeroberfläche transportiert werden, um sie dort in einer strukturierten und für den Menschen gut lesbaren Form darzustellen. Bei diesem Datenstrom fallen geringe Datenmengen an und der Fokus liegt auf einer guten Strukturierung und Charakterisierung.
 Eine geeignete Datenstruktur muss daher folgende Anforderungen erfüllen:
 \begin{itemize}
@@ -148,7 +148,7 @@ Eine geeignete Datenstruktur muss daher folgende Anforderungen erfüllen:
 \end{itemize}
 \item \textbf{Gute Lesbarkeit} für Menschen
 \end{itemize}
-Das Datenformat \ac{JSON} erfüllt diese Eigenschaften hinreichend und wird in dieser Arbeit für den Metadatenfluss zum graphischen Frontend verwendet.
+Das Datenformat \ac{JSON} erfüllt diese Eigenschaften hinreichend und wird in dieser Arbeit für den Metadatenfluss zum grafischen Frontend verwendet.
 \subsection{JSON}
 Die grundlegenden Datenstrukturen des JSON Formats sind:
 \begin{equation}

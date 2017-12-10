@@ -1,5 +1,6 @@
 \documentclass{article}
-\usepackage[utf8]{inputenc}
+
+\usepackage[latin1]{inputenc}
 \usepackage{tikz}
 \usetikzlibrary{calc}
 \usepackage{tkz-euclide}
@@ -8,38 +9,20 @@
 \begin{document}
 \pagestyle{empty}
 
-
+\begin{figure} [htb]
+\begin{center}
 \begin{tikzpicture}
+
+    
+% MSC ###############################################
 \tikzstyle{block} = [rectangle, rounded corners, draw, text width=4.8em, text centered, minimum height=4em]
 \tikzstyle{input} = [rectangle, text width=0em, minimum height=0em]
-
-% FIC chain ##################################################
-
-% blocks
-    \node [](null){};
-    \node [input](si)[above=0.1cm of null]{SI};
-    \node [input](mci)[below=0.1cm of null]{MCI};
-    \node [block, right=0.8cm of null] (FIB) {FIB Quelle};
-    \node [block, right=0.5cm of FIB, text width=4em] (CRC) {CRC16};
-    \node [block, right=0.5cm of CRC] (Energy) {Scrambler};
-    \node [block, right=0.5cm of Energy] (conv) {Faltungs- encoder};
-% arrows
-    \path [line] (si.east) -- (FIB.west|-si);
-    \path [line] (mci.east) -- (FIB.west|-mci);
-    \path [line] (FIB.east) -- (CRC.west);
-    \path [line] (CRC.east) -- (Energy.west);
-    \path [line] (Energy.east) -- (conv.west);
-    \path [line] (conv.east) -- ++(0.5,0);
-    
-    
-% MSC chain ##################################################
-% blocks
     % audio1
-    \node [block, below = 1.5em of CRC] (MPEG) {Audio Kompression};
-        \node [text width = 5em, left=0.2cm of MPEG](audio1){\begin{tabular}{cc}
+    \node [text width = 5em](audio1){\begin{tabular}{cc}
 Audiokanal \\
 (stereo)
 \end{tabular}};
+    \node [block, right=0.2cm of audio1] (MPEG) {Audio Kompression};
     \node [](audio left)[left=1.5cm of MPEG.153]{};
     \node [](audio right)[left=1.5cm of MPEG.207]{};
     \node [block, right=0.5cm of MPEG] (Energy) {Scrambler};
@@ -50,7 +33,7 @@ Audiokanal \\
     %\node [below=1cm of audio1](audioN){\rotatebox{270}{\dotso}};
     %\node [circle, draw, below of= audio1, node distance = 1.5cm](audioN){};
     \node [below of=MPEG, node distance=1.5cm](audioNpoint){};
-    \node [](AudioN text)[above=0cm of audioNpoint]{weitere Audiokanäle};
+    \node (AudioN text)[above=0cm of audioNpoint]{weitere Audiokanäle};
     \node [input, below of=end1, node distance = 1.5cm](end2){};
     % data1
     \node [block, below of = Energy, node distance=3cm] (Energy2) {Scrambler};
@@ -85,8 +68,14 @@ Audiokanal \\
     \path [line] (time2.east) -- (end3);
     \path [line] (mux.east) -- (CIF_point.east);
     % dataN
-    \path [line, dotted] (dataN.east) -- (end4.west);
+    \path [line, dotted] (dataN.east) -- (end4.west);    
     
 
 \end{tikzpicture}
+\end{center}
+\end{figure}
+
+
+
+
 \end{document}

@@ -10,43 +10,53 @@
 \pagestyle{empty}
 
 
-\begin{tikzpicture}[node distance = 1cm, auto]
-\tikzstyle{block} = [rectangle, rounded corners, draw, text width=6em, text centered, minimum height=2em]
-\tikzstyle{rect} = [rectangle, draw, text width=5.9em, text centered, minimum height=2em]
-\tikzstyle{input} = [rectangle, text width=2em, align=right, minimum height=2em]
-
-\node [block, text width=18em](ensemble){"Campus Radio"};
-\node [block, below=0.5cm of ensemble.190, anchor=north, text width=7em](sender1){"CELs Angles"};
-\node [block, below=0.5cm of ensemble.350, text width=7em](sender2){"KIT Tune"};
-\node [block, text width=5em, below=1.5cm of $(sender2.west)!0.5!(sender1.east)$](traffic){"Stauinfo"};
-\node [block, left=2mm of traffic](news){"Nachrichten"};
-\node [block, text width=5em, left=2mm of news](audio1){"Audio 1"};
-\node [block, right=2mm of traffic](audio2){"Audio 2"};
-\node [block, right=2mm of audio2, opacity=0.5, text width=5em](etc){...};
-\node [rect, below=0.5cm of traffic.south](cif_mid){Kanal 3};
-\node [rect, left=0.0cm of cif_mid.west](cif_-1){Kanal 2};
-\node [rect, left=0.0cm of cif_-1.west](cif_-2){Kanal 1};
-\node [rect, right=0.0cm of cif_mid.east](cif_+1){Kanal 4};
-\node [rect, right=0.0cm of cif_+1.east](cif_+2){Kanal 5};
-\node [input, left= of cif_-2.west](cif){\textbf{CIF}};
-\node [input, above=0.5cm of cif](kanal){\textbf{Kanal}};
-\node [input, above=1.1cm of kanal](sender){\textbf{Radiosender}};
-\node [input, above=0.5cm of sender](ensemble_label){\textbf{Ensemble}};
-
-\path [line] (ensemble.190) -- (sender1.north);
-\path [line] (ensemble.350) -- (sender2.north);
-\path [line] (sender1.south) -- ($(sender1.south)!0.3!(news.north-|sender1.north)$) -| (news.140);
-\path [line] (sender1.south) -- ($(sender1.south)!0.3!(news.north-|sender1.north)$) -| (audio1.north);
-\path [line] (sender1.south) -- ($(sender1.south)!0.3!(news.north-|sender1.north)$) -| (traffic.140);
-\path [line, dash dot] (sender2.south) -- ($(sender2.south)!0.7!(audio2.north-|sender2.north)$) -| (audio2.north);
-\path [line, dash dot] (sender2.south) -- ($(sender2.south)!0.7!(audio2.north-|sender2.north)$) -| (traffic.40);
-\path [line, dash dot] (sender2.south) -- ($(sender2.south)!0.7!(audio2.north-|sender2.north)$) -| (etc.north);
-\path [line, dash dot] (sender2.south) -- ($(sender2.south)!0.7!(audio2.north-|sender2.north)$) -| (news.40);
-\path [line] (audio1.south) -- (cif_-2.north-|audio1.south);
-\path [line] (news.south) -- (cif_-1.north-|news.south);
-\path [line] (traffic.south) -- (cif_mid.north-|traffic.south);
-\path [line] (audio2.south) -- (cif_+1.north-|audio2.south);
-\path [line] (etc.south) -- (cif_+2.north-|etc.south);
-
+\begin{figure}
+\begin{center}
+\begin{tikzpicture}[node distance = 2cm, auto]
+% Define block styles
+\tikzstyle{decision} = [diamond, draw, fill=cyan!30, 
+    text width=4.5em, text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{start} = [rectangle, draw, fill=cyan!30, 
+    text width=5em, text centered, rounded corners, minimum height=4em]
+\tikzstyle{output} = [trapezium, draw, fill=cyan!30, 
+    text width=4em, text centered, minimum height=4em, trapezium right angle=110, trapezium left angle=70]
+\tikzstyle{block} = [rectangle, draw, fill=cyan!30, 
+    text width=5em, text centered, minimum height=4em]
+\tikzstyle{line} = [draw, -latex']
+\tikzstyle{cloud} = [draw, ellipse,fill=red!20, node distance=3cm,
+    minimum height=2em]
+    % Place nodes
+    \node [start] (init) {Start};
+    \node [decision, below of=init] (null) {NULL erwartet?};
+    \node [block, below of=null, node distance=3cm] (corr) {gleitende Korrelation};
+    \node [decision, below of=corr, node distance=3cm] (peak) {Peak?};
+    \node [block, below of=peak, node distance=2.5cm] (energy) {Energie- messung};
+    \node [decision, below of=energy] (first) {Symbol $z_{1,k}$?};
+    \node [output, below of=first, node distance=3cm] (tag) {Start des Frames in $T_G$};
+    \node [block, right of=null, node distance=4.5cm] (skip) {überspringe $T_S$};
+    \node [block, below of=skip, node distance=3cm] (corr2) {einmalige Korrelation};
+    \node [decision, below of=corr2] (peak?2) {Peak?};
+    \node [above of=null, node distance=2cm] (backtonull){};
+    \node [output, below of=peak?2, node distance=3cm] (lost track){nicht mehr in Sync};
+    
+    \path [line] (init) -- (null);
+    \path [line] (null) -- node {ja} (corr);
+    \path [line] (null) -- node {nein} (skip);
+    \path [line] (corr) -- (peak);
+    \path [line] (peak) -- node {ja} (energy);
+    \path [line] (energy) -- (first);
+    \path [line] (first) -- node {ja} (tag);
+    \path [line] (peak) -- node {nein} ++(2.5cm,0);
+    \path [line] (first) -- node {nein} ++(2.5cm,0) |- (corr);
+    \path [line] (skip) -- (corr2);
+    \path [line] (corr2) -- (peak?2);
+    \path [line] (peak?2.south) -- node {nein} (lost track);
+    \path [line] (peak?2.east) -- node{ja}++(1cm,0) -- ++(0,8cm) -- ++(-6.5,0);
+    \path [line] (tag) -- node{}++(0,-1cm) -- node {} ++(-2.5cm,0) -- node{}++(0,17.5cm) -- ++(2.5cm,0);
+    \path [line] (lost track.south) -- ++(0,-1cm) -- ++(-2,0);
 \end{tikzpicture}
+\end{center}
+\caption{Programmablaufplan der Zeitsynchronisation}
+\label{chart:zeitsync}
+\end{figure}
 \end{document}

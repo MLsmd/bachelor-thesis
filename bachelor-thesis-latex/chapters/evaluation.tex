@@ -3,7 +3,7 @@
 Nach erfolgreicher Implementierung des DAB/DAB+ Transceivers folgt in diesem Abschnitt eine Evaluation des Systems. Für eine grundsätzliche Verifikation wird der Empfänger gegen das DAB+ Ensemble eines lokalen Radiosenders in einer realen Übertragung getestet. In der Simulation wird der Transceiver anschließend auf sein Verhalten und seine Robustheit bei verschiedenen Übertragungskanälen untersucht. \\
 Für quantitative Aussagen stellt die \ac{BER} ein gängiges Gütekriterium zur Bewertung der Übertragungsqualität des physikalischen Kanals dar. Die \ac{BER} allein ist jedoch kein ausreichendes Maß für die vom Nutzer subjektiv empfundene Qualität des Empfangssignals. Sowohl im FIC als auch im MSC entscheidet letzlich ein CRC darüber, ob ein FIB beziehungsweise ein MPEG Frame korrekt ist und es dementsprechend weiterverarbeitet oder verworfen wird. Das Audiosignal wird, im Gegensatz zu FM, bei gestörter Übertragung nicht verrauschter, sondern die Ausfallrate, auch \ac{PER} genannt, steigt. Deshalb ist es sinnvoll, die Fehlerrate dieser Pakete über die CRCs als Gütekriterium für eine praktische bzw. subjektive Übertragungsqualität zusätzlich zur Bitfehlerrate heranzuziehen.\\
 
-Die Performanz des Systems hängt von vielen Faktoren ab. Die Konzeption der Systemarchitektur entscheidet über die grundlegenden Eigeschaften des Systems und ist durch den ETSI DAB Standard \cite{etsi:dab_main} festgelegt. Ein weiterer wesentlicher Faktor ist das Design der Synchronisation. Es ist nicht im Standard spezifiziert und deshalb stark von der jeweiligen Implementierung abhängt.
+Die Performanz des Systems hängt von vielen Faktoren ab. Die Konzeption der Systemarchitektur entscheidet über die grundlegenden Eigeschaften des Systems und ist durch den ETSI DAB Standard \cite{etsi:dab_main} festgelegt. Ein weiterer wesentlicher Faktor ist das Design der Synchronisation. Es ist nicht im Standard spezifiziert und hängt deshalb stark von der jeweiligen Implementierung ab.
 
 \section{Verifikation des Empfängers}
 Der Empfänger wird gegen ein lokales DAB+ Ensemble des Südwestrundfunks (SWR) verifiziert. Die Sendestation ist in ca. 10 km Entfernung und sendet mit einer \ac{ERP} von etwa 1 kW \cite{web:wattkopf_sender}. Der Empfang findet im Gebäude und ohne Bewegung des Empfängers statt. Es wurden insgesamt 3 Empfängerkonfigurationen getestet:
@@ -21,13 +21,13 @@ RTL-SDR mit DVB-T kleiner Stabantenne & $\approx 18$ dB & gestört
 \end{figure}
 
 Durch den erfolgreichen Empfang des SWR DAB+ Ensembles ist der Empfänger verifiziert. Die SNR Werte spiegeln wie zu erwarten die Eignung der jeweiligen Antenne für den DAB Empfang wider. Der hohe Qualitätsunterschied der SDR-Geräte ist bei der reinen SNR Messung nicht vollständig berücksichtigt, wirkt sich aber im weiteren Verlauf der Synchronisations- und Decodierungskette auf die Empfangsqualität aus.\\
-Zur subjektiven Empfangsqualität seien zwei Anmerkungen gemacht: Die subjektive Audioqualität der DAB+ Übertragung ist im Vergleich zu FM wesentlich besser; dies kommt jedoch nur bei der Verwendung eines hochwertigen Lautsprechers oder Kopfhörer zum Tragen. Bei kostengünstigen Lautsprechern ist ein Qualitätsunterschied kaum hörbar. Bei sehr schlechter Empfangsqualität fallen einzelne DAB+ Audioframes aus und unterbrechen dadurch den Audiostream für die Dauer eines Superframes von $120 ms$. Auch wenn die restlichen Audioframes komplett fehlerfrei und rauschfrei sind, ist in diesem Fall das sehr verrauschte aber unterbrechungslose FM Audiosignal angenehmer für den Hörer. Eine mögliche Verbesserung dieser subjektiven Empfindung kann durch weiches Aus- und Einblenden vor bzw. nach einem Frameausfall erreicht werden. Diese Methode wird in einigen kommerziellen DAB+ Radios bereits eingesetzt und erzielt den gewünschten Effekt.
+Zur subjektiven Empfangsqualität seien zwei Anmerkungen gemacht: Die subjektive Audioqualität der DAB+ Übertragung ist im Vergleich zu FM wesentlich besser; dies kommt jedoch nur bei der Verwendung eines hochwertigen Lautsprechers oder Kopfhörer zum Tragen. Bei kostengünstigen Lautsprechern ist ein Qualitätsunterschied kaum hörbar. Bei sehr schlechter Empfangsqualität fallen einzelne DAB+ Audioframes aus und unterbrechen dadurch den Audiostream für die Dauer eines Superframes von $120$ ms. Auch wenn die restlichen Audioframes komplett fehlerfrei und rauschfrei sind, ist in diesem Fall das sehr verrauschte aber unterbrechungslose FM Audiosignal angenehmer für den Hörer. Eine mögliche Verbesserung dieser subjektiven Empfindung kann durch weiches Aus- und Einblenden vor bzw. nach einem Frameausfall erreicht werden. Diese Methode wird in einigen kommerziellen DAB+ Radios bereits eingesetzt und erzielt den gewünschten Effekt.
 
 
 \section{AWGN Kanal}
 Der \ac{AWGN} Kanal ist das einfachste hier verwendete Kanalmodell. Der Kanal addiert bei der Übertragung weißes, gaußsches Rauschen auf das Sendesignal.
 \begin{equation}
-R(t) = S(t) + N(t) \quad \text{mit} \quad N(t) \sim \mathcal{C}\mathcal{N}(0,\,\sigma^{2})
+r(t) = s(t) + n(t) \quad \text{mit} \quad n(t) \sim \mathcal{C}\mathcal{N}(0,\,\sigma^{2})
 \end{equation}
 
 \subsection{Bitfehlerrate}
@@ -72,7 +72,7 @@ legend cell align={left},
 \end{figure}
 
 Wie zu erkennen ist, hat die BER Kurve des DAB Systems den gleichen Verlauf wie die D-QPSK BER Kurve und ist um etwa 1 dB nach rechts verschoben. Um also die gleiche BER zu erreichen, benötigt der DAB Empfänger ein um 1 dB besseres $\text{E}_b/\text{N}_0$. Der Performanzverlust ist durch den für die Synchronisation notwendigen Overhead durch Cyclic Prefix und unbelegte Unterträger zu erklären.\\
-Ein Implementationsverlust ist lediglich unter ca. 3 dB zu erkennen, bei dem die BER des DAB Empfänger sehr schnell gegen einem Wert von $0,5$ konvergiert. Das Verhalten kann unter Berücksichtigung der Durchsatzrate des Synchronisationsblocks erklärt werden. Unter 2 dB nimmt die Durchsatzrate rapide ab und bei etwa 0 dB wird quasi kein Frame von der Synchronisation erkannt. In dieser Simulation wurden die Bits eines nicht erkannten Frames mit BER $= 0,5$ gewichtet, was einem Raten von gleichverteilten Bits entspricht. Unter 2dB ist die Rauschleistung in der gleichen Größenordnung wie die Signalleistung, wodurch das Nullsymbol nicht mehr mit großer Sicherheit von anderen Symbolen unterschieden werden kann. Aus diesem Grund wurde die Empfindlichkeitsschwelle für die Synchronisation (siehe \ref{sec:time_sync}) bewusst auf 2 dB gesetzt. Ein zu geringer Schwellwert für die Energiedifferenz zwischen Nullframe und Phasenrefernzsymbol sollte unbedingt vermieden werden. Er kann dazu führen, dass Leistungsschwankungen einen Falschalarm bei der Framedetektion auslösen. Zudem liefern $\text{E}_b/\text{N}_0$ Werte unter 2 dB so hohe Bitfehlerraten, dass ein sinnvoller Betrieb nicht mehr möglich ist.
+Ein Implementationsverlust ist lediglich unter ca. 3 dB zu erkennen, bei dem die BER des DAB Empfänger sehr schnell gegen einen Wert von $0,5$ konvergiert. Das Verhalten kann unter Berücksichtigung der Detektionsrate des Synchronisationsblocks erklärt werden. Unter 2 dB nimmt die Rate der detektierten Frames rapide ab und bei etwa 0 dB wird quasi kein Frame von der Synchronisation erkannt. In dieser Simulation wurden die Bits eines nicht erkannten Frames mit BER $= 0,5$ gewichtet, was einem Raten von gleichverteilten Bits entspricht. Unter 2 dB ist die Rauschleistung in der gleichen Größenordnung wie die Signalleistung, wodurch das Nullsymbol nicht mehr mit großer Sicherheit von anderen Symbolen unterschieden werden kann. Aus diesem Grund wurde die Empfindlichkeitsschwelle für die Synchronisation (siehe \ref{sec:time_sync}) bewusst auf 2 dB gesetzt. Ein zu geringer Schwellwert für die Energiedifferenz zwischen Nullframe und Phasenrefernzsymbol sollte unbedingt vermieden werden. Er kann dazu führen, dass Leistungsschwankungen einen Falschalarm bei der Framedetektion auslösen. Zudem liefern $\text{E}_b/\text{N}_0$ Werte unter 2 dB so hohe Bitfehlerraten, dass ein sinnvoller Betrieb nicht mehr möglich ist.
 
 \subsection{Paketfehlerrate}
 In einem zweiten Schritt wird nun die Paketfehlerrate (PER) untersucht. Die PER Simulation soll dabei so weit wie möglich einer Ende zu Ende Übertragung entsprechen, da dieser Fall der subjektiv empfundenen Übertragungsqualität am nächsten kommt. Deshalb wird bei der Simulation der PER die komplette Kanalcodierungskette in die Simulationsumgebung integriert.\\
@@ -137,31 +137,29 @@ Im FIC wird nach der Kanalcodierung ein CRC über jedes FIB berechnet, dessen Er
 \end{figure}
 
 Eine PER schneidet in der Regel deutlich schlechter als eine äquivalente BER ab, da alle Bits für ein erfolgreiches Paket korrekt sein müssen. Schon einzelne falsche Bits führen zum Scheitern eines ganzen Paketes, während bei der BER jedes Bit unabhängig zur Fehlerrate beiträgt. Durch die Effekte der Kanalcodierung und der damit verbundenen Fehlerkorrektur des Faltungsdecoders fällt die PER jedoch trotzdem in der gleichen Größenordnung wie die BER aus. \\
-Im Bereich unter 3 dB verlässt die PER des FIC ihren typischen AWGN Verlauf und konvergiert deutlich schneller gegen eine totale Ausfallrate als erwartet. Hier zeigt sich wieder der Einfluss der Durchlassrate von der Synchronisation, die schon bei der BER diskutiert wurde. Die PER wurde für den Fall eines nicht erkannten Frames mit 0 gewichtet, da ein Paket mit BER=0,5 in diesem Fall nicht korrigierbar ist.\\
+Im Bereich unter 3 dB verlässt die PER des FIC ihren typischen AWGN Verlauf und konvergiert deutlich schneller gegen eine totale Ausfallrate als erwartet. Hier zeigt sich wieder der Einfluss der Detektionsrate der Synchronisation, die schon bei der BER diskutiert wurde. Die PER wurde für den Fall eines nicht erkannten Frames als Fehler berechnet, da ein Paket mit BER = 0,5 im Allgemeinen nicht korrigierbar ist.\\
 \subsubsection{Main Service Channel (MSC)}
-Die PER des MSC kann vom Firecode-Check abgeleitet werden, der nach der Kanalcodierung und vor der Reed-Solomon Korrektur stattfindet. Die angewandte Kanalcodierung unterscheidet sich vom FIC in der Faltungscodierung bzw. deren Coderate. Zusätzlich wird der MSC um das Zeit-Interleaving ergänzt.\\
+Die PER des MSC kann vom Firecode-Check abgeleitet werden, der nach der Kanaldecodierung und vor der Reed-Solomon Korrektur stattfindet. Die angewandte Kanalcodierung unterscheidet sich vom FIC in der Faltungscodierung bzw. deren Coderate. Zusätzlich wird der MSC um das Zeit-Interleaving ergänzt.\\
 Hier sei angemerkt, dass der Firecode laut DAB+ Standard nicht über das gesamte Superframe berechnet wird, sondern nur über die ersten 9 Byte. Der Firecode hat somit lediglich Einfluss auf die Bits des MPEG Headers. Im Gegensatz dazu wird der CRC des FIC jeweils über das gesamte FIB, also über 30 Byte, berechnet. Ein direkter Vergleich der PER des Firecode mit der PER des FICs ist daher erst nach einer Normierung möglich.\\
 Die PER hängt bei fester BER von der Anzahl der Bits ab, die pro Paket überprüft werden. Diese effektive Bitlänge ist für den CRC im FIC $L_1 = 32$ Byte und für den Firecode $L_2 = 11$ Byte. Dabei kommen jeweils 2 Byte zur eigentlichen Berechnungslänge hinzu, da auch die 16 Bits des CRC- bzw. Firecode-Wortes selbst falsch übertragen werden können. Die Wahrscheinlichkeit, dass ein Paket der Länge $L_1$ fehlerfrei ist entspricht der Wahrscheinlichkeit, dass genau $\frac{L_1}{L_2}$ unabhängige Pakete der Länge $L_2$ fehlerfrei sind.
 
 \begin{alignat}{3}
 &1-&&P_{e,1} &&= (1-P_{e,2})^\frac{32}{11}\nonumber \\
-& && &&\approx (1-P_{e,2})^3\nonumber \\
-& && &&= 1-P_{e,2}^3+3P_{e,2}^2-3P_{e,2}\nonumber \\
-\Leftrightarrow\; & &&P_{e,1} &&\approx 3P_{e,2}-3P_{e,2}^2+P_{e,2}^3 \label{eq:per}
+\Leftrightarrow\; & &&P_{e,1} &&= 1 - (1-P_{e,2})^{\frac{32}{11}} \label{eq:per}
 \end{alignat}
 
-Mit Gl.~\ref{eq:per} kann die PER des Firecodes auf die Länge $32$ Byte normiert werden. Die resultierende normierte PER ist in Abb. \ref{plot:awgn_per_fic} aufgetragen und kann nun direkt mit der PER des FIC verglichen werden. Die PER Kurve des MSC hat den selben Verlauf wie die des FIC und ist um etwa 2 dB verschoben. Die schlechtere Performanz kann mit der höheren Coderate des MSC im Protection Mode A3 von $R=1/2$ im Vergleich zu $R=1/3$ des FIC erklärt werden. Das zusätzliche Zeit-Interleaving im MSC macht sich im AWGN Fall in der Performanz nicht bemerkbar.\\
+Mit Gl.~\ref{eq:per} kann die PER des Firecodes auf die Länge $32$ Byte normiert werden. Die resultierende normierte PER ist in Abb. \ref{plot:awgn_per_fic} aufgetragen und kann nun direkt mit der PER des FIC verglichen werden. Die PER Kurve des MSC hat den selben Verlauf wie die des FIC und ist um etwa 2 dB verschoben. Die schlechtere Performanz kann mit der höheren Coderate des MSC im Protection Mode A3 von $R=1/2$ im Vergleich zu $R=1/3$ des FIC erklärt werden. Das zusätzliche Zeit-Interleaving im MSC macht sich im AWGN Fall in der Performanz nicht bemerkbar, da nur unabhängige Einzelfehler auftreten.\\
 
 Die Normierung der Firecode-PER auf die Länge der FIBs ist sinnvoll, um die beiden PERs miteinander zu vergleichen. Die subjektive Audioqualität, wie sie am Anfang dieses Kapitels motiviert wurde, ist damit aber nicht hinreichend gut beschrieben. Damit ein Superframe fehlerfrei im Audio Decoder ankommt, muss es die Stufen aus Abb.~\ref{fig:dab+chain} durchlaufen.\\
 Nach erfolgreichem Firecode-Check werden im Reed-Solomon Decoder alle restlichen Bitfehler korrigiert, wenn dies möglich ist. Ausschließlich nach erfolgreicher Korrektur wird das Superframe an den Audio Decoder weitergegeben und kann zum Audiostream beitragen. Eine realistische Ausfallwahrscheinlichkeit für die Superframes ergibt sich wie folgt:
 \begin{alignat}{3}
-&1-&&P_{e,Superframe} &&= (1-P_{e,Firecode}) \cdot (1-P_{e, Reed-Solomon})\nonumber \\
-\Leftrightarrow\; & &&P_{e, Superframe} &&= P_{e,Firecode} + P_{e, Reed-Solomon} - P_{e,Firecode}\cdot P_{e, Reed-Solomon}
+&1-&&P_{e,\text{Superframe}} &&= (1-P_{e,\text{Firecode}}) \cdot (1-P_{e, \text{Reed-Solomon}})\nonumber \\
+\Leftrightarrow\; & &&P_{e, \text{Superframe}} &&= P_{e,\text{Firecode}} + P_{e, \text{Reed-Solomon}} - P_{e,\text{Firecode}}\cdot P_{e, \text{Reed-Solomon}}
 \label{eq:per_superframe}
 \end{alignat}
-Dabei entspricht $P_{e,Firecode}$ der nicht normierten Ausfallwahrscheinlichkeit $P_{e,2}$ aus Gl. \ref{eq:per}. $P_{e,Reed-Solomon}$ wird über die Ausfallrate des Reed-Solomon Decoders bei vorgeschaltenem Firecode-Checker geschätzt. Die resultierende PER des MSC ist für das oft verwendete Protection Level A3 in Abb.~\ref{plot:awgn_per_fic} dargestellt. Die PER Kurve ist um ca. 2 dB schlechter als die Kurve des FIC. Der Verlust kann mit der höheren Coderate von $R=1/2$ begründet werden.\\
+Dabei entspricht $P_{e,\text{Firecode}}$ der nicht normierten Ausfallwahrscheinlichkeit $P_{e,2}$ aus Gl. \ref{eq:per}. $P_{e,\text{Reed-Solomon}}$ wird über die Ausfallrate des Reed-Solomon Decoders bei vorgeschaltenem Firecode-Checker geschätzt. Die resultierende PER des MSC ist für das oft verwendete Protection Level A3 in Abb.~\ref{plot:awgn_per_fic} dargestellt. Die PER Kurve ist um ca. 2 dB schlechter als die Kurve des FIC. Der Verlust kann mit der höheren Coderate von $R=1/2$ begründet werden.\\
 
-Ein Vergleich der verschiedenen Protection Levels des MSC ist in Abb.~\ref{plot:awgn_per_msc} zu sehen. Die PERs sind in diesem Diagramm nicht auf eine andere Länge normiert, weshalb die Kurve für das Protection Level A3 in den Abbildungen \ref{plot:awgn_per_fic} und \ref{plot:awgn_per_msc} (jeweils in magenta dargestellt) unterschiedliche Verläufe annimmt. Der Vergleich zeigt, dass die Wahl des Protection Levels deutlichen Einfluss auf die resultierenden PERs nimmt. Die besten Ergebnisse liefert der Protection Mode A1, der sich geringere PERs durch eine sehr kleine Coderate von $R=1/4$ erkauft.
+Ein Vergleich der verschiedenen Protection Levels des MSC ist in Abb.~\ref{plot:awgn_per_msc} zu sehen. Die PERs sind in diesem Diagramm nicht gemäß Gl.~\ref{eq:per} auf eine andere Länge normiert, weshalb die Kurve für das Protection Level A3 in den Abbildungen \ref{plot:awgn_per_fic} und \ref{plot:awgn_per_msc} (jeweils in magenta dargestellt) unterschiedliche Verläufe annimmt. Der Vergleich zeigt, dass die Wahl des Protection Levels deutlichen Einfluss auf die resultierenden PERs nimmt. Die besten Ergebnisse liefert der Protection Mode A1, der sich geringere PERs durch eine sehr kleine Coderate von $R=1/4$ erkauft.
 
 \section{Realistische Kanalmodelle}
 Der im vorherigen Kapitel diskutierte AWGN Kanal ist ein stark vereinfaches Kanalmodell das viele Effekte, die bei einer realen Übertragung auftreten, vernachlässigt. Eine vollständig realistische Übertragungssituation kann in einer Simulation niemals nachgestellt werden, es können aber die wichtigsten Effekte in das Kanalmodell integriert werden um der realisitschen Übertragung so nah wie möglich zu kommen. Diese Effekte sind bei einer typischen Rundfunkübertragung:
@@ -174,14 +172,14 @@ Der im vorherigen Kapitel diskutierte AWGN Kanal ist ein stark vereinfaches Kana
 Der beschriebene NLOS Mehrwegeempfang kann unter der Annahme einer gleichverteilten Phasendrehung und normalverteilter Kanalkoeffizienten nach \cite{proakis} in einem Rayleigh Fading Kanal dargestellt werden.
 Bei $n$ Mehrwegen ergibt sich das empfangene Basisbandsignal zu
 \begin{equation}
-R(t) = \sum \limits_n \alpha_n(t) e^{-j2\pi f_c \tau_n(t)} S(t-\tau_n(t)) + N(t)
+r(t) = \sum \limits_n \alpha_n(t) e^{-j2\pi f_c \tau_n(t)} S(t-\tau_n(t)) + N(t)
 \end{equation}
 mit dem zeitabhängigen Dämpfungsfaktor $\alpha_n(t) \in \mathbb{C}$, der Dopplerverschiebung $f_c \in \mathbb{R}$ und der zeitabhängigen Verzögerung des Mehrwegs $\tau_n(t)$ die zu einer Phasendrehung im Basisband führt. Zusätzlich addiert der Kanal weißes, gaußsches Rauschen $N(t) \sim \mathcal{C}\mathcal{N}(0,\,\sigma^{2})$ auf das resultierende Signal.\\  
 Die Anzahl der Mehrwege und deren Verzögerung und mittlere Dämpfung ist stark von der Umgebung abhängig und muss für verschiedene Übertragungssituationen separat festgelegt werden.
 In dieser Arbeit wurden die folgenden zwei Szenarien betrachtet:
 \begin{enumerate}
-\item DVB-T Kanalmodell MR100: \textit{Motorway Rural channel with 12 paths} \cite{kanalmodell:dvb_paper} \cite{etsi:dvb}. Dieses Kanalmodell beschreibt einen Mehrwegempfang mit vielen kurzen, stark gedämpften Echos. Die Ausbreitungsbedingungen von DVB-T sind sehr ähnlich zu DAB, weshalb das Kanalmodell verwendet werden kann. Der Empfang von DAB auf einer Autobahn ist außerdem eine typsiche Empfangssituation eines Autoradios.
-\item DAB Kanalmodell DAB\_HT\_2: \textit{DAB Hilly Terrain Profile 2} \cite{kanalmodell:dab_ht_2}. Das Modell beschreibt eine hügelige Landschaft bei dem drei wenig gedämpfte Mehrwege mit einer hohen Verzögerung empfangen werden.
+\item DVB-T Kanalmodell MR100: \textit{Motorway Rural channel with 12 paths} \cite{kanalmodell:dvb_paper} \cite{etsi:dvb}. Dieses Kanalmodell beschreibt einen Mehrwegempfang mit vielen kurzen, stark gedämpften Echos. Die Ausbreitungsbedingungen von DVB-T sind sehr ähnlich zu DAB, weshalb das Kanalmodell verwendet werden kann. Der Empfang von DAB auf einer Autobahn ist außerdem eine typische Empfangssituation eines Autoradios.
+\item DAB Kanalmodell DAB\_HT\_2: \textit{DAB Hilly Terrain Profile 2} \cite{kanalmodell:dab_ht_2}. Das Modell beschreibt eine hügelige Landschaft, bei dem drei wenig gedämpfte Mehrwege mit einer hohen Verzögerung empfangen werden.
 \end{enumerate}
 Die Verteilung der mittleren Leistung über der Verzögerung kann mit dem Power Delay Profile (PDP) beschrieben werden. In einem PDP ist die relative Leistungsverteilung über der Zeitverzögerung aufgetragen. Es konkretisiert damit die Anzahl der Mehrwege und ihre jeweilige Verzögerung und Dämpfung. Die PDPs der untersuchten Szenarien sind in Abb. \ref{plot:pdp_dvb} und \ref{plot:pdp_dab} dargestellt. Es ist die unterschiedliche Skalierung der Zeit-Achsen zu beachten.
 
@@ -281,12 +279,12 @@ table{
 \end{figure}
 
 \subsection{Kohärenzbandbreite}
-Durch die verschiedenen Kanallaufzeiten der einzelnen Mehrwege kommt es am Empfänger zu konstruktiver und destruktiver Interferenz, die von der Verzögerung der Mehrwege, aber auch von der Frequenz abhängt. In einem Frequenzband der Bandbreite B variiert deshalb die mittlere empfangene Leistung über der Frequenz, was als frequenzselektives Fading bezeichnet wird. Die Bandbreite, in der ein Kanal als flach angenommen werden kann, wird als Kohärenzbandbreite bezeichnet. Für das Kanalmodell DAB\_HT\_2, das mit $T_d = 40$ \textmu s die längsten Echos enthält, ist die Kohärenzbandbreite
+Durch die verschiedenen Kanallaufzeiten der einzelnen Mehrwege kommt es am Empfänger zu konstruktiver und destruktiver Interferenz, die von der Verzögerung der Mehrwege, aber auch von der Frequenz abhängt. In einem Frequenzband der Bandbreite B variiert deshalb die mittlere empfangene Leistung über der Frequenz, was als frequenzselektives Fading bezeichnet wird. Die Bandbreite, in der ein Kanal als flach angenommen werden kann, wird als Kohärenzbandbreite bezeichnet. Für das Kanalmodell DAB\_HT\_2, das mit $T_d = 160$ \textmu s die längsten Echos enthält, ist die Kohärenzbandbreite
 \begin{equation}
-B_c \coloneqq \frac{1}{2 T_d} = 12,5 \text{kHz} < 1536 \text{kHz} = B
+B_c \coloneqq \frac{1}{2 T_d} = 12,5\, \text{kHz} < 1536\, \text{kHz} = B
 \end{equation}
 
-Das Gesamtübertragungssystem ist also frequenzselektiv. Durch die parallele Übertragung in OFDM Unterträgern mit der Unterträgerbreite $\Delta f = 1 \text{kHz} < 12,5 \text{kHz} = B_c$ kann jedoch jeder Unterträger als frequenzflach angenommen werden.
+Das Gesamtübertragungssystem ist also frequenzselektiv. Durch die parallele Übertragung in OFDM Unterträgern mit der Unterträgerbreite $\Delta f = 1 \text{ kHz} < 12,5 \text{ kHz} = B_c$ kann jedoch jeder Unterträger als frequenzflach angenommen werden.
 
 \subsection{Doppler-Spread}
 Für die Wahl der maximalen Dopplerverschiebung wird die Geschwindigkeit eines mobilen Empfängers betrachtet. Bei einer typischen Trägerfrequenz für die terrestrische DAB Übertragung $f_T=200$ MHz ergibt sich eine Proportionalität zwischen der Geschwindigkeit und der Dopplerverschiebung.
@@ -295,7 +293,7 @@ Für die Wahl der maximalen Dopplerverschiebung wird die Geschwindigkeit eines m
 \end{equation}
 Der Doppler-Spread ist die maximale Differenz der auftretenden Doppler-Verschiebungen \cite{proakis}.
 \begin{equation}
-D_s = \max_{i,k} |\Delta f_{D,1} - \Delta f_{D,2}| = 2 |\Delta f_{D,max}|
+D_s = \max_{i,k} |\Delta f_{D,i} - \Delta f_{D,k}| = 2 |\Delta f_{D,\text{max}}|
 \end{equation}
 Die folgenden Dopplerverschiebungen und damit korrespondierenden Geschwindigkeiten werden untersucht:
 
@@ -387,7 +385,7 @@ In Abb.~\ref{plot:ber_dvb} sind die Bitfehlerraten des DAB OFDM Systems über de
 
 Im Vergleich zur theoretischen BER Kurve im AWGN Kanal (Abb.~\ref{plot:awgn_ber}), schneidet die BER im Rayleigh-Fading Kanal deutlich schlechter ab. Die Simulationsergebnisse für geringe Dopplerverschiebungen liegen nahe an der theoretischen Kurve. Mit zunehmendem Doppler-Spread laufen die Kurven immer früher in einen Error-Floor. Sehr schlechte Ergebnisse liefert eine Simulation mit der maximalen Dopplerverschiebung von 50Hz. Eine BER von unter $10^{-2}$ wird selbst bei hohem SNR nicht erreicht.
 \\
-In Abb.~\ref{plot:ber_dab_ht} sind die Ergebnisse der BER Simulation für das Kanalmodell DAB\_HT\_2 dargestellt. Die BER Kurven haben den gleichen Verlauf wie die Kurven in Abb.~\ref{plot:ber_dvb} und sind um etwa 3 dB nach rechts verschoben. Die BER für 50 Hz Dopplerverschiebung läuft außerdem in einen schlechteren Error-Floor von etwa $5\cdot 10^{-2}$. Die geringe Verschlechterung im Kanalmodell DAB\_HT\_2 im Vergleich zu MR100 demonstriert die Robustheit des DAB Systems gegen stark verzögerte Mehrwege. Die CP Länge von $T_B =$ 246 \textmu s ist dabei noch nicht ausgereizt.\\
+In Abb.~\ref{plot:ber_dab_ht} sind die Ergebnisse der BER Simulation für das Kanalmodell DAB\_HT\_2 dargestellt. Die BER Kurven haben den gleichen Verlauf wie die Kurven in Abb.~\ref{plot:ber_dvb} und sind um etwa 3 dB nach rechts verschoben. Die BER für 50 Hz Dopplerverschiebung läuft außerdem in einen schlechteren Error-Floor von etwa $5\cdot 10^{-2}$. Die geringe Verschlechterung im Kanalmodell DAB\_HT\_2 im Vergleich zu MR100 demonstriert die Robustheit des DAB Systems gegen stark verzögerte Mehrwege. Die CP Länge von $T_G =$ 246 \textmu s ist dabei noch nicht ausgereizt.\\
 
 \subsection{Paketfehlerrate}
 Die Paketfehlerrate im Rayleigh-Fading Kanal mit realistischem PDP bildet schließlich die Simulation, die der subjektiven Empfangsqualität im Realfall am nächsten kommt. Wegen der Ähnlichkeit von den BER Kurven der beiden Kanalmodelle, wurde die PER nur für das Kanalmodell DAB\_HT\_2 untersucht. Die Simulationsergebenisse sind in Abb.~\ref{plot:doppler_per} gezeigt.
